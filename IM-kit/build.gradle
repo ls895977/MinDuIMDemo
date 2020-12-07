@@ -44,4 +44,16 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    //Room数据库
+    implementation "androidx.room:room-runtime:2.3.0-alpha03"
+    annotationProcessor "androidx.room:room-compiler:2.3.0-alpha03"
+    // optional - Kotlin Extensions and Coroutines support for Room
+    implementation "androidx.room:room-ktx:2.3.0-alpha03"
+    // optional - Test helpers
+    testImplementation "androidx.room:room-testing:2.3.0-alpha03"
+
+    // 添加协程安卓库
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 }
