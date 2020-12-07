@@ -2,6 +2,6 @@
 初始项目
 IMKit 1.0.1
 
-maven { url "https://github.com/ls895977/MinDuIMDemo/tree/master" }
+maven { url "https://raw.githubusercontent.com/ls895977/MinDuIMDemo/master" }
 
-implementation 'com.css:imkit:1.0.1'
+implementation 'com.css:im-kit:1.0.1'
