@@ -1,6 +1,6 @@
 # MinDuIMDemo
 初始项目
-IMKit 1.0.1
+IMKit 0.0.1
 Add it in your root build.gradle at the end of repositories:
 
 	allprojects {
@@ -12,5 +12,5 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.ls895977:MinDuIMDemo:Tag'
+	        implementation 'com.github.ls895977:MinDuIMDemo:0.0.1'
 	}
