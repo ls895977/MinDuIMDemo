@@ -1,9 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-// JitPack Maven
-apply plugin: 'com.github.dcendents.android-maven'
-// Your Group
-group='com.github.ls895977'
+
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.2"
