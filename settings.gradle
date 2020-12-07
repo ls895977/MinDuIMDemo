@@ -1,2 +1,3 @@
+include ':IMKit'
 include ':app'
 rootProject.name = "MinDuIMDemo"
