@@ -20,7 +20,7 @@ allprojects {
     repositories {
         google()
         jcenter()
-        maven { url "https://raw.githubusercontent.com/ls895977/MinDuIMDemo/master/IMKit" }
+        maven { url "https://raw.githubusercontent.com/ls895977/MinDuIMDemo/master" }
     }
 }
 
