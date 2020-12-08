@@ -2,6 +2,7 @@ package com.css.im_kit.ui;
 
 import com.css.im_kit.R;
 import com.css.im_kit.databinding.FragmentConversationListBinding;
+import com.css.im_kit.ui.base.BaseFragment;
 
 public class ConversationListFragment extends BaseFragment<FragmentConversationListBinding> {
 

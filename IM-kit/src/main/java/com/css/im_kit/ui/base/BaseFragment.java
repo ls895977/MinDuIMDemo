@@ -1,4 +1,4 @@
-package com.css.im_kit.ui;
+package com.css.im_kit.ui.base;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
