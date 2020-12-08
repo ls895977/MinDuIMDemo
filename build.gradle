@@ -24,6 +24,10 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
 }
+ext {
+    appSourceCompatibility = JavaVersion.VERSION_1_8
+    appTargetCompatibility = JavaVersion.VERSION_1_8
+}
 
 task clean(type: Delete) {
     delete rootProject.buildDir
