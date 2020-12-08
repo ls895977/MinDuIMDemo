@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.User_Info
@@ -12,6 +13,7 @@ import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.dao.UserInfoDao
 
 @Database(entities = [User_Info::class, Message::class, Conversation::class], version = 1)
+@TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract val userDao: UserInfoDao

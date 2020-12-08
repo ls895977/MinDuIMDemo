@@ -15,12 +15,18 @@ interface MessageDao {
     @Query("SELECT * FROM message WHERE messageId = (:message_id)")
     fun loadById(message_id: String): Flow<List<Message>>
 
+    @Query("SELECT  * FROM message ORDER BY messageId DESC LIMIT 1")
+    fun getLast(): Flow<Message>
+
     @Insert
-    suspend fun insertAll(users: Message)
+    suspend fun insert(users: Message)
 
     @Delete
     suspend fun delete(user: Message)
 
+    @Query("DELETE FROM message")
+    suspend fun deleteAll()
+
     @Update
-    suspend fun updateUsers(users: Message)
+    suspend fun update(users: Message)
 }

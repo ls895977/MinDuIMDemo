@@ -21,7 +21,6 @@ data class UserInfoRepository(private val dao: UserInfoDao) {
         }
     }
 
-
     suspend fun insert(user: User_Info) {
         return dao.insert(user)
     }
