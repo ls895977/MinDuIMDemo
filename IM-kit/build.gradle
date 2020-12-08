@@ -74,4 +74,8 @@ dependencies {
     implementation 'com.gyf.immersionbar:immersionbar-components:3.0.0'
     // kotlin扩展（可选）
     implementation 'com.gyf.immersionbar:immersionbar-ktx:3.0.0'
+
+    //一个强大的列表adapter适配器  谁用谁知道
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.47'
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'  //刷新加载控件
 }
