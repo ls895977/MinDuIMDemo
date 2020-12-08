@@ -4,24 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ConversationDao {
     @Query("SELECT * FROM conversation")
-    suspend fun getAll(): LiveData<Array<Conversation>>
+    fun getAll(): Flow<List<Conversation>>
 
     @Query("SELECT * FROM conversation WHERE id IN (:ids)")
-    suspend fun loadAllByIds(ids: IntArray): LiveData<Array<Conversation>>
+    fun loadAllByIds(ids: IntArray): Flow<List<Conversation>>
 
     @Query("SELECT * FROM conversation WHERE id = (:id)")
-    suspend fun loadById(id: String): LiveData<Array<Conversation>>
+    fun loadById(id: String): Flow<List<Conversation>>
 
     @Insert
-    suspend fun insertAll(vararg users: Message)
+    suspend fun insertAll(users: Conversation)
 
     @Delete
-    suspend fun delete(vararg user: Message)
+    suspend fun delete(user: Conversation)
 
     @Update
-    suspend fun updateUsers(vararg users: Message)
+    suspend fun updateUsers(users: Conversation)
 }

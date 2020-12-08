@@ -6,12 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
-import com.css.im_kit.db.bean.UserInfo
+import com.css.im_kit.db.bean.User_Info
 import com.css.im_kit.db.dao.ConversationDao
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.dao.UserInfoDao
 
-@Database(entities = [UserInfo::class, Message::class, Conversation::class], version = 1)
+@Database(entities = [User_Info::class, Message::class, Conversation::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract val userDao: UserInfoDao

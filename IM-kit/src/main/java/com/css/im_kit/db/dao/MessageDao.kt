@@ -1,26 +1,26 @@
 package com.css.im_kit.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.css.im_kit.db.bean.Message
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageDao {
     @Query("SELECT * FROM message")
-    suspend fun getAll(): LiveData<Array<Message>>
+    fun getAll(): Flow<List<Message>>
 
-    @Query("SELECT * FROM message WHERE message_id IN (:message_ids)")
-    suspend fun loadAllByIds(message_ids: IntArray): LiveData<Array<Message>>
+    @Query("SELECT * FROM message WHERE messageId IN (:message_ids)")
+    fun loadAllByIds(message_ids: IntArray): Flow<List<Message>>
 
-    @Query("SELECT * FROM message WHERE message_id = (:message_id)")
-    suspend fun loadById(message_id: String): LiveData<Array<Message>>
+    @Query("SELECT * FROM message WHERE messageId = (:message_id)")
+    fun loadById(message_id: String): Flow<List<Message>>
 
     @Insert
-    suspend fun insertAll(vararg users: Message)
+    suspend fun insertAll(users: Message)
 
     @Delete
-    suspend fun delete(vararg user: Message)
+    suspend fun delete(user: Message)
 
     @Update
-    suspend fun updateUsers(vararg users: Message)
+    suspend fun updateUsers(users: Message)
 }
