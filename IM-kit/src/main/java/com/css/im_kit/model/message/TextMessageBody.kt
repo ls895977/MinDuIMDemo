@@ -1,4 +1,4 @@
-package com.css.im_kit.message
+package com.css.im_kit.model.message
 
 /**
  * 文字消息消息体
