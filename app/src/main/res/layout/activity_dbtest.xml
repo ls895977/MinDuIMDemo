@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="@dimen/dp_20"
+            android:text="@{title}"
+            android:textSize="@dimen/dp_50" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:background="@color/color_f3f3f3" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/addUser"
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_50"
+                android:text="添加用户" />
+
+            <Button
+                android:id="@+id/addMessage"
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_50"
+                android:text="添加消息" />
+
+            <Button
+                android:id="@+id/addConversation"
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_50"
+                android:text="添加会话" />
+
+            <Button
+                android:id="@+id/getSGConversation"
+                android:layout_width="@dimen/dp_100"
+                android:layout_height="@dimen/dp_50"
+                android:text="获取会话消息" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+</layout>

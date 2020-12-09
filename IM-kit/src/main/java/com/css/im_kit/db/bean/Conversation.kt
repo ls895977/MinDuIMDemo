@@ -8,11 +8,13 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class Conversation(
-        @PrimaryKey
-        var id: Int = 0,
+        var conversationId: String,//发送方id
         var sendUserId: String,//发送方id
         var receiveUserId: String//接收方id
 ) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+
     override fun toString(): String {
         return super.toString()
     }

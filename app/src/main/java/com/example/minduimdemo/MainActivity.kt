@@ -17,5 +17,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         binding.title = resources.getString(R.string.app_name)
     }
 
-    override fun initListeners() {}
+    override fun initListeners() {
+
+    }
 }

@@ -1,4 +1,4 @@
-package com.css.im_kit.`interface`
+package com.css.im_kit.callback
 
 interface OnCallBack<T> {
     fun onSuccess(models: T)

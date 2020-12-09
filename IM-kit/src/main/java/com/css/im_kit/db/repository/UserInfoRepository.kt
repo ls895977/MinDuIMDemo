@@ -4,21 +4,16 @@ import android.content.Context
 import com.css.im_kit.db.bean.User_Info
 import com.css.im_kit.db.dao.UserInfoDao
 import com.css.im_kit.db.imDb
-import com.css.im_kit.db.ioScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 data class UserInfoRepository(private val dao: UserInfoDao) {
 
-    suspend fun getAll(listen: ((List<User_Info>) -> Unit)) {
-        ioScope.launch {
-            val task = async { dao.getAll() }
-            val result = task.await()
-            result.collect {
-                listen(it)
-            }
-        }
+    fun getAll(): Flow<List<User_Info>> {
+        return dao.getAll()
+    }
+
+    fun loadAllById(userId: String): Flow<User_Info> {
+        return dao.loadAllById(userId)
     }
 
     suspend fun insert(user: User_Info) {

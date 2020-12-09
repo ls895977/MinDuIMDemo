@@ -1,6 +1,6 @@
-package com.css.im_kit.`interface`
+package com.css.im_kit.callback
 
-import com.css.im_kit.`interface`.base.EMCallBack
+import com.css.im_kit.callback.base.EMCallBack
 import com.css.im_kit.model.message.SGMessage
 
 abstract class SGMessageCallback : EMCallBack {

@@ -15,8 +15,8 @@ interface MessageDao {
     @Query("SELECT * FROM message WHERE messageId = (:message_id)")
     fun loadById(message_id: String): Flow<List<Message>>
 
-    @Query("SELECT  * FROM message ORDER BY messageId DESC LIMIT 1")
-    fun getLast(): Flow<Message>
+    @Query("SELECT  * FROM message WHERE sendUserId = (:userId) ORDER BY messageId DESC LIMIT 1")
+    fun getLast(userId: String): Flow<Message>
 
     @Insert
     suspend fun insert(users: Message)

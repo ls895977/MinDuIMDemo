@@ -1,9 +1,7 @@
 package com.css.im_kit.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.css.im_kit.db.bean.Conversation
-import com.css.im_kit.db.bean.Message
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,11 +16,20 @@ interface ConversationDao {
     fun loadById(id: String): Flow<List<Conversation>>
 
     @Insert
-    suspend fun insertAll(users: Conversation)
+    suspend fun insert(user: Conversation)
+
+    @Insert
+    suspend fun insertAll(users: List<Conversation>)
 
     @Delete
     suspend fun delete(user: Conversation)
 
+    @Query("DELETE FROM conversation")
+    suspend fun deleteAll()
+
     @Update
-    suspend fun updateUsers(users: Conversation)
+    suspend fun update(user: Conversation)
+
+    @Update
+    suspend fun updateAll(users: List<Conversation>)
 }

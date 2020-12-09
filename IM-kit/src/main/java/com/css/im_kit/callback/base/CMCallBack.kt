@@ -1,4 +1,4 @@
-package com.css.im_kit.`interface`.base
+package com.css.im_kit.callback.base
 
 /**
  * \~chinese

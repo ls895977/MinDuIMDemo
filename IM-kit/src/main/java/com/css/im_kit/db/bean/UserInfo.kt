@@ -9,10 +9,11 @@ import androidx.room.PrimaryKey
 @Entity
 data class User_Info(
         var nickName: String,
-        var avatar: String
+        var avatar: String,
+        var userId: String
 ) {
     @PrimaryKey(autoGenerate = true)
-    var userId: Int = 0
+    var id: Int = 0
 
 
     override fun toString(): String {

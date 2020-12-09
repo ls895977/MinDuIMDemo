@@ -10,7 +10,10 @@ interface UserInfoDao {
     fun getAll(): Flow<List<User_Info>>
 
     @Query("SELECT * FROM user_info WHERE userId IN (:userIds)")
-    fun loadAllByIds(userIds: IntArray): Flow<List<User_Info>>
+    fun loadAllByIds(userIds: ArrayList<String>): Flow<List<User_Info>>
+
+    @Query("SELECT * FROM user_info WHERE userId = (:userId)")
+    fun loadAllById(userId: String): Flow<User_Info>
 
     @Insert
     suspend fun insert(users: User_Info)
@@ -19,7 +22,7 @@ interface UserInfoDao {
     suspend fun delete(user: User_Info)
 
     @Query("DELETE FROM user_info")
-    suspend fun deleteAll()
+    fun deleteAll()
 
     @Update
     suspend fun update(users: User_Info)

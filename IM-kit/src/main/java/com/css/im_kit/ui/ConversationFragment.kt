@@ -12,7 +12,7 @@ class ConversationFragment : BaseFragment<FragmentConversationBinding?>() {
     override fun layoutResource(): Int = R.layout.fragment_conversation
 
     override fun initView() {
-        userInfo = User_Info("我是大爷", "")
+        userInfo = User_Info("我是大爷", "","1001")
         binding!!.userInfo = userInfo
     }
 

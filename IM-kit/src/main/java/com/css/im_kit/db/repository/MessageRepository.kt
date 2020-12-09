@@ -4,22 +4,13 @@ import android.content.Context
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.imDb
-import com.css.im_kit.db.ioScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 data class MessageRepository(private val dao: MessageDao) {
 
 
-    suspend fun getAll(listen: ((List<Message>) -> Unit)) {
-        ioScope.launch {
-            val task = async { dao.getAll() }
-            val result = task.await()
-            result.collect {
-                listen(it)
-            }
-        }
+    fun getAll(): Flow<List<Message>> {
+        return dao.getAll()
     }
 
     suspend fun insert(message: Message) {
@@ -29,14 +20,8 @@ data class MessageRepository(private val dao: MessageDao) {
     /**
      * 获取最新消息新消息
      */
-    suspend fun getLast(listen: ((Message) -> Unit)) {
-        ioScope.launch {
-            val task = async { dao.getLast() }
-            val result = task.await()
-            result.collect {
-                listen(it)
-            }
-        }
+    fun getLast(userId: String): Flow<Message> {
+        return dao.getLast(userId)
     }
 
     suspend fun update(message: Message) {
