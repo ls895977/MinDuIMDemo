@@ -1,5 +1,6 @@
 package com.css.im_kit.message
 
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.userinfo.SGUserInfo
 
 /**
@@ -13,7 +14,7 @@ enum class MessageType {
     COMMODITY
 }
 
-class SGMessage {
+class SGMessage : MultiItemEntity {
     /**
      * 消息id
      */
@@ -123,5 +124,26 @@ class SGMessage {
             createCommodityMessageBody(userInfo, body)
         }
 
+    }
+
+    /**
+     *TEXT
+     *IMAGE
+     *COMMODITY
+     * isSelf是否是自己发送的
+     */
+    override fun getItemType(): Int {
+        return when (type) {
+            MessageType.TEXT -> {
+                if (messageBody?.isSelf == true) 1 else 4
+            }
+            MessageType.IMAGE -> {
+                if (messageBody!!.isSelf == true) 2 else 5
+            }
+            MessageType.COMMODITY -> {
+                if (messageBody!!.isSelf == true) 3 else 6
+            }
+            else -> 0
+        }
     }
 }
