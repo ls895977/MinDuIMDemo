@@ -1,4 +1,10 @@
 package com.css.im_kit.message
 
-class ImageMessageBody(var imageUrl: String) : BaseMessageBody() {
+class ImageMessageBody : BaseMessageBody {
+    var imageUrl: String? = null
+
+    constructor() : super()
+    constructor(imageUrl: String?) : super() {
+        this.imageUrl = imageUrl
+    }
 }
