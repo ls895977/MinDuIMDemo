@@ -11,36 +11,32 @@ enum class MessageType {
     IMAGE
 }
 
-data class SGMessage(
-        /**
-         * 消息id
-         */
-        var messageId: String,
+class SGMessage{
+    /**
+     * 消息id
+     */
+    var messageId: String? = null
 
-        /**
-         * 消息类型
-         */
-        var type: MessageType,
+    /**
+     * 消息类型
+     */
+    var type: MessageType? = null
 
-        /**
-         * 发送方的个人信息
-         */
-        var userInfo: SGUserInfo,
+    /**
+     * 发送方的个人信息
+     */
+    var userInfo: SGUserInfo? = null
 
-        /**
-         * 消息内容
-         */
-        var messageBody: BaseMessageBody
-) {
+    /**
+     * 消息内容
+     */
+    var messageBody: BaseMessageBody? = null
+
     constructor(
             type: MessageType,
             userInfo: SGUserInfo,
             messageBody: BaseMessageBody
-    ) {
-        this.type = type
-        this.userInfo = userInfo
-        this.messageBody = messageBody
-    }
+    )
 
     companion object {
         private fun createTextMessageBody(userInfo: SGUserInfo, messageBody: TextMessageBody) = SGMessage(
