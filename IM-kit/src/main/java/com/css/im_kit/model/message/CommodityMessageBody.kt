@@ -1,4 +1,4 @@
-package com.css.im_kit.message
+package com.css.im_kit.model.message
 
 /**
  * 商品类型消息内容

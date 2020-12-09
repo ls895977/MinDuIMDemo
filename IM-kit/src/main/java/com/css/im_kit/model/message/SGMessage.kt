@@ -1,5 +1,6 @@
-package com.css.im_kit.message
+package com.css.im_kit.model.message
 
+import com.css.im_kit.model.userinfo.SGUserInfo
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.userinfo.SGUserInfo
 
