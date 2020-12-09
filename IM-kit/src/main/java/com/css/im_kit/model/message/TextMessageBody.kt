@@ -11,4 +11,9 @@ class TextMessageBody : BaseMessageBody {
         this.text = text
     }
 
+    constructor(isRead: Boolean?, receivedTime: String?, sendTime: String?, isSelf: Boolean?, text: String?) : super(isRead, receivedTime, sendTime, isSelf) {
+        this.text = text
+    }
+
+
 }

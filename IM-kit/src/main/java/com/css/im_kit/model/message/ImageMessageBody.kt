@@ -10,4 +10,9 @@ class ImageMessageBody : BaseMessageBody {
     constructor(imageUrl: String?) : super() {
         this.imageUrl = imageUrl
     }
+
+    constructor(isRead: Boolean?, receivedTime: String?, sendTime: String?, isSelf: Boolean?, imageUrl: String?) : super(isRead, receivedTime, sendTime, isSelf) {
+        this.imageUrl = imageUrl
+    }
+
 }
