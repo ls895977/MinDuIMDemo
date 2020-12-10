@@ -3,16 +3,16 @@ package com.css.im_kit.manager
 import android.content.Context
 import android.util.Log
 import com.css.im_kit.callback.SGConversationCallback
-import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.*
+import com.css.im_kit.model.message.BaseMessageBody
+import com.css.im_kit.model.message.MessageType
+import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
-import com.google.gson.Gson
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -113,23 +113,20 @@ class IMConversationManager {
                                 val sgMessage = SGMessage()
                                 sgMessage.userInfo = data.userInfo
                                 sgMessage.messageId = messageResult.messageId
-                                when (messageResult.type) {
+                                sgMessage.messageBody = BaseMessageBody.format(messageResult)
+
+                                sgMessage.type = when (messageResult.type) {
                                     MessageType.TEXT.str -> {
-                                        sgMessage.type = MessageType.TEXT
-                                        sgMessage.messageBody = TextMessageBody(messageResult.content)
+                                        MessageType.TEXT
                                     }
                                     MessageType.IMAGE.str -> {
-                                        sgMessage.type = MessageType.IMAGE
-                                        sgMessage.messageBody = ImageMessageBody(messageResult.content)
+                                        MessageType.IMAGE
                                     }
                                     MessageType.COMMODITY.str -> {
-                                        sgMessage.type = MessageType.COMMODITY
-                                        val message = Gson().fromJson(messageResult.content, CommodityMessage::class.java)
-                                        sgMessage.messageBody = CommodityMessageBody.toCommodityMessageBody(message)
+                                        MessageType.COMMODITY
                                     }
                                     else -> {
-                                        sgMessage.type = MessageType.TEXT
-                                        sgMessage.messageBody = TextMessageBody("其他消息类型")
+                                        MessageType.TEXT
                                     }
                                 }
                                 data.newMessage = sgMessage

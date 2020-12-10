@@ -4,22 +4,29 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.css.im_kit.callback.SGMessageCallback
+import com.css.im_kit.db.bean.Conversation
+import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.User_Info
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.model.message.BaseMessageBody
-import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.*
 
 class IMMessageManager {
 
     companion object {
         private var context: Context? = null
-        private var conversationId: String? = null//会话id
+        var conversationId: String? = null//会话id
+        var sendUser: User_Info? = null
+        var receiveUser: User_Info? = null
+        var conversation: Conversation? = null
+
         @Volatile
         private var INSTANCE: IMMessageManager? = null
 
@@ -78,38 +85,23 @@ class IMMessageManager {
             } else {
                 ioScope.launch {
                     val task = async {
-                        val conversation = ConversationRepository.findConversation(conversationId!!)
+                        conversation = ConversationRepository.findConversation(conversationId!!)
                         val sgMessages = arrayListOf<SGMessage>()
                         conversation?.let {
                             val resultMessage = MessageRepository.getMessage(conversationId!!)
-                            val sendUser = UserInfoRepository.loadById(conversation.sendUserId)
-                            val receiveUser = UserInfoRepository.loadById(conversation.receiveUserId)
-                            Log.e("111","111")
+                            sendUser = UserInfoRepository.loadById(conversation!!.sendUserId)
+                            receiveUser = UserInfoRepository.loadById(conversation!!.receiveUserId)
+                            Log.e("111", "111")
                             resultMessage.forEach { message ->
-                                val sgMessage = SGMessage()
-                                sgMessage.messageId = message.messageId
-                                sgMessage.type = when (message.type) {
-                                    MessageType.TEXT.str -> {
-                                        MessageType.TEXT
-                                    }
-                                    MessageType.IMAGE.str -> {
-                                        MessageType.IMAGE
-                                    }
-                                    MessageType.COMMODITY.str -> {
-                                        MessageType.COMMODITY
-                                    }
-                                    else -> {
-                                        MessageType.TEXT
-                                    }
-                                }
-                                if (message.sendUserId == conversation.sendUserId) {
+                                val sgMessage = SGMessage.format(message)
+                                sgMessage.messageBody = BaseMessageBody.format(message)
+                                if (message.sendUserId == conversation!!.sendUserId) {
                                     sgMessage.userInfo = SGUserInfo.format(sendUser)
                                     sgMessage.messageBody?.isSelf = false
                                 } else {
                                     sgMessage.userInfo = SGUserInfo.format(receiveUser)
                                     sgMessage.messageBody?.isSelf = true
                                 }
-                                sgMessage.messageBody = BaseMessageBody.format(message)
                                 sgMessages.add(sgMessage)
                             }
                         }
@@ -118,6 +110,60 @@ class IMMessageManager {
                     val result = task.await()
                     sgMessageCallback?.onMessages(result)
                 }
+            }
+        }
+
+        /**
+         * 保存接收到的新消息
+         */
+        fun rewNewMessage(message: Message) {
+            ioScope.launch {
+                val task = async {
+                    message.receivedTime = Date().time.toString()
+                    MessageRepository.insert(message)
+                    MessageRepository.getLast(conversationId!!)
+                }
+                val result = task.await()
+                result?.let { message ->
+                    val sgMessage = SGMessage.format(message)
+                    sgMessage.messageBody = BaseMessageBody.format(message)
+                    if (message.sendUserId == conversation!!.sendUserId) {
+                        sgMessage.userInfo = SGUserInfo.format(sendUser)
+                        sgMessage.messageBody?.isSelf = false
+                    } else {
+                        sgMessage.userInfo = SGUserInfo.format(receiveUser)
+                        sgMessage.messageBody?.isSelf = true
+                    }
+                    sgMessageCallback?.onReceiveMessage(sgMessage)
+                }
+
+            }
+        }
+
+        /**
+         * 保存发送的新消息
+         */
+        fun sendNewMessage(message: Message) {
+            ioScope.launch {
+                val task = async {
+                    message.receivedTime = Date().time.toString()
+                    MessageRepository.insert(message)
+                    MessageRepository.getLast(conversationId!!)
+                }
+                val result = task.await()
+                result?.let { message ->
+                    val sgMessage = SGMessage.format(message)
+                    sgMessage.messageBody = BaseMessageBody.format(message)
+                    if (message.sendUserId == conversation!!.sendUserId) {
+                        sgMessage.userInfo = SGUserInfo.format(sendUser)
+                        sgMessage.messageBody?.isSelf = false
+                    } else {
+                        sgMessage.userInfo = SGUserInfo.format(receiveUser)
+                        sgMessage.messageBody?.isSelf = true
+                    }
+                    sgMessageCallback?.onReceiveMessage(sgMessage)
+                }
+
             }
         }
     }

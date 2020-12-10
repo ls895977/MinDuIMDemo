@@ -27,11 +27,6 @@ class CommodityMessageBody : BaseMessageBody {
         this.commodityPrice = commodityPrice
     }
 
-
-    fun toJsonString(): String {
-        return Gson().toJson(this)
-    }
-
     companion object {
         fun toCommodityMessageBody(message: CommodityMessage): CommodityMessageBody {
             return CommodityMessageBody(message.commodityId, message.commodityName, message.commodityName, message.commodityPrice)

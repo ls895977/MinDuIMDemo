@@ -37,5 +37,17 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
             android:text="进入聊天室" />
+
+        <Button
+            android:id="@+id/rewNewMessage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:text="接收消息" />
+
+        <Button
+            android:id="@+id/sendNewMessage"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:text="发送新消息" />
     </LinearLayout>
 </layout>

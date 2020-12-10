@@ -1,6 +1,7 @@
 package com.example.minduimdemo
 
 import android.util.Log
+import android.widget.Toast
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.callback.SGMessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
@@ -13,7 +14,6 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.manager.IMMessageManager
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.base.BaseActivity
@@ -61,13 +61,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             ioScope.launch {
                 val list = arrayListOf<Message>()
                 val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                val message1 = Message("111", "111", "1607415263000", "1607415263000", "1111", "100001", "111111", MessageType.TEXT.str)
-                val message2 = Message("222", "222", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str)
-                val message3 = Message("333", "333", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str)
-                val message4 = Message("111", "444", "1607415263000", "1607415263000", "1111", "111111", "100001", MessageType.TEXT.str)
-                val message5 = Message("222", "555", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str)
-                val message6 = Message("333", "666", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str)
-                val message7 = Message("111", "777", "1607415263000", "1607415263000", "1111", "100004", "111111", MessageType.TEXT.str)
+                val message1 = Message("111", "111", "1607415263000", "1607415263000", "1111", "100001", "111111", MessageType.TEXT.str, true)
+                val message2 = Message("222", "222", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str, true)
+                val message3 = Message("333", "333", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str, true)
+                val message4 = Message("111", "444", "1607415263000", "1607415263000", "1111", "111111", "100001", MessageType.TEXT.str, true)
+                val message5 = Message("222", "555", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str, true)
+                val message6 = Message("333", "666", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str, true)
+                val message7 = Message("111", "777", "1607415263000", "1607415263000", "1111", "100004", "111111", MessageType.TEXT.str, true)
                 list.add(message1)
                 list.add(message2)
                 list.add(message3)
@@ -100,7 +100,9 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         binding?.joinChat?.setOnClickListener {
             if (inChat) {
                 IMMessageManager.dismissSgMessageCallback()
+                Toast.makeText(this, "退出会话", Toast.LENGTH_SHORT).show()
             } else {
+                Toast.makeText(this, "进入会话", Toast.LENGTH_SHORT).show()
                 IMMessageManager
                         .initConversation("111")
                         .addSGConversationListListener(object : SGMessageCallback {
@@ -118,6 +120,115 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
             }
             inChat = !inChat
+        }
+
+        /**
+         * 接收新消息
+         *
+        var conversationId: String,//聊天室id
+        var messageId: String,//消息id
+        var sendTime: String,//发送时间
+        var receivedTime: String,//接收时间
+        var content: String,//内容
+        var sendUserId: String,//发送方id
+        var receiveUserId: String,//接收方id
+        var type: String
+         */
+        var rewStaue: MessageType = MessageType.TEXT
+        binding?.rewNewMessage?.setOnClickListener {
+            val message = when (rewStaue) {
+                MessageType.TEXT -> {
+                    rewStaue = MessageType.IMAGE
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            "接收到一条消息",
+                            IMMessageManager.sendUser?.userId ?: "",
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            MessageType.TEXT.str,
+                            true
+                    )
+                }
+                MessageType.IMAGE -> {
+                    rewStaue = MessageType.COMMODITY
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            "http://testimg.supersg.cn/user/773870855045251072.jpeg",
+                            IMMessageManager.sendUser?.userId ?: "",
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            MessageType.IMAGE.str,
+                            true
+                    )
+                }
+                MessageType.COMMODITY -> {
+                    rewStaue = MessageType.TEXT
+                    val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
+
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            commodityMessage.toJsonString(),
+                            IMMessageManager.sendUser?.userId ?: "",
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            MessageType.COMMODITY.str,
+                            true
+                    )
+                }
+            }
+            IMMessageManager.rewNewMessage(message)
+        }
+        /**
+         * 发送新消息
+         */
+        binding?.sendNewMessage?.setOnClickListener {
+            val message = when (rewStaue) {
+                MessageType.TEXT -> {
+                    rewStaue = MessageType.IMAGE
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            "接收到一条消息",
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMMessageManager.sendUser?.userId ?: "",
+                            MessageType.TEXT.str,
+                            true
+                    )
+                }
+                MessageType.IMAGE -> {
+                    rewStaue = MessageType.COMMODITY
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            "http://testimg.supersg.cn/user/773870855045251072.jpeg",
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMMessageManager.sendUser?.userId ?: "",
+                            MessageType.IMAGE.str,
+                            true
+                    )
+                }
+                MessageType.COMMODITY -> {
+                    rewStaue = MessageType.TEXT
+                    val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
+
+                    Message(IMMessageManager.conversationId ?: "",
+                            "111",
+                            "1607415263000",
+                            "",
+                            commodityMessage.toJsonString(),
+                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMMessageManager.sendUser?.userId ?: "",
+                            MessageType.COMMODITY.str,
+                            true
+                    )
+                }
+            }
+            IMMessageManager.sendNewMessage(message)
         }
     }
 

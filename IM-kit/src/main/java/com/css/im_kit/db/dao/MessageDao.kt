@@ -5,10 +5,10 @@ import com.css.im_kit.db.bean.Message
 
 @Dao
 interface MessageDao {
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY messageId")
+    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY messageId ASC")
     suspend fun getMessages(conversationId: String): List<Message>
 
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY messageId DESC LIMIT 1")
+    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId)  ORDER BY targetId DESC LIMIT 1")
     suspend fun getLast(conversationId: String): Message
 
     @Insert

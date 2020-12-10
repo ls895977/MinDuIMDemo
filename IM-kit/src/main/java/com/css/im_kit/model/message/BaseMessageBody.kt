@@ -51,6 +51,8 @@ open class BaseMessageBody {
                     TextMessageBody("其他消息类型")
                 }
             }
+            baseMessageBody.sendTime = message.sendTime
+            baseMessageBody.receivedTime = message.receivedTime
             return baseMessageBody
         }
     }

@@ -1,6 +1,7 @@
 package com.css.im_kit.model.message
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.css.im_kit.db.bean.Message
 import com.css.im_kit.model.userinfo.SGUserInfo
 
 /**
@@ -122,6 +123,27 @@ class SGMessage : MultiItemEntity {
         fun createCommodityMessageBody(userInfo: SGUserInfo) {
             val body = CommodityMessageBody()
             createCommodityMessageBody(userInfo, body)
+        }
+
+        fun format(message: Message): SGMessage {
+            val sgMessage = SGMessage()
+            sgMessage.messageId = message.messageId
+            sgMessage.type = when (message.type) {
+                MessageType.TEXT.str -> {
+                    MessageType.TEXT
+                }
+                MessageType.IMAGE.str -> {
+                    MessageType.IMAGE
+                }
+                MessageType.COMMODITY.str -> {
+                    MessageType.COMMODITY
+                }
+                else -> {
+                    MessageType.TEXT
+                }
+            }
+            sgMessage.messageBody = BaseMessageBody.format(message)
+            return sgMessage
         }
 
     }

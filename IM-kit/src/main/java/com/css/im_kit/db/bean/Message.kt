@@ -15,7 +15,8 @@ data class Message(
         var content: String,//内容
         var sendUserId: String,//发送方id
         var receiveUserId: String,//接收方id
-        var type: String
+        var type: String,
+        var sendType:Boolean//是否发送成功
 ) {
     @PrimaryKey(autoGenerate = true)
     var targetId = 0//id
