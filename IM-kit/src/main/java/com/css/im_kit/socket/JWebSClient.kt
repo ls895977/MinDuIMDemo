@@ -1,4 +1,5 @@
 package com.css.im_kit.socket
+
 import android.util.Log
 import com.css.im_kit.socket.`interface`.SocketListener
 import com.css.im_kit.socket.coom.SocketType
@@ -6,11 +7,13 @@ import org.java_websocket.client.WebSocketClient
 import org.java_websocket.drafts.Draft_6455
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
+
 class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
     private var socketListener: SocketListener? = null
     fun setSocketListener(socketListener: SocketListener) {
         this.socketListener = socketListener
     }
+
     /**
      * 在开始握手并且给定的websocket准备好写入后调用
      */

@@ -11,13 +11,21 @@ import com.example.minduimdemo.databinding.TestwebsocketBinding
 import com.google.gson.Gson
 
 class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
-    private val Url = "ws://192.168.0.73:9502?token=2"
+    private val url = "ws://192.168.0.73:9502?token=2"
     override fun layoutResource(): Int {
         return R.layout.testwebsocket
     }
 
     override fun initView() {
-        initService(Url)
+        initService(url,object : onLinkStatus {
+            override fun onLinkedSuccess() {
+                Log.e("aa", "----------------链接成功")
+            }
+
+            override fun onLinkedClose() {
+                Log.e("aa", "----------------已关闭链接")
+            }
+        })
     }
 
     override fun initData() {}
@@ -32,15 +40,6 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
         binding?.tvLianjie?.setOnClickListener {
             MessageServiceUtils.retryService()
         }
-        MessageServiceUtils.setOnLinkStatus(object : onLinkStatus {
-            override fun onLinkedSuccess() {
-                Log.e("aa", "----------------链接成功")
-            }
-
-            override fun onLinkedClose() {
-                Log.e("aa", "----------------已关闭链接")
-            }
-        })
         MessageServiceUtils.setOnResultMessage(object : onResultMessage {
             override fun onMessage(context: String) {
                 Log.e("aa", "----------------消息内容==" + context)

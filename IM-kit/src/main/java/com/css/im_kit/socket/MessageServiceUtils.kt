@@ -1,5 +1,7 @@
 package com.css.im_kit.socket
+
 import android.text.TextUtils
+import android.util.Log
 import com.css.im_kit.socket.`interface`.SocketListener
 import com.css.im_kit.socket.`interface`.onLinkStatus
 import com.css.im_kit.socket.`interface`.onResultMessage
@@ -13,6 +15,20 @@ object MessageServiceUtils {
     private var closeConnectStatus = false//是否是手动关闭
     private var onResultMessage: onResultMessage? = null
     private var onLinkStatus: onLinkStatus? = null
+
+    /**
+     * CHAT_SERVER_URL 聊天服务地址
+     * onLinkStatus 链接状态反馈
+     */
+    fun initService(CHAT_SERVER_URL: String?, onLinkStatus: onLinkStatus?) {
+        this.onLinkStatus = onLinkStatus
+        this.SerViceUrl = CHAT_SERVER_URL.toString()
+        val uri: URI = URI.create(CHAT_SERVER_URL)
+        client = JWebSClient(uri)
+        listeners()
+        client?.connectBlocking()
+    }
+
     /**
      * CHAT_SERVER_URL 聊天服务地址
      */
@@ -23,12 +39,13 @@ object MessageServiceUtils {
         listeners()
         client?.connectBlocking()
     }
+
     /**
      * 重新链接
      * 必须建立在已链接基础上否则无效
      */
-    fun retryService(){
-        if(TextUtils.isEmpty(SerViceUrl)){
+    fun retryService() {
+        if (TextUtils.isEmpty(SerViceUrl)) {
             return
         }
         closeConnectStatus = false
@@ -47,10 +64,12 @@ object MessageServiceUtils {
 
     /**
      * 链接状态监听
+     * 此回调会导致第一次链接无反馈状态
      */
     fun setOnLinkStatus(onLinkStatus: onLinkStatus) {
         this.onLinkStatus = onLinkStatus
     }
+
     /**
      * 发送新消息
      * event 事件名称
