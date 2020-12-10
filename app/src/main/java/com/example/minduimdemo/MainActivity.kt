@@ -37,25 +37,29 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             val list: Deferred<ArrayList<SGConversation>> = async { getData() }
             conversationListFragment?.refreshDataList(list.await())
             //连接状态展示
-            conversationListFragment?.updateContentShowView(true, "连接状态展示>已连接（假的）")
+            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
         }
     }
 
     override fun initListeners() {
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             pageSize = 1
-            conversationList.clear()
             conversationListFragment?.refreshDataList(getData())
+            //连接状态展示
+            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
             refreshLayout.finishRefresh()
         }
         binding!!.refreshView.setOnLoadMoreListener { refreshLayout: RefreshLayout ->
             pageSize++
             conversationListFragment?.addDataList(getData())
+            //连接状态展示
+            conversationListFragment?.updateContentShowView(false, "连接状态展示>连接成功（假的）")
             refreshLayout.finishLoadMore()
         }
     }
 
     private fun getData(): ArrayList<SGConversation> {
+        conversationList.clear()
         for (i in 1..10) {
             val userInfo = SGUserInfo("conversationId${pageSize}${i}", "name${pageSize}${i}", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
             val messageBody: BaseMessageBody
