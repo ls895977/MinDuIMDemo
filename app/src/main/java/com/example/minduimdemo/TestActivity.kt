@@ -26,7 +26,6 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
     }
 
     override fun initData() {
-        binding.title = resources.getString(R.string.app_name)
     }
 
     override fun initListeners() {

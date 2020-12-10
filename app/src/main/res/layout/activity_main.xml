@@ -23,12 +23,6 @@
             android:text="@{title}"
             android:textSize="@dimen/dp_50" />
 
-        <Button
-            android:id="@+id/addData"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
-            android:text="添加数据" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_1"
@@ -45,6 +39,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/addData"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"

@@ -3,13 +3,18 @@ package com.css.im_kit.ui
 import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
+import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.databinding.FragmentConversationListBinding
+import com.css.im_kit.db.uiScope
+import com.css.im_kit.manager.IMConversationManager
+import com.css.im_kit.manager.IMManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
+import kotlinx.coroutines.launch
 
-class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFragment<FragmentConversationListBinding?>() {
+class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListAdapter: ConversationListAdapter? = null
@@ -25,6 +30,8 @@ class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFr
     override fun initListeners() {
         //设置事件
         setListener.onSetItemListener()
+        //注册监听
+        IMConversationManager.addSGConversationListListener(this)
     }
 
     /**
@@ -83,5 +90,21 @@ class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFr
     fun addOnLongClickListener(clickLongListener: BaseQuickAdapter.OnItemChildLongClickListener) {
         //长按item
         conversationListAdapter?.onItemChildLongClickListener = clickLongListener
+    }
+
+    /**
+     * 拿到数据了
+     */
+    override fun onConversationList(sgConversation: List<SGConversation>) {
+        this.conversationList.clear()
+        this.conversationList.addAll(sgConversation)
+        uiScope.launch {
+            conversationListAdapter?.notifyDataSetChanged()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        IMConversationManager.removeSGConversationListListener(this)
     }
 }

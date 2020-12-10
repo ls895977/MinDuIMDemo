@@ -2,10 +2,9 @@ package com.example.minduimdemo
 
 import android.view.View
 import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.*
 import com.css.im_kit.model.userinfo.SGUserInfo
@@ -14,7 +13,6 @@ import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityMainBinding
 import com.scwang.smart.refresh.layout.api.RefreshLayout
-import kotlinx.coroutines.*
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
     private var pageSize = 1
@@ -23,36 +21,26 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener
 
     override fun layoutResource(): Int = R.layout.activity_main
     override fun initView() {
+        conversationList = arrayListOf()
+        binding.title = resources.getString(R.string.app_name)
+    }
+
+    override fun initData() {
         conversationListFragment = ConversationListFragment(this)
         val transaction = this@MainActivity.supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, conversationListFragment!!)
         transaction.commit()
     }
 
-    override fun initData() {
-        binding.title = resources.getString(R.string.app_name)
-        conversationList = arrayListOf()
-        getK()
-    }
-
-    /**
-     * Kotlin 协程获取数据，避免Fragment还没初始化view成功
-     */
-    private fun getK() {
-        this.lifecycleScope.launch(Dispatchers.Main) {
-            val list: Deferred<ArrayList<SGConversation>> = async { getData() }
-            conversationListFragment?.refreshDataList(list.await())
-        }
-    }
-
     override fun initListeners() {
         //刷新
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             pageSize = 1
-            conversationListFragment?.refreshDataList(getData())
-            //连接状态展示
-            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
+            IMConversationManager.getConversationList()//数据库room拿数据
             refreshLayout.finishRefresh()
+//            conversationListFragment?.refreshDataList(getData())
+//            //连接状态展示
+//            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
         }
         //加载
         binding!!.refreshView.setOnLoadMoreListener { refreshLayout: RefreshLayout ->
@@ -69,6 +57,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener
         }
     }
 
+    /**
+     * 加载更多，假数据
+     */
     private fun getData(): ArrayList<SGConversation> {
         conversationList.clear()
         for (i in 1..10) {
@@ -96,6 +87,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener
      * Fragment 初始化好了，可以设置值和监听
      */
     override fun onSetItemListener() {
+        //获取第一次数据
+        IMConversationManager.getConversationList()//数据库room拿数据
         //连接状态展示
         conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的ssss）")
         //item点击
