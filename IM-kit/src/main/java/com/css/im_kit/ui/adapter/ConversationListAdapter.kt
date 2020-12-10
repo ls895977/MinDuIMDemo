@@ -40,5 +40,9 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         //未读消息条数
         helper.setText(R.id.message_count, item.newsNum.toString())
         helper.setGone(R.id.message_count, item.newsNum > 0)
+
+        //点击事件
+        helper.addOnClickListener(R.id.item_view)
+        helper.addOnLongClickListener(R.id.item_view)
     }
 }

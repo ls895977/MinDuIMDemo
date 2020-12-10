@@ -1,13 +1,15 @@
 package com.css.im_kit.ui
 
 import android.view.View
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
 import com.css.im_kit.databinding.FragmentConversationListBinding
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
+import com.css.im_kit.ui.listener.IMListener
 
-class ConversationListFragment : BaseFragment<FragmentConversationListBinding?>() {
+class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFragment<FragmentConversationListBinding?>() {
 
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListAdapter: ConversationListAdapter? = null
@@ -21,6 +23,8 @@ class ConversationListFragment : BaseFragment<FragmentConversationListBinding?>(
     }
 
     override fun initListeners() {
+        //设置事件
+        setListener.onSetItemListener()
     }
 
     /**
@@ -63,5 +67,21 @@ class ConversationListFragment : BaseFragment<FragmentConversationListBinding?>(
     fun updateContentShowView(flag: Boolean, showStr: String) {
         binding?.tvConnectStatus?.visibility = if (flag) View.VISIBLE else View.GONE
         binding?.tvConnectStatus?.text = showStr
+    }
+
+    /**
+     * 添加点击事件
+     */
+    fun addOnClickListener(clickListener: BaseQuickAdapter.OnItemChildClickListener) {
+        //点击item
+        conversationListAdapter?.onItemChildClickListener = clickListener
+    }
+
+    /**
+     * 添加长按事件
+     */
+    fun addOnLongClickListener(clickLongListener: BaseQuickAdapter.OnItemChildLongClickListener) {
+        //长按item
+        conversationListAdapter?.onItemChildLongClickListener = clickLongListener
     }
 }

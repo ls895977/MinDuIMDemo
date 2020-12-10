@@ -1,24 +1,29 @@
 package com.example.minduimdemo
 
+import android.view.View
 import android.content.Intent
+import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.*
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.ui.ConversationListFragment
 import com.css.im_kit.ui.base.BaseActivity
+import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityMainBinding
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.*
 
-class MainActivity : BaseActivity<ActivityMainBinding>() {
+class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
     private var pageSize = 1
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListFragment: ConversationListFragment? = null
 
     override fun layoutResource(): Int = R.layout.activity_main
     override fun initView() {
-        conversationListFragment = ConversationListFragment()
+        conversationListFragment = ConversationListFragment(this)
         val transaction = this@MainActivity.supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, conversationListFragment!!)
         transaction.commit()
@@ -37,12 +42,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         this.lifecycleScope.launch(Dispatchers.Main) {
             val list: Deferred<ArrayList<SGConversation>> = async { getData() }
             conversationListFragment?.refreshDataList(list.await())
-            //连接状态展示
-            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
         }
     }
 
     override fun initListeners() {
+        //刷新
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             pageSize = 1
             conversationListFragment?.refreshDataList(getData())
@@ -50,6 +54,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")
             refreshLayout.finishRefresh()
         }
+        //加载
         binding!!.refreshView.setOnLoadMoreListener { refreshLayout: RefreshLayout ->
             pageSize++
             conversationListFragment?.addDataList(getData())
@@ -57,8 +62,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             conversationListFragment?.updateContentShowView(false, "连接状态展示>连接成功（假的）")
             refreshLayout.finishLoadMore()
         }
+
         binding?.addData?.setOnClickListener {
-            val intent = Intent(this,TestActivity::class.java)
+            val intent = Intent(this, TestActivity::class.java)
             startActivity(intent)
         }
     }
@@ -85,4 +91,34 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
         return conversationList
     }
+
+    /**
+     * Fragment 初始化好了，可以设置值和监听
+     */
+    override fun onSetItemListener() {
+        //连接状态展示
+        conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的ssss）")
+        //item点击
+        conversationListFragment?.addOnClickListener(this)
+        //item长按
+        conversationListFragment?.addOnLongClickListener(this)
+    }
+
+
+    /**
+     * 消息点击事件
+     */
+    override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
+        Toast.makeText(this, "点击了", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * 消息长按事件
+     */
+    override fun onItemChildLongClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int): Boolean {
+        Toast.makeText(this, "长按了", Toast.LENGTH_SHORT).show()
+        return false
+    }
+
+
 }
