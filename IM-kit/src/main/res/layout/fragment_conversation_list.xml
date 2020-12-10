@@ -3,37 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="userInfo"
-            type="com.css.im_kit.db.bean.User_Info" />
-    </data>
-
-
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/refresh_view"
+    <LinearLayout
+        android:id="@+id/ll_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tv_connect_status"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="@dimen/dp_40"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="@dimen/dp_20"
+            android:text="连接状态展示" />
 
-            <TextView
-                android:id="@+id/tv_connect_status"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_40"
-                android:text="连接状态展示" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_1"
+            android:background="@color/color_f3f3f3" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_conversation_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="adapter_conversation_list_item" />
-        </LinearLayout>
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_conversation_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/adapter_conversation_list_item" />
+    </LinearLayout>
 </layout>

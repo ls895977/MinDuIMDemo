@@ -28,11 +28,33 @@
             android:layout_height="@dimen/dp_1"
             android:background="@color/color_f3f3f3" />
 
-        <FrameLayout
-            android:id="@+id/container"
+        <com.scwang.smart.refresh.layout.SmartRefreshLayout
+            android:id="@+id/refresh_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/dp_10" />
+            android:layout_height="match_parent">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="其他布局"
+                    android:textSize="@dimen/dp_50" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_1"
+                    android:background="@color/color_f3f3f3" />
+
+                <FrameLayout
+                    android:id="@+id/container"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </com.scwang.smart.refresh.layout.SmartRefreshLayout>
     </LinearLayout>
 </layout>

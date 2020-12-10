@@ -1,16 +1,15 @@
-package com.css.im_kit.ui;
+package com.example.minduimdemo;
 
 import android.app.Application;
 import android.content.Context;
 
 import androidx.core.content.ContextCompat;
 
-import com.css.im_kit.R;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
-import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.scwang.smart.refresh.footer.ClassicsFooter;
+import com.scwang.smart.refresh.header.ClassicsHeader;
+import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 
-public class IMApplication extends Application {
+public class TestApplication extends Application {
     public static Context mContext;
 
     @Override

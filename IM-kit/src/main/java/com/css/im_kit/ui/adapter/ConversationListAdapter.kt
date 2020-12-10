@@ -1,8 +1,6 @@
 package com.css.im_kit.ui.adapter
 
 import android.content.Context
-import android.widget.ImageView
-import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.css.im_kit.R
@@ -15,9 +13,8 @@ import com.css.im_kit.utils.IMGlideUtil
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
         //头像
-//        IMGlideUtil.loadAvatar(context, item.userInfo?.avatar, helper.getView(R.id.user_avatar))
-        var iv = helper.getView(R.id.user_avatar) as ImageView
-        Glide.with(context).load("http://testimg.supersg.cn/user/773870855045251072.jpeg").into(iv)
+        IMGlideUtil.loadAvatar(context, item.userInfo?.avatar, helper.getView(R.id.user_avatar))
+
         //用户名
         helper.setText(R.id.user_name, item.userInfo?.userName)
 
