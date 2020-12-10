@@ -10,7 +10,7 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
-import com.css.im_kit.manager.IMManager
+import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.ui.base.BaseActivity
@@ -30,7 +30,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
     }
 
     override fun initListeners() {
-        IMManager.getInstance(this).addSGConversationListListener(this)
+        IMConversationManager.addSGConversationListListener(this)
         binding?.addUser?.setOnClickListener {
             ioScope.launch {
                 val list = arrayListOf<User_Info>()
@@ -42,9 +42,9 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 list.add(userInfo1)
                 list.add(userInfo2)
                 list.add(userInfo3)
-                UserInfoRepository.getInstance(this@TestActivity).insertDatas(list)
+                UserInfoRepository.insertDatas(list)
                 val stak = async {
-                    UserInfoRepository.getInstance(this@TestActivity).getAll()
+                    UserInfoRepository.getAll()
                 }
                 val result = stak.await()
                 result.collect {
@@ -64,9 +64,9 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 list.add(message2)
                 list.add(message3)
                 list.add(message4)
-                MessageRepository.getInstance(this@TestActivity).insertDatas(list)
+                MessageRepository.insertDatas(list)
                 val stak = async {
-                    MessageRepository.getInstance(this@TestActivity).getAll()
+                    MessageRepository.getAll()
                 }
                 val result = stak.await()
                 result.collect {
@@ -79,16 +79,16 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             ioScope.launch {
                 val list = arrayListOf<Conversation>()
                 val conversation1 = Conversation("111", "100001", "11111")
-                val conversation2 = Conversation("111", "100002", "11111")
-                val conversation3 = Conversation("111", "100003", "11111")
-                val conversation4 = Conversation("111", "100004", "11111")
+                val conversation2 = Conversation("222", "100002", "11111")
+                val conversation3 = Conversation("333", "100003", "11111")
+                val conversation4 = Conversation("444", "100004", "11111")
                 list.add(conversation1)
                 list.add(conversation2)
                 list.add(conversation3)
                 list.add(conversation4)
-                ConversationRepository.getInstance(this@TestActivity).insert(list)
+                ConversationRepository.insert(list)
                 val stak = async {
-                    ConversationRepository.getInstance(this@TestActivity).getAll()
+                    ConversationRepository.getAll()
                 }
                 val result = stak.await()
                 result.collect {
@@ -97,7 +97,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             }
         }
         binding?.getSGConversation?.setOnClickListener {
-            IMManager.getInstance(this).getConversationList()
+            IMConversationManager.getConversationList()
         }
     }
 
@@ -107,6 +107,6 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
     override fun onDestroy() {
         super.onDestroy()
-        IMManager.getInstance(this).removeSGConversationListListener(this)
+        IMConversationManager.removeSGConversationListListener(this)
     }
 }

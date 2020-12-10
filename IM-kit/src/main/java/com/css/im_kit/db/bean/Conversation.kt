@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class Conversation(
-        var conversationId: String,//发送方id
+        var conversationId: String,//会话id
         var sendUserId: String,//发送方id
         var receiveUserId: String//接收方id
 ) {

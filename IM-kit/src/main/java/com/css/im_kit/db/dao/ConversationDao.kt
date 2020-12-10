@@ -34,5 +34,8 @@ interface ConversationDao {
     suspend fun update(user: Conversation)
 
     @Update
+    suspend fun update(user: List<Conversation>)
+
+    @Update
     suspend fun updateAll(users: List<Conversation>)
 }

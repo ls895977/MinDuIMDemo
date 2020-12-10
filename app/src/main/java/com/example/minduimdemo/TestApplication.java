@@ -5,6 +5,7 @@ import android.content.Context;
 
 import androidx.core.content.ContextCompat;
 
+import com.css.im_kit.manager.IMManager;
 import com.scwang.smart.refresh.footer.ClassicsFooter;
 import com.scwang.smart.refresh.header.ClassicsHeader;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
@@ -16,6 +17,7 @@ public class TestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
+        IMManager.Companion.build(this);
     }
 
     //static 代码段可以防止内存泄露
