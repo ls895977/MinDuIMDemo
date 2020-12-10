@@ -1,5 +1,6 @@
 package com.example.minduimdemo
 
+import androidx.lifecycle.lifecycleScope
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.*
 import com.css.im_kit.model.userinfo.SGUserInfo
@@ -25,47 +26,36 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     override fun initData() {
         binding.title = resources.getString(R.string.app_name)
         conversationList = arrayListOf()
-        binding!!.refreshView.autoRefresh()
+        getK()
+    }
+
+    /**
+     * Kotlin 协程获取数据，避免Fragment还没初始化view成功
+     */
+    private fun getK() {
+        this.lifecycleScope.launch(Dispatchers.Main) {
+            val list: Deferred<ArrayList<SGConversation>> = async { getData() }
+            conversationListFragment?.refreshDataList(list.await())
+            //连接状态展示
+            conversationListFragment?.updateContentShowView(true, "连接状态展示>已连接（假的）")
+        }
     }
 
     override fun initListeners() {
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             pageSize = 1
             conversationList.clear()
-            getData()
-            conversationListFragment!!.refreshDataList(conversationList)
+            conversationListFragment?.refreshDataList(getData())
             refreshLayout.finishRefresh()
         }
         binding!!.refreshView.setOnLoadMoreListener { refreshLayout: RefreshLayout ->
             pageSize++
-            getData()
-            conversationListFragment!!.addDataList(conversationList)
+            conversationListFragment?.addDataList(getData())
             refreshLayout.finishLoadMore()
         }
     }
 
-    private fun getData() {
-        for (i in 1..10) {
-            val userInfo = SGUserInfo("conversationId${pageSize}${i}", "name${pageSize}${i}", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-            val messageBody: BaseMessageBody
-            when {
-                i.rem(2) == 0 -> {
-                    messageBody = ImageMessageBody(false, "1607415263000", "1607415263000", false, "http://testimg.supersg.cn/user/773870855045251072.jpeg")//2020-12-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.IMAGE, userInfo, messageBody), pageSize))
-                }
-                i.rem(3) == 0 -> {
-                    messageBody = CommodityMessageBody(false, "1604823263000", "1604823263000", false, "commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.COMMODITY, userInfo, messageBody), pageSize))
-                }
-                else -> {
-                    messageBody = TextMessageBody(false, "1607501663000", "1607501663000", false, "我是你大爷")//2020-12-09 17:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.TEXT, userInfo, messageBody), pageSize))
-                }
-            }
-        }
-    }
-
-    private fun getData1(): ArrayList<SGConversation> {
+    private fun getData(): ArrayList<SGConversation> {
         for (i in 1..10) {
             val userInfo = SGUserInfo("conversationId${pageSize}${i}", "name${pageSize}${i}", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
             val messageBody: BaseMessageBody
@@ -86,12 +76,4 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
         }
         return conversationList
     }
-
-//    fun getK() {
-//        GlobalScope.launch() {
-//            val avatar: Deferred<ArrayList<SGConversation>> = async { getData1() }    // 获取用户头像
-////            val logo: Deferred = async { api.getCompanyLogo(user) } // 获取用户所在公司的 logo
-////            show(avatar.await(), logo.await())                     // 更新 UI
-//        }
-//    }
 }

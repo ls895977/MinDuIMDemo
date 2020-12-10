@@ -1,5 +1,6 @@
 package com.css.im_kit.ui
 
+import android.view.View
 import com.css.im_kit.R
 import com.css.im_kit.databinding.FragmentConversationListBinding
 import com.css.im_kit.model.conversation.SGConversation
@@ -55,4 +56,12 @@ class ConversationListFragment : BaseFragment<FragmentConversationListBinding?>(
         conversationListAdapter?.notifyItemChanged(position)
     }
 
+    /**
+     * @flag：显示隐藏
+     * @showStr：显示文字内容
+     */
+    fun updateContentShowView(flag: Boolean, showStr: String) {
+        binding?.tvConnectStatus?.visibility = if (flag) View.VISIBLE else View.GONE
+        binding?.tvConnectStatus?.text = showStr
+    }
 }
