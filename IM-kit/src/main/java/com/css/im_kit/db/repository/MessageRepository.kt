@@ -26,9 +26,11 @@ class MessageRepository {
             }
         }
 
-
-        fun getAll(): Flow<List<Message>> {
-            return dao?.getAll() ?: flow { arrayListOf<Message>() }
+        /**
+         * 获取消息列表
+         */
+        suspend fun getMessage(conversationId: String):List<Message>{
+            return dao?.getMessages(conversationId) ?: arrayListOf()
         }
 
         suspend fun insert(message: Message) {
@@ -42,8 +44,8 @@ class MessageRepository {
         /**
          * 获取最新消息新消息
          */
-        suspend fun getLast(userId: String): Message? {
-            return dao?.getLast(userId)
+        suspend fun getLast(conversationId: String): Message? {
+            return dao?.getLast(conversationId)
         }
 
         suspend fun update(message: Message) {

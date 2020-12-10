@@ -9,6 +9,7 @@ class IMManager {
     companion object {
         fun build(context: Context) {
             IMConversationManager.build(context)
+            IMMessageManager.build(context)
             ConversationRepository.build(context)
             MessageRepository.build(context)
             UserInfoRepository.build(context)

@@ -1,5 +1,9 @@
 package com.css.im_kit.model.message
 
+import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.bean.Message
+import com.google.gson.Gson
+
 open class BaseMessageBody {
     /**
      * 是否新消息
@@ -29,5 +33,26 @@ open class BaseMessageBody {
         this.isSelf = isSelf
     }
 
+    companion object {
+        fun format(message: Message): BaseMessageBody {
+            val baseMessageBody: BaseMessageBody
+            baseMessageBody = when (message.type) {
+                MessageType.TEXT.str -> {
+                    TextMessageBody(message.content)
+                }
+                MessageType.IMAGE.str -> {
+                    ImageMessageBody(message.content)
+                }
+                MessageType.COMMODITY.str -> {
+                    val commodityMessage = Gson().fromJson(message.content, CommodityMessage::class.java)
+                    CommodityMessageBody.toCommodityMessageBody(commodityMessage)
+                }
+                else -> {
+                    TextMessageBody("其他消息类型")
+                }
+            }
+            return baseMessageBody
+        }
+    }
 
 }

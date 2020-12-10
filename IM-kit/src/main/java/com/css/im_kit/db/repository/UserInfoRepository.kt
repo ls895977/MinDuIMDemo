@@ -30,7 +30,7 @@ class UserInfoRepository {
             return dao?.getAll() ?: flow { arrayListOf<User_Info>() }
         }
 
-        suspend fun loadAllById(userId: String): User_Info? {
+        suspend fun loadById(userId: String): User_Info? {
             return dao?.loadAllById(userId)
         }
 

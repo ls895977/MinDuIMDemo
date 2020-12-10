@@ -26,8 +26,12 @@ class ConversationRepository {
             }
         }
 
-        suspend fun getAll(): Flow<List<Conversation>> {
+        fun getAll(): Flow<List<Conversation>> {
             return conversationDao?.getAll() ?: flow { arrayListOf<Conversation>() }
+        }
+
+        suspend fun findConversation(conversationId:String): Conversation? {
+            return conversationDao?.loadById(conversationId)
         }
 
         suspend fun insert(user: Conversation) {

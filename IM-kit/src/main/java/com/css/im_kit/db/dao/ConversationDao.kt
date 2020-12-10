@@ -9,11 +9,11 @@ interface ConversationDao {
     @Query("SELECT * FROM conversation")
     fun getAll(): Flow<List<Conversation>>
 
-    @Query("SELECT * FROM conversation WHERE id IN (:ids)")
+    @Query("SELECT * FROM conversation WHERE conversationId IN (:ids)")
     fun loadAllByIds(ids: IntArray): Flow<List<Conversation>>
 
-    @Query("SELECT * FROM conversation WHERE id = (:id)")
-    fun loadById(id: String): Flow<List<Conversation>>
+    @Query("SELECT  * FROM conversation WHERE conversationId = (:id) ORDER BY id DESC LIMIT 1")
+    suspend fun loadById(id: String): Conversation
 
     @Insert
     suspend fun insert(user: Conversation)

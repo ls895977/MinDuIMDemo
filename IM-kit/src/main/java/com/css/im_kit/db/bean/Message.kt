@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class Message(
+        var conversationId: String,//聊天室id
         var messageId: String,//消息id
         var sendTime: String,//发送时间
         var receivedTime: String,//接收时间

@@ -31,5 +31,11 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
             android:text="获取会话消息" />
+
+        <Button
+            android:id="@+id/joinChat"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:text="进入聊天室" />
     </LinearLayout>
 </layout>

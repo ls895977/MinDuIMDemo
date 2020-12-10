@@ -1,12 +1,16 @@
 package com.css.im_kit.callback
 
-import com.css.im_kit.callback.base.EMCallBack
 import com.css.im_kit.model.message.SGMessage
 
-abstract class SGMessageCallback : EMCallBack {
+interface SGMessageCallback {
 
-    override fun onSuccess() {}
-    abstract fun onSuccess(message: SGMessage?, position: Int)
-    override fun onError(code: Int, error: String?) {}
-    override fun onProgress(progress: Int, status: String?) {}
+    /**
+     * 接收消息
+     */
+    fun onReceiveMessage(message: SGMessage)
+
+    /**
+     * 全部消息
+     */
+    fun onMessages(message: List<SGMessage>)
 }
