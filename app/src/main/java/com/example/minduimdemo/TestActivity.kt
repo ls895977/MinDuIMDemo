@@ -2,6 +2,7 @@ package com.example.minduimdemo
 
 import android.util.Log
 import com.css.im_kit.callback.SGConversationCallback
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.User_Info
@@ -11,6 +12,7 @@ import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.manager.IMManager
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.ui.base.BaseActivity
 import com.example.minduimdemo.databinding.ActivityDbtestBinding
 import kotlinx.coroutines.async
@@ -31,8 +33,16 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         IMManager.getInstance(this).addSGConversationListListener(this)
         binding?.addUser?.setOnClickListener {
             ioScope.launch {
-                val userInfo = User_Info("昵称", "头像链接", "10001")
-                UserInfoRepository.getInstance(this@TestActivity).insert(userInfo)
+                val list = arrayListOf<User_Info>()
+                val userInfo = User_Info("昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100001")
+                val userInfo1 = User_Info("昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002")
+                val userInfo2 = User_Info("昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100003")
+                val userInfo3 = User_Info("昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100004")
+                list.add(userInfo)
+                list.add(userInfo1)
+                list.add(userInfo2)
+                list.add(userInfo3)
+                UserInfoRepository.getInstance(this@TestActivity).insertDatas(list)
                 val stak = async {
                     UserInfoRepository.getInstance(this@TestActivity).getAll()
                 }
@@ -44,8 +54,17 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         binding?.addMessage?.setOnClickListener {
             ioScope.launch {
-                val message = Message("111", "1111", "1111", "1111", "1111", "1111", "1111")
-                MessageRepository.getInstance(this@TestActivity).insert(message)
+                val list = arrayListOf<Message>()
+                val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
+                val message1 = Message("111", "1111", "1607415263000", "1111", "100001", "1111", MessageType.TEXT.str)
+                val message2 = Message("222", "1111", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "1111", MessageType.IMAGE.str)
+                val message3 = Message("333", "1111", "1607415263000", commodityMessage.toJsonString(), "100003", "1111", MessageType.COMMODITY.str)
+                val message4 = Message("444", "1111", "1607415263000", "1111", "100004", "1111", MessageType.TEXT.str)
+                list.add(message1)
+                list.add(message2)
+                list.add(message3)
+                list.add(message4)
+                MessageRepository.getInstance(this@TestActivity).insertDatas(list)
                 val stak = async {
                     MessageRepository.getInstance(this@TestActivity).getAll()
                 }
@@ -58,8 +77,16 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
         binding?.addConversation?.setOnClickListener {
             ioScope.launch {
-                val conversation = Conversation("111", "111", "11111")
-                ConversationRepository.getInstance(this@TestActivity).insert(conversation)
+                val list = arrayListOf<Conversation>()
+                val conversation1 = Conversation("111", "100001", "11111")
+                val conversation2 = Conversation("111", "100002", "11111")
+                val conversation3 = Conversation("111", "100003", "11111")
+                val conversation4 = Conversation("111", "100004", "11111")
+                list.add(conversation1)
+                list.add(conversation2)
+                list.add(conversation3)
+                list.add(conversation4)
+                ConversationRepository.getInstance(this@TestActivity).insert(list)
                 val stak = async {
                     ConversationRepository.getInstance(this@TestActivity).getAll()
                 }

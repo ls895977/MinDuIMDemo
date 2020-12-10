@@ -6,13 +6,17 @@ import com.css.im_kit.db.dao.ConversationDao
 import com.css.im_kit.db.imDb
 import kotlinx.coroutines.flow.Flow
 
-data class ConversationRepository(private val conversationDao: ConversationDao) {
+class ConversationRepository(private val conversationDao: ConversationDao) {
 
     suspend fun getAll(): Flow<List<Conversation>> {
         return conversationDao.getAll()
     }
 
     suspend fun insert(user: Conversation) {
+        return conversationDao.insert(user)
+    }
+
+    suspend fun insert(user: List<Conversation>) {
         return conversationDao.insert(user)
     }
 

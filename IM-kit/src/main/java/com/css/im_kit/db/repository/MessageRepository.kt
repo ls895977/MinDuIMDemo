@@ -17,10 +17,14 @@ data class MessageRepository(private val dao: MessageDao) {
         return dao.insert(message)
     }
 
+    suspend fun insertDatas(messages: List<Message>) {
+        return dao.insertDatas(messages)
+    }
+
     /**
      * 获取最新消息新消息
      */
-    fun getLast(userId: String): Flow<Message> {
+    suspend fun getLast(userId: String): Message? {
         return dao.getLast(userId)
     }
 

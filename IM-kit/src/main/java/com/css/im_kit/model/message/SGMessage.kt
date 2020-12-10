@@ -1,17 +1,17 @@
 package com.css.im_kit.model.message
 
-import com.css.im_kit.model.userinfo.SGUserInfo
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.css.im_kit.model.userinfo.SGUserInfo
 
 /**
  * TEXT 文字类型
  * IMAGE 图片类型
  * COMMODITY 商品
  */
-enum class MessageType {
-    TEXT,
-    IMAGE,
-    COMMODITY
+enum class MessageType(var str: String) {
+    TEXT("TEXT"),
+    IMAGE("IMAGE"),
+    COMMODITY("COMMODITY");
 }
 
 class SGMessage : MultiItemEntity {

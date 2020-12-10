@@ -3,16 +3,16 @@ package com.css.im_kit.manager
 import android.content.Context
 import android.util.Log
 import com.css.im_kit.callback.SGConversationCallback
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.MessageType
-import com.css.im_kit.model.message.SGMessage
-import com.css.im_kit.model.message.TextMessageBody
+import com.css.im_kit.model.message.*
 import com.css.im_kit.model.userinfo.SGUserInfo
+import com.google.gson.Gson
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -20,15 +20,16 @@ import kotlinx.coroutines.launch
 
 class IMManager(private var context: Context) {
 
-    //回调列表
-    private var sgConversationCallbacks = arrayListOf<SGConversationCallback>()
-
-    //会话列表暂存数据
-    private var sgConversations = arrayListOf<SGConversation>()
-
     companion object {
         @Volatile
         private var INSTANCE: IMManager? = null
+
+        //回调列表
+        private var sgConversationCallbacks = arrayListOf<SGConversationCallback>()
+
+        //会话列表暂存数据
+        private var sgConversations = arrayListOf<SGConversation>()
+
         fun getInstance(context: Context): IMManager {
             synchronized(this) {
                 var instance = INSTANCE
@@ -77,42 +78,58 @@ class IMManager(private var context: Context) {
     private fun integrationConversation(conversations: List<Conversation>) {
 
         ioScope.launch {
-            val sgConversations = arrayListOf<SGConversation>()
-            conversations.forEach {
-                try {
-                    val data = SGConversation()
-                    data.conversationId = it.id.toString()
-                    val userInfoTask = async { UserInfoRepository.getInstance(context).loadAllById(it.sendUserId) }
-                    val messageTask = async { MessageRepository.getInstance(context).getLast(it.sendUserId) }
-                    val userInfoResult = userInfoTask.await()
-                    val messageResult = messageTask.await()
-                    userInfoResult.catch {
-                        Log.e("111", "11111111")
-                    }.collect {
-                        val sgUserinfo = SGUserInfo()
-                        sgUserinfo.avatar = it.avatar
-                        sgUserinfo.userId = it.userId
-                        sgUserinfo.userName = it.nickName
-                        data.userInfo = sgUserinfo
+            val task = async {
+                val sgConversations = arrayListOf<SGConversation>()
+                conversations.forEach {
+                    try {
+                        val data = SGConversation()
+                        data.conversationId = it.id.toString()
+                        val userInfoTask = async { UserInfoRepository.getInstance(context).loadAllById(it.sendUserId) }
+                        val messageTask = async { MessageRepository.getInstance(context).getLast(it.sendUserId) }
+                        val userInfoResult = userInfoTask.await()
+                        val messageResult = messageTask.await()
+                        userInfoResult?.let {
+                            val sgUserinfo = SGUserInfo()
+                            sgUserinfo.avatar = userInfoResult.avatar
+                            sgUserinfo.userId = userInfoResult.userId
+                            sgUserinfo.userName = userInfoResult.nickName
+                            data.userInfo = sgUserinfo
+                        }
+                        messageResult?.let {
+                            val sgMessage = SGMessage()
+                            sgMessage.userInfo = data.userInfo
+                            sgMessage.messageId = messageResult.messageId
+                            when (messageResult.type) {
+                                MessageType.TEXT.str -> {
+                                    sgMessage.type = MessageType.TEXT
+                                    sgMessage.messageBody = TextMessageBody(messageResult.content)
+                                }
+                                MessageType.IMAGE.str -> {
+                                    sgMessage.type = MessageType.IMAGE
+                                    sgMessage.messageBody = ImageMessageBody(messageResult.content)
+                                }
+                                MessageType.COMMODITY.str -> {
+                                    sgMessage.type = MessageType.TEXT
+                                    val message = Gson().fromJson(messageResult.content, CommodityMessage::class.java)
+                                    sgMessage.messageBody = CommodityMessageBody.toCommodityMessageBody(message)
+                                }
+                                else -> {
+                                    sgMessage.type = MessageType.TEXT
+                                    sgMessage.messageBody = TextMessageBody("其他消息类型")
+                                }
+                            }
+                            data.newMessage = sgMessage
+                        }
+                        sgConversations.add(data)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    messageResult.catch {
-                        Log.e("111", "11111111")
-                    }.collect {
-                        val sgMessage = SGMessage()
-                        sgMessage.userInfo = data.userInfo
-                        sgMessage.messageId = it.messageId
-                        //TODO 需根据后台返回字段处理
-                        sgMessage.type = MessageType.TEXT
-                        sgMessage.messageBody = TextMessageBody(it.content)
-                        data.newMessage = sgMessage
-                    }
-                    sgConversations.add(data)
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
+                return@async sgConversations
             }
+            val result = task.await()
             sgConversations.clear()
-            sgConversations.addAll(sgConversations)
+            sgConversations.addAll(result)
             sgConversationCallbacks.forEach {
                 it.onConversationList(sgConversations)
             }

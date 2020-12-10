@@ -12,12 +12,16 @@ data class UserInfoRepository(private val dao: UserInfoDao) {
         return dao.getAll()
     }
 
-    fun loadAllById(userId: String): Flow<User_Info> {
+    suspend fun loadAllById(userId: String): User_Info ?{
         return dao.loadAllById(userId)
     }
 
     suspend fun insert(user: User_Info) {
         return dao.insert(user)
+    }
+
+    suspend fun insertDatas(users: List<User_Info>) {
+        return dao.insertDatas(users)
     }
 
     suspend fun update(user: User_Info) {

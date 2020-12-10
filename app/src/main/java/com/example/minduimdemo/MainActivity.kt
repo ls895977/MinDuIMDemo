@@ -1,5 +1,6 @@
 package com.example.minduimdemo
 
+import android.content.Intent
 import androidx.lifecycle.lifecycleScope
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.*
@@ -55,6 +56,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
             //连接状态展示
             conversationListFragment?.updateContentShowView(false, "连接状态展示>连接成功（假的）")
             refreshLayout.finishLoadMore()
+        }
+        binding?.addData?.setOnClickListener {
+            val intent = Intent(this,TestActivity::class.java)
+            startActivity(intent)
         }
     }
 

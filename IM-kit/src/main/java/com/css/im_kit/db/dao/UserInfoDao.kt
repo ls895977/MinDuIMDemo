@@ -13,10 +13,13 @@ interface UserInfoDao {
     fun loadAllByIds(userIds: ArrayList<String>): Flow<List<User_Info>>
 
     @Query("SELECT * FROM user_info WHERE userId = (:userId)")
-    fun loadAllById(userId: String): Flow<User_Info>
+    suspend fun loadAllById(userId: String): User_Info
 
     @Insert
     suspend fun insert(users: User_Info)
+
+    @Insert
+    suspend fun insertDatas(users: List<User_Info>)
 
     @Delete
     suspend fun delete(user: User_Info)

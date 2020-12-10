@@ -1,5 +1,8 @@
 package com.css.im_kit.model.message
 
+import com.css.im_kit.db.bean.CommodityMessage
+import com.google.gson.Gson
+
 /**
  * 商品类型消息内容
  */
@@ -25,4 +28,13 @@ class CommodityMessageBody : BaseMessageBody {
     }
 
 
+    fun toJsonString(): String {
+        return Gson().toJson(this)
+    }
+
+    companion object {
+        fun toCommodityMessageBody(message: CommodityMessage): CommodityMessageBody {
+            return CommodityMessageBody(message.commodityId, message.commodityName, message.commodityName, message.commodityPrice)
+        }
+    }
 }

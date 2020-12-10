@@ -19,6 +19,9 @@ interface ConversationDao {
     suspend fun insert(user: Conversation)
 
     @Insert
+    suspend fun insert(user: List<Conversation>)
+
+    @Insert
     suspend fun insertAll(users: List<Conversation>)
 
     @Delete
