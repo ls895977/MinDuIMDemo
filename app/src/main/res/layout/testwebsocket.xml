@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <EditText
+        android:layout_marginTop="@dimen/dp_100"
+        android:id="@+id/etContext"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_100"/>
+    <TextView
+        android:id="@+id/tvContext"
+        android:layout_width="@dimen/dp_100"
+        android:text="发送"
+        android:background="#ff0000"
+        android:gravity="center"
+        android:layout_height="@dimen/dp_50"/>
+    <TextView
+        android:id="@+id/tvLianjie"
+        android:layout_width="@dimen/dp_100"
+        android:text="连接"
+        android:background="#ff0000"
+        android:gravity="center"
+        android:layout_height="@dimen/dp_50"/>
+</LinearLayout>
+</layout>

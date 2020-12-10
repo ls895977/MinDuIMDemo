@@ -82,6 +82,7 @@ dependencies {
     //图片加载
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
-    implementation 'com.google.code.gson:gson:2.8.6'
-
+    api 'com.google.code.gson:gson:2.8.6'
+    //通讯
+    implementation "org.java-websocket:Java-WebSocket:1.5.1"
 }
