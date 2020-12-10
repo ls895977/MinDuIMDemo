@@ -1,6 +1,7 @@
 package com.css.im_kit.manager
 
 import android.content.Context
+import android.util.Log
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
@@ -79,10 +80,12 @@ class IMConversationManager {
         fun insertOrUpdateConversations(conversations: ArrayList<Conversation>) {
             ioScope.launch {
                 val task = async {
-                    ConversationRepository.update(conversations)
+                    ConversationRepository.insertOrUpdate(conversations)
                 }
                 val result = task.await()
-                getConversationList()
+                if (result) {
+                    Log.e("1111", "更新成功")
+                }
             }
         }
 

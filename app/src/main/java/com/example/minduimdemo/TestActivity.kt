@@ -77,22 +77,15 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         binding?.addConversation?.setOnClickListener {
             ioScope.launch {
                 val list = arrayListOf<Conversation>()
-                val conversation1 = Conversation("111", "100001", "11111")
-                val conversation2 = Conversation("222", "100002", "11111")
-                val conversation3 = Conversation("333", "100003", "11111")
-                val conversation4 = Conversation("444", "100004", "11111")
+                val conversation1 = Conversation("111", "100001", "221")
+                val conversation2 = Conversation("222", "100002", "331")
+                val conversation3 = Conversation("333", "100003", "441")
+                val conversation4 = Conversation("445", "100004", "555")
                 list.add(conversation1)
                 list.add(conversation2)
                 list.add(conversation3)
                 list.add(conversation4)
-                ConversationRepository.insert(list)
-                val stak = async {
-                    ConversationRepository.getAll()
-                }
-                val result = stak.await()
-                result.collect {
-                    binding?.addConversation?.text = "添加会话" + it.size
-                }
+                IMConversationManager.insertOrUpdateConversations(list)
             }
         }
         binding?.getSGConversation?.setOnClickListener {

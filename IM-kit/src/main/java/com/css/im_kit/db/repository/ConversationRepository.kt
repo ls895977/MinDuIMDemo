@@ -42,15 +42,16 @@ class ConversationRepository {
             conversationDao?.update(user)
         }
 
-        suspend fun update(conversations: ArrayList<Conversation>) {
+        suspend fun insertOrUpdate(conversations: ArrayList<Conversation>): Boolean {
             try {
                 val list = conversationDao?.getAll()
                 list?.collect { dbConversations ->
                     val updateList = arrayListOf<Conversation>()
                     //获取数据库内有的数据conversationId一样
-                    conversations.forEach { initConversation ->
-                        dbConversations.forEach { dbConversation ->
+                    dbConversations.forEach { dbConversation ->
+                        conversations.forEach { initConversation ->
                             if (initConversation.conversationId == dbConversation.conversationId) {
+                                initConversation.id = dbConversation.id
                                 updateList.add(initConversation)
                             }
                         }
@@ -59,9 +60,12 @@ class ConversationRepository {
                     updateList.forEach {
                         conversations.remove(it)
                     }
+                    conversationDao?.insert(conversations)
                 }
+                return true
             } catch (e: Exception) {
                 e.printStackTrace()
+                return false
             }
         }
 
