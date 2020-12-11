@@ -85,4 +85,6 @@ dependencies {
     api 'com.google.code.gson:gson:2.8.6'
     //通讯
     implementation "org.java-websocket:Java-WebSocket:1.5.1"
+    //监听网络状态变化
+    api 'com.github.kongqw:NetworkMonitor:1.0.1'
 }

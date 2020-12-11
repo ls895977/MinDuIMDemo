@@ -1,5 +1,6 @@
 package com.css.im_kit
 
+import android.app.Application
 import android.content.Context
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
@@ -7,12 +8,15 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.`interface`.onLinkStatus
 import com.css.im_kit.manager.IMMessageManager
+import com.kongqw.network.monitor.NetworkMonitorManager
 
 object IMManager {
-    fun build(context: Context) {
+    fun build(context: Application) {
         ConversationRepository.build(context)
         MessageRepository.build(context)
         UserInfoRepository.build(context)
+        NetworkMonitorManager.getInstance().init(context)
+        MessageServiceUtils.init(context)
     }
 
     /**
