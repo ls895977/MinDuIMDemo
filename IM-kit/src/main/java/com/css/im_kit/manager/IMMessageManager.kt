@@ -50,7 +50,7 @@ object IMMessageManager {
     fun rewNewMessage(message: Message) {
         ioScope.launch {
             val task = async {
-                message.receivedTime = Date().time.toString()
+                message.receivedTime = Date().time
                 MessageRepository.insert(message)
                 MessageRepository.getLast(IMChatRoomManager.conversationId!!)
             }
@@ -81,7 +81,7 @@ object IMMessageManager {
     fun sendNewMessage(message: Message) {
         ioScope.launch {
             val task = async {
-                message.receivedTime = Date().time.toString()
+                message.receivedTime = Date().time
                 MessageRepository.insert(message)
                 MessageRepository.getLast(IMChatRoomManager.conversationId!!)
             }

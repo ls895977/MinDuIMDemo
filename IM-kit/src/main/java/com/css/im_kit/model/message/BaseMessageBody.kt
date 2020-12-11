@@ -52,8 +52,8 @@ open class BaseMessageBody {
                 }
             }
             baseMessageBody.isRead = message.isRead
-            baseMessageBody.sendTime = message.sendTime
-            baseMessageBody.receivedTime = message.receivedTime
+            baseMessageBody.sendTime = message.sendTime.toString()
+            baseMessageBody.receivedTime = message.receivedTime.toString()
             return baseMessageBody
         }
     }

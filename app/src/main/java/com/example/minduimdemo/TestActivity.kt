@@ -62,13 +62,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             ioScope.launch {
                 val list = arrayListOf<Message>()
                 val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                val message1 = Message("111", "111", "1607415263000", "1607415263000", "1111", "100001", "111111", MessageType.TEXT.str, true)
-                val message2 = Message("222", "222", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str, true)
-                val message3 = Message("333", "333", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str, true)
-                val message4 = Message("111", "444", "1607415263000", "1607415263000", "1111", "111111", "100001", MessageType.TEXT.str, true)
-                val message5 = Message("222", "555", "1607415263000", "1607415263000", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str, true)
-                val message6 = Message("333", "666", "1607415263000", "1607415263000", commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str, true)
-                val message7 = Message("111", "777", "1607415263000", "1607415263000", "1111", "100004", "111111", MessageType.TEXT.str, true)
+                val message1 = Message("111", "111", 1607415263000, 1607415263000, "1111", "100001", "111111", MessageType.TEXT.str, true)
+                val message2 = Message("222", "222", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str, true)
+                val message3 = Message("333", "333", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str, true)
+                val message4 = Message("111", "444", 1607415263000, 1607415263000, "1111", "111111", "100001", MessageType.TEXT.str, true)
+                val message5 = Message("222", "555", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str, true)
+                val message6 = Message("333", "666", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str, true)
+                val message7 = Message("111", "777", 1607415263000, 1607415263000, "1111", "100004", "111111", MessageType.TEXT.str, true)
                 list.add(message1)
                 list.add(message2)
                 list.add(message3)
@@ -142,8 +142,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.IMAGE
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             "接收到一条消息",
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
@@ -155,8 +155,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.COMMODITY
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             "http://testimg.supersg.cn/user/773870855045251072.jpeg",
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
@@ -170,8 +170,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             commodityMessage.toJsonString(),
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
@@ -191,8 +191,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.IMAGE
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             "接收到一条消息",
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             IMChatRoomManager.sendUser?.userId ?: "",
@@ -204,8 +204,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.COMMODITY
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             "http://testimg.supersg.cn/user/773870855045251072.jpeg",
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             IMChatRoomManager.sendUser?.userId ?: "",
@@ -219,8 +219,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
                     Message(IMChatRoomManager.conversationId ?: "",
                             "111",
-                            "1607415263000",
-                            "",
+                            1607415263000,
+                            0,
                             commodityMessage.toJsonString(),
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             IMChatRoomManager.sendUser?.userId ?: "",
@@ -239,6 +239,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
     override fun onDestroy() {
         super.onDestroy()
+        IMChatRoomManager.dismissSgMessageCallback()
         IMConversationManager.removeSGConversationListListener(this)
     }
 }

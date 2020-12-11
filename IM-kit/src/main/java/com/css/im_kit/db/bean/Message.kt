@@ -10,8 +10,8 @@ import androidx.room.PrimaryKey
 data class Message(
         var conversationId: String,//聊天室id
         var messageId: String,//消息id
-        var sendTime: String,//发送时间
-        var receivedTime: String,//接收时间
+        var sendTime: Long,//发送时间
+        var receivedTime: Long,//接收时间
         var content: String,//内容
         var sendUserId: String,//发送方id
         var receiveUserId: String,//接收方id

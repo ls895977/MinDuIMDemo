@@ -5,7 +5,7 @@ import com.css.im_kit.db.bean.Message
 
 @Dao
 interface MessageDao {
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY messageId ASC")
+    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY receivedTime ASC")
     suspend fun getMessages(conversationId: String): List<Message>
 
     @Query("SELECT  * FROM message WHERE conversationId = (:conversationId)  ORDER BY targetId DESC LIMIT 1")
