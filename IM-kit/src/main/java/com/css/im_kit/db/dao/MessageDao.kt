@@ -25,4 +25,7 @@ interface MessageDao {
 
     @Update
     suspend fun update(users: Message)
+
+    @Update
+    suspend fun update(users: List<Message>)
 }

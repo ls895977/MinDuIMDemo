@@ -10,6 +10,7 @@ class IMManager {
         fun build(context: Context) {
             IMConversationManager.build(context)
             IMMessageManager.build(context)
+            IMUserInfoManager.build(context)
             ConversationRepository.build(context)
             MessageRepository.build(context)
             UserInfoRepository.build(context)

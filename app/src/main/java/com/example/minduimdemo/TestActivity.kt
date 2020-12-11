@@ -7,7 +7,7 @@ import com.css.im_kit.callback.SGMessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
-import com.css.im_kit.db.bean.User_Info
+import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
@@ -36,12 +36,12 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         IMConversationManager.addSGConversationListListener(this)
         binding?.addUser?.setOnClickListener {
             ioScope.launch {
-                val list = arrayListOf<User_Info>()
-                val userInfo4 = User_Info("本人", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111")
-                val userInfo = User_Info("昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100001")
-                val userInfo1 = User_Info("昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002")
-                val userInfo2 = User_Info("昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100003")
-                val userInfo3 = User_Info("昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100004")
+                val list = arrayListOf<UserInfo>()
+                val userInfo4 = UserInfo("本人", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111")
+                val userInfo = UserInfo("昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100001")
+                val userInfo1 = UserInfo("昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002")
+                val userInfo2 = UserInfo("昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100003")
+                val userInfo3 = UserInfo("昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100004")
                 list.add(userInfo)
                 list.add(userInfo1)
                 list.add(userInfo2)

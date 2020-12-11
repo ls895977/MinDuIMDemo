@@ -1,10 +1,11 @@
 package com.css.im_kit.db.repository
 
 import android.content.Context
-import com.css.im_kit.db.bean.User_Info
+import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.dao.UserInfoDao
 import com.css.im_kit.db.imDb
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 
 class UserInfoRepository {
@@ -26,32 +27,68 @@ class UserInfoRepository {
             }
         }
 
-        fun getAll(): Flow<List<User_Info>> {
-            return dao?.getAll() ?: flow { arrayListOf<User_Info>() }
+        fun getAll(): Flow<List<UserInfo>> {
+            return dao?.getAll() ?: flow { arrayListOf<UserInfo>() }
         }
 
-        suspend fun loadById(userId: String): User_Info? {
+        suspend fun loadById(userId: String): UserInfo? {
             return dao?.loadAllById(userId)
         }
 
-        suspend fun insert(user: User_Info) {
+        suspend fun insert(user: UserInfo) {
             dao?.insert(user)
         }
 
-        suspend fun insertDatas(users: List<User_Info>) {
+        suspend fun insertDatas(users: List<UserInfo>) {
             dao?.insertDatas(users)
         }
 
-        suspend fun update(user: User_Info) {
+        suspend fun update(user: UserInfo) {
             dao?.update(user)
-        }
-
-        suspend fun delete(user: User_Info) {
-            dao?.delete(user)
         }
 
         suspend fun deleteAll() {
             dao?.deleteAll()
+        }
+
+        /**
+         * 修改昵称
+         */
+        suspend fun changeName(userId: String, username: String) {
+            dao?.updateUserName(userId, username)
+        }
+
+        /**
+         * 修改头像
+         */
+        suspend fun changeAvatar(userId: String, avatar: String) {
+            dao?.updateAvatar(userId, avatar)
+        }
+
+        /**
+         * 添加或者修改用户资料
+         */
+        suspend fun insertOrUpdateUser(user: UserInfo): Boolean {
+            try {
+                dao?.getAll()?.collect { userInfos ->
+                    var isUpdate = false
+                    userInfos.forEach {
+                        if (it.userId == user.userId) {
+                            user.id = it.id
+                            dao?.update(user)
+                            isUpdate = true
+                            return@forEach
+                        }
+                    }
+                    if (!isUpdate) {
+                        dao?.insert(user)
+                    }
+                }
+                return true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return false
+            }
         }
     }
 }

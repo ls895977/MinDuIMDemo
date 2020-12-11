@@ -1,12 +1,11 @@
 package com.css.im_kit.manager
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import com.css.im_kit.callback.SGMessageCallback
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
-import com.css.im_kit.db.bean.User_Info
+import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
@@ -23,8 +22,8 @@ class IMMessageManager {
     companion object {
         private var context: Context? = null
         var conversationId: String? = null//会话id
-        var sendUser: User_Info? = null
-        var receiveUser: User_Info? = null
+        var sendUser: UserInfo? = null
+        var receiveUser: UserInfo? = null
         var conversation: Conversation? = null
 
         @Volatile
@@ -91,7 +90,6 @@ class IMMessageManager {
                             val resultMessage = MessageRepository.getMessage(conversationId!!)
                             sendUser = UserInfoRepository.loadById(conversation!!.sendUserId)
                             receiveUser = UserInfoRepository.loadById(conversation!!.receiveUserId)
-                            Log.e("111", "111")
                             resultMessage.forEach { message ->
                                 val sgMessage = SGMessage.format(message)
                                 sgMessage.messageBody = BaseMessageBody.format(message)
@@ -130,9 +128,11 @@ class IMMessageManager {
                     if (message.sendUserId == conversation!!.sendUserId) {
                         sgMessage.userInfo = SGUserInfo.format(sendUser)
                         sgMessage.messageBody?.isSelf = false
+                        sgMessage.messageBody?.isRead = true
                     } else {
                         sgMessage.userInfo = SGUserInfo.format(receiveUser)
                         sgMessage.messageBody?.isSelf = true
+                        sgMessage.messageBody?.isRead = true
                     }
                     sgMessageCallback?.onReceiveMessage(sgMessage)
                 }
@@ -157,14 +157,18 @@ class IMMessageManager {
                     if (message.sendUserId == conversation!!.sendUserId) {
                         sgMessage.userInfo = SGUserInfo.format(sendUser)
                         sgMessage.messageBody?.isSelf = false
+                        sgMessage.messageBody?.isRead = true
                     } else {
                         sgMessage.userInfo = SGUserInfo.format(receiveUser)
                         sgMessage.messageBody?.isSelf = true
+                        sgMessage.messageBody?.isRead = true
                     }
                     sgMessageCallback?.onReceiveMessage(sgMessage)
                 }
 
             }
         }
+
+
     }
 }

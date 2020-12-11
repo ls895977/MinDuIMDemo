@@ -4,8 +4,6 @@ import android.content.Context
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.imDb
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 class MessageRepository {
 
@@ -29,7 +27,7 @@ class MessageRepository {
         /**
          * 获取消息列表
          */
-        suspend fun getMessage(conversationId: String):List<Message>{
+        suspend fun getMessage(conversationId: String): List<Message> {
             return dao?.getMessages(conversationId) ?: arrayListOf()
         }
 
@@ -50,6 +48,10 @@ class MessageRepository {
 
         suspend fun update(message: Message) {
             dao?.update(message)
+        }
+
+        suspend fun update(messages: List<Message>) {
+            dao?.update(messages)
         }
 
         suspend fun delete(message: Message) {

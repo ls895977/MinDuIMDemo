@@ -1,6 +1,6 @@
 package com.css.im_kit.model.userinfo
 
-import com.css.im_kit.db.bean.User_Info
+import com.css.im_kit.db.bean.UserInfo
 
 class SGUserInfo {
     var userId: String? = null
@@ -16,7 +16,7 @@ class SGUserInfo {
     constructor()
 
     companion object {
-        fun format(userInfo: User_Info?): SGUserInfo {
+        fun format(userInfo: UserInfo?): SGUserInfo {
             return SGUserInfo(userInfo?.userId, userInfo?.nickName, userInfo?.avatar)
         }
     }

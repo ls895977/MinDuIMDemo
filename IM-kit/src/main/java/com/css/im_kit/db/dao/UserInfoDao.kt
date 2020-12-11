@@ -1,32 +1,44 @@
 package com.css.im_kit.db.dao
 
 import androidx.room.*
-import com.css.im_kit.db.bean.User_Info
+import com.css.im_kit.db.bean.UserInfo
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserInfoDao {
-    @Query("SELECT * FROM user_info")
-    fun getAll(): Flow<List<User_Info>>
+    @Query("SELECT * FROM userinfo")
+    fun getAll(): Flow<List<UserInfo>>
 
-    @Query("SELECT * FROM user_info WHERE userId IN (:userIds)")
-    fun loadAllByIds(userIds: ArrayList<String>): Flow<List<User_Info>>
+    @Query("SELECT * FROM userinfo WHERE userId IN (:userIds)")
+    fun loadAllByIds(userIds: ArrayList<String>): Flow<List<UserInfo>>
 
-    @Query("SELECT * FROM user_info WHERE userId = (:userId)")
-    suspend fun loadAllById(userId: String): User_Info
-
-    @Insert
-    suspend fun insert(users: User_Info)
+    @Query("SELECT * FROM userinfo WHERE userId = (:userId)")
+    suspend fun loadAllById(userId: String): UserInfo
 
     @Insert
-    suspend fun insertDatas(users: List<User_Info>)
+    suspend fun insert(users: UserInfo)
+
+    @Insert
+    suspend fun insertDatas(users: List<UserInfo>)
 
     @Delete
-    suspend fun delete(user: User_Info)
+    suspend fun delete(user: UserInfo)
 
-    @Query("DELETE FROM user_info")
+    @Query("DELETE FROM userinfo")
     fun deleteAll()
 
     @Update
-    suspend fun update(users: User_Info)
+    suspend fun update(users: UserInfo)
+
+    /**
+     * 修改昵称
+     */
+    @Query("UPDATE userinfo SET nickName = :userName WHERE userId = :userId")
+    suspend fun updateUserName(userId: String, userName: String)
+
+    /**
+     * 修改头像
+     */
+    @Query("UPDATE userinfo SET avatar = :avatar WHERE userId = :userId")
+    suspend fun updateAvatar(userId: String, avatar: String)
 }

@@ -5,7 +5,7 @@
 
         <variable
             name="userInfo"
-            type="com.css.im_kit.db.bean.User_Info" />
+            type="com.css.im_kit.db.bean.UserInfo" />
     </data>
 
     <LinearLayout

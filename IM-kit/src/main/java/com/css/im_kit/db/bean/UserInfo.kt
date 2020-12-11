@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
  * 用户资料
  */
 @Entity
-data class User_Info(
+data class UserInfo(
         var nickName: String,
         var avatar: String,
         var userId: String
