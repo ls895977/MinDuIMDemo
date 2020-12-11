@@ -1,4 +1,4 @@
-package com.css.im_kit.socket.`interface`
+package com.css.im_kit.imservice.`interface`
 
 interface onLinkStatus {
     /**

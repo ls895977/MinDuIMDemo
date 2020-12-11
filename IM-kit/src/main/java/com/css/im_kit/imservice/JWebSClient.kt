@@ -1,16 +1,14 @@
-package com.css.im_kit.socket
-
-import android.util.Log
-import com.css.im_kit.socket.`interface`.SocketListener
-import com.css.im_kit.socket.coom.SocketType
+package com.css.im_kit.imservice
+import com.css.im_kit.imservice.`interface`.ServiceListener
+import com.css.im_kit.imservice.coom.ServiceType
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.drafts.Draft_6455
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 
 class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
-    private var socketListener: SocketListener? = null
-    fun setSocketListener(socketListener: SocketListener) {
+    private var socketListener: ServiceListener? = null
+    fun setSocketListener(socketListener: ServiceListener) {
         this.socketListener = socketListener
     }
 
@@ -18,7 +16,7 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
      * 在开始握手并且给定的websocket准备好写入后调用
      */
     override fun onOpen(handshakedata: ServerHandshake) {
-        socketListener?.onBackSocketStatus(SocketType.openMessageStats, "已连接")
+        socketListener?.onBackSocketStatus(ServiceType.openMessageStats, "已连接")
     }
 
     /**
@@ -26,20 +24,20 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
      * @param message
      */
     override fun onMessage(message: String) {
-        socketListener?.onBackSocketStatus(SocketType.collectMessageStats, message)
+        socketListener?.onBackSocketStatus(ServiceType.collectMessageStats, message)
     }
 
     /**
      * 在websocket连接关闭后调用
      */
     override fun onClose(code: Int, reason: String, remote: Boolean) {
-        socketListener?.onBackSocketStatus(SocketType.closeMessageStats, reason)
+        socketListener?.onBackSocketStatus(ServiceType.closeMessageStats, reason)
     }
 
     /**
      *调用此方法的主要原因是IO或协议错误
      */
     override fun onError(ex: Exception) {
-        socketListener?.onBackSocketStatus(SocketType.errorMessageStats, ex.toString())
+        socketListener?.onBackSocketStatus(ServiceType.errorMessageStats, ex.toString())
     }
 }

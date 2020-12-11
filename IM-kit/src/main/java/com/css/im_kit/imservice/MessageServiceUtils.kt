@@ -1,11 +1,10 @@
-package com.css.im_kit.socket
+package com.css.im_kit.imservice
 
 import android.text.TextUtils
-import android.util.Log
-import com.css.im_kit.socket.`interface`.SocketListener
-import com.css.im_kit.socket.`interface`.onLinkStatus
-import com.css.im_kit.socket.`interface`.onResultMessage
-import com.css.im_kit.socket.coom.SocketType
+import com.css.im_kit.imservice.`interface`.ServiceListener
+import com.css.im_kit.imservice.`interface`.onLinkStatus
+import com.css.im_kit.imservice.`interface`.onResultMessage
+import com.css.im_kit.imservice.coom.ServiceType
 import java.net.URI
 
 object MessageServiceUtils {
@@ -23,10 +22,12 @@ object MessageServiceUtils {
     fun initService(CHAT_SERVER_URL: String?, onLinkStatus: onLinkStatus?) {
         this.onLinkStatus = onLinkStatus
         this.SerViceUrl = CHAT_SERVER_URL.toString()
+        try {
         val uri: URI = URI.create(CHAT_SERVER_URL)
         client = JWebSClient(uri)
         listeners()
         client?.connectBlocking()
+        } catch (e: Exception){}
     }
 
     /**
@@ -101,18 +102,18 @@ object MessageServiceUtils {
      * 消息反馈状态处理
      */
     private fun listeners() {
-        client?.setSocketListener(object : SocketListener {
+        client?.setSocketListener(object : ServiceListener {
             override fun onBackSocketStatus(event: Int, msg: String) {
                 when (event) {
-                    SocketType.openMessageStats -> {//已链接
+                    ServiceType.openMessageStats -> {//已链接
                         retryIndex = 0//重置为零
                         onLinkStatus?.onLinkedSuccess()
                     }
-                    SocketType.collectMessageStats -> {//链接收到消息
+                    ServiceType.collectMessageStats -> {//链接收到消息
                         retryIndex = 0//重置为零
                         onResultMessage?.onMessage(msg)
                     }
-                    SocketType.closeMessageStats -> {//链接关闭
+                    ServiceType.closeMessageStats -> {//链接关闭
                         if (retryIndex < 5 && !closeConnectStatus) {//链接重试五次后不在重连
                             retryService()
                             retryIndex++
@@ -120,7 +121,7 @@ object MessageServiceUtils {
                             onLinkStatus?.onLinkedClose()
                         }
                     }
-                    SocketType.errorMessageStats -> {//链接发生错误
+                    ServiceType.errorMessageStats -> {//链接发生错误
                         retryIndex = 0//重置为零
                         onLinkStatus?.onLinkedClose()
                     }

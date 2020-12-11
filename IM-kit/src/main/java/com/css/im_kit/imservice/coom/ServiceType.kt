@@ -1,8 +1,8 @@
-package com.css.im_kit.socket.coom
+package com.css.im_kit.imservice.coom
 /**
  * 状态码
  */
-object SocketType {
+object ServiceType {
     var openMessageStats = 1 //已链接
     var collectMessageStats = 2//链接收到消息
     var closeMessageStats = 3//链接关闭

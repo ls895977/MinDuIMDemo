@@ -1,4 +1,4 @@
-package com.css.im_kit.socket;
+package com.example.minduimdemo.bean;
 
 public class TestBean {
     String content;

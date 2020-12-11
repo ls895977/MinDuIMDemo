@@ -1,11 +1,11 @@
 package com.example.minduimdemo
 
 import android.util.Log
-import com.css.im_kit.socket.MessageServiceUtils
-import com.css.im_kit.socket.MessageServiceUtils.initService
-import com.css.im_kit.socket.TestBean
-import com.css.im_kit.socket.`interface`.onLinkStatus
-import com.css.im_kit.socket.`interface`.onResultMessage
+import com.css.im_kit.imservice.MessageServiceUtils
+import com.css.im_kit.imservice.MessageServiceUtils.initService
+import com.example.minduimdemo.bean.TestBean
+import com.css.im_kit.imservice.`interface`.onLinkStatus
+import com.css.im_kit.imservice.`interface`.onResultMessage
 import com.css.im_kit.ui.base.BaseActivity
 import com.example.minduimdemo.databinding.TestwebsocketBinding
 import com.google.gson.Gson
