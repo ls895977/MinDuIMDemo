@@ -8,7 +8,7 @@ open class BaseMessageBody {
     /**
      * 是否新消息
      */
-    var isRead: Boolean? = null
+    var isRead: Boolean = false
 
     /**
      * 消息接收时间
@@ -26,7 +26,7 @@ open class BaseMessageBody {
     var isSelf: Boolean? = null
 
     constructor()
-    constructor(isRead: Boolean?, receivedTime: String?, sendTime: String?, isSelf: Boolean?) {
+    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean?) {
         this.isRead = isRead
         this.receivedTime = receivedTime
         this.sendTime = sendTime
@@ -51,6 +51,7 @@ open class BaseMessageBody {
                     TextMessageBody("其他消息类型")
                 }
             }
+            baseMessageBody.isRead = message.isRead
             baseMessageBody.sendTime = message.sendTime
             baseMessageBody.receivedTime = message.receivedTime
             return baseMessageBody

@@ -2,7 +2,7 @@ package com.css.im_kit.callback
 
 import com.css.im_kit.model.message.SGMessage
 
-interface SGMessageCallback {
+interface ChatRoomCallback {
 
     /**
      * 接收消息

@@ -11,6 +11,9 @@ interface MessageDao {
     @Query("SELECT  * FROM message WHERE conversationId = (:conversationId)  ORDER BY targetId DESC LIMIT 1")
     suspend fun getLast(conversationId: String): Message
 
+    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) AND isRead = :isRead")
+    suspend fun getNoReadData(conversationId: String, isRead: Boolean): List<Message>
+
     @Insert
     suspend fun insert(users: Message)
 
@@ -28,4 +31,10 @@ interface MessageDao {
 
     @Update
     suspend fun update(users: List<Message>)
+
+    /**
+     * 设置消息已读
+     */
+    @Query("UPDATE message SET isRead = :isRead WHERE messageId IN (:messageIds)")
+    suspend fun read(messageIds: List<String>, isRead: Boolean)
 }

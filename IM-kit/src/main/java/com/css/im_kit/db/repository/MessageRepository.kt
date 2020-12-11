@@ -5,61 +5,64 @@ import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.imDb
 
-class MessageRepository {
+object MessageRepository {
 
-    // 通过伴生对象实现单例模式
-    companion object {
-        private var dao: MessageDao? = null
+    private var dao: MessageDao? = null
 
-        @Volatile
-        private var INSTANCE: MessageRepository? = null
-        fun build(context: Context): MessageRepository {
-            synchronized(this) {
-                var instance = INSTANCE
-                if (instance == null) {
-                    dao = context.imDb().messageDao
-                    instance = MessageRepository()
-                }
-                return instance
-            }
-        }
+    fun build(context: Context) {
+        dao = context.imDb().messageDao
+    }
 
-        /**
-         * 获取消息列表
-         */
-        suspend fun getMessage(conversationId: String): List<Message> {
-            return dao?.getMessages(conversationId) ?: arrayListOf()
-        }
+    fun setOnResultMessage() {
 
-        suspend fun insert(message: Message) {
-            dao?.insert(message)
-        }
+    }
 
-        suspend fun insertDatas(messages: List<Message>) {
-            dao?.insertDatas(messages)
-        }
+    /**
+     * 获取消息列表
+     */
+    suspend fun getMessage(conversationId: String): List<Message> {
+        return dao?.getMessages(conversationId) ?: arrayListOf()
+    }
 
-        /**
-         * 获取最新消息新消息
-         */
-        suspend fun getLast(conversationId: String): Message? {
-            return dao?.getLast(conversationId)
-        }
+    suspend fun insert(message: Message) {
+        dao?.insert(message)
+    }
 
-        suspend fun update(message: Message) {
-            dao?.update(message)
-        }
+    suspend fun insertDatas(messages: List<Message>) {
+        dao?.insertDatas(messages)
+    }
 
-        suspend fun update(messages: List<Message>) {
-            dao?.update(messages)
-        }
+    /**
+     * 获取最新消息新消息
+     */
+    suspend fun getLast(conversationId: String): Message? {
+        return dao?.getLast(conversationId)
+    }
 
-        suspend fun delete(message: Message) {
-            dao?.delete(message)
-        }
+    suspend fun update(message: Message) {
+        dao?.update(message)
+    }
 
-        suspend fun deleteAll() {
-            dao?.deleteAll()
-        }
+    suspend fun update(messages: List<Message>) {
+        dao?.update(messages)
+    }
+
+    /**
+     * 设置消息已读
+     */
+    suspend fun read(messageIds: List<String>) {
+        dao?.read(messageIds, true)
+    }
+
+    suspend fun getNoReadData(conversationId: String): Int {
+        return dao?.getNoReadData(conversationId, false)?.size ?: 0
+    }
+
+    suspend fun delete(message: Message) {
+        dao?.delete(message)
+    }
+
+    suspend fun deleteAll() {
+        dao?.deleteAll()
     }
 }

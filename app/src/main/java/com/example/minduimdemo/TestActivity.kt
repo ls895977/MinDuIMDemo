@@ -2,8 +2,8 @@ package com.example.minduimdemo
 
 import android.util.Log
 import android.widget.Toast
+import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.SGConversationCallback
-import com.css.im_kit.callback.SGMessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
@@ -11,6 +11,7 @@ import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
+import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.manager.IMMessageManager
 import com.css.im_kit.model.conversation.SGConversation
@@ -99,13 +100,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         var inChat = false
         binding?.joinChat?.setOnClickListener {
             if (inChat) {
-                IMMessageManager.dismissSgMessageCallback()
+                IMChatRoomManager.dismissSgMessageCallback()
                 Toast.makeText(this, "退出会话", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "进入会话", Toast.LENGTH_SHORT).show()
-                IMMessageManager
+                IMChatRoomManager
                         .initConversation("111")
-                        .addSGConversationListListener(object : SGMessageCallback {
+                        .addSGConversationListListener(object : ChatRoomCallback {
                             override fun onReceiveMessage(message: SGMessage) {
                                 Log.e("111", "1111")
                             }
@@ -139,26 +140,26 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             val message = when (rewStaue) {
                 MessageType.TEXT -> {
                     rewStaue = MessageType.IMAGE
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             "接收到一条消息",
-                            IMMessageManager.sendUser?.userId ?: "",
-                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.TEXT.str,
                             true
                     )
                 }
                 MessageType.IMAGE -> {
                     rewStaue = MessageType.COMMODITY
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             "http://testimg.supersg.cn/user/773870855045251072.jpeg",
-                            IMMessageManager.sendUser?.userId ?: "",
-                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.IMAGE.str,
                             true
                     )
@@ -167,13 +168,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.TEXT
                     val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
 
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             commodityMessage.toJsonString(),
-                            IMMessageManager.sendUser?.userId ?: "",
-                            IMMessageManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.COMMODITY.str,
                             true
                     )
@@ -188,26 +189,26 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             val message = when (rewStaue) {
                 MessageType.TEXT -> {
                     rewStaue = MessageType.IMAGE
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             "接收到一条消息",
-                            IMMessageManager.receiveUser?.userId ?: "",
-                            IMMessageManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
                             MessageType.TEXT.str,
                             true
                     )
                 }
                 MessageType.IMAGE -> {
                     rewStaue = MessageType.COMMODITY
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             "http://testimg.supersg.cn/user/773870855045251072.jpeg",
-                            IMMessageManager.receiveUser?.userId ?: "",
-                            IMMessageManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
                             MessageType.IMAGE.str,
                             true
                     )
@@ -216,13 +217,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     rewStaue = MessageType.TEXT
                     val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
 
-                    Message(IMMessageManager.conversationId ?: "",
+                    Message(IMChatRoomManager.conversationId ?: "",
                             "111",
                             "1607415263000",
                             "",
                             commodityMessage.toJsonString(),
-                            IMMessageManager.receiveUser?.userId ?: "",
-                            IMMessageManager.sendUser?.userId ?: "",
+                            IMChatRoomManager.receiveUser?.userId ?: "",
+                            IMChatRoomManager.sendUser?.userId ?: "",
                             MessageType.COMMODITY.str,
                             true
                     )

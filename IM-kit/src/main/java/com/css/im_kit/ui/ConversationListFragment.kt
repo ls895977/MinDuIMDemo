@@ -7,7 +7,6 @@ import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.databinding.FragmentConversationListBinding
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMConversationManager
-import com.css.im_kit.manager.IMManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
