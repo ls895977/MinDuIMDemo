@@ -1,5 +1,6 @@
 package com.css.im_kit.db.bean
 
+import com.css.im_kit.db.gson
 import com.google.gson.Gson
 
 /**
@@ -20,6 +21,6 @@ class CommodityMessage {
     }
 
     fun toJsonString(): String {
-        return Gson().toJson(this)
+        return gson.toJson(this)
     }
 }

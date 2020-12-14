@@ -2,6 +2,7 @@ package com.css.im_kit.db.bean
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.css.im_kit.imservice.bean.SendMessageBean
 
 /**
  * 消息
@@ -21,6 +22,18 @@ data class Message(
 ) {
     @PrimaryKey(autoGenerate = true)
     var targetId = 0//id
+
+    /**
+     * 转换为service发送消息数据类型
+    String content;
+    String chat_id;
+    String receive_id;
+    String send_id;
+    String type;
+     */
+    fun toSendMessageBean(): SendMessageBean {
+        return SendMessageBean(this.content, this.conversationId, this.receiveUserId, this.sendUserId, this.type)
+    }
 }
 
 enum class SendType(var text: Int) {

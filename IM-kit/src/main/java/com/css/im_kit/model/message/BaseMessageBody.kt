@@ -2,6 +2,7 @@ package com.css.im_kit.model.message
 
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.gson
 import com.google.gson.Gson
 
 open class BaseMessageBody {
@@ -44,7 +45,7 @@ open class BaseMessageBody {
                     ImageMessageBody(message.content)
                 }
                 MessageType.COMMODITY.str -> {
-                    val commodityMessage = Gson().fromJson(message.content, CommodityMessage::class.java)
+                    val commodityMessage = gson.fromJson(message.content, CommodityMessage::class.java)
                     CommodityMessageBody.toCommodityMessageBody(commodityMessage)
                 }
                 else -> {

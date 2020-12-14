@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.MessageServiceUtils.initService
 import com.css.im_kit.imservice.`interface`.onLinkStatus
@@ -58,7 +59,7 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
             //客服2
             val testbean = TestBean(binding?.etContext?.text.toString(),
                     "3", "2", "3", "0")
-            context = Gson().toJson(testbean)
+            context = gson.toJson(testbean)
             MessageServiceUtils.sendNewMsg(context)
             //客服1
 //            val contextBean=ContextBean("", "", binding?.etContext?.text.toString(), "3", "2", IMDateUtil.getTime(), "", 2000)
@@ -73,7 +74,7 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
 //        }
         MessageServiceUtils.setOnResultMessage(object : onResultMessage {
             override fun onMessage(context: String) {
-                val contextBean = Gson().fromJson(context, ContextBean::class.java)
+                val contextBean = gson.fromJson(context, ContextBean::class.java)
                 Log.e("aa", "----------------消息内容==" + context)
                 if (contextBean.send_id != "0") {
                     myData.add(0, contextBean)
