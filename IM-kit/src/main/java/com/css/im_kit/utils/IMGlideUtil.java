@@ -40,6 +40,20 @@ public class IMGlideUtil {
         }
     }
 
+    //加载4个角为radius（单位：dp）的圆角图片
+    public static void loadRound4Img(Context context, Bitmap bitmap, ImageView img, int radius) {
+        Glide.with(context).load(bitmap).apply(getRounOptions(radius)).into(img);
+    }
+
+    //头部圆角
+    public static void loadRoundTop2Img(Context context, String url, ImageView img, int radius) {
+        if (TextUtils.isEmpty(url)) {
+            Glide.with(img.getContext()).load(R.color.color_f3f3f3).apply(getRounOptions(radius)).into(img);
+        } else {
+            Glide.with(context).load(url).apply(getRounOptions(radius)).into(img);
+        }
+    }
+
     //圆图
     private static RequestOptions getAvatarOptions() {
         if (avatarOption == null) {
@@ -51,7 +65,6 @@ public class IMGlideUtil {
         }
         return avatarOption;
     }
-
 
     //4个角为radius（单位：dp）
     public static RequestOptions getRounOptions(int radius) {
@@ -72,5 +85,17 @@ public class IMGlideUtil {
         IMRoundedCornersTransformation transformation = new IMRoundedCornersTransformation(radius, 0, IMRoundedCornersTransformation.CornerType.ALL);
         //组合各种Transformation
         return new MultiTransformation<>(new CenterCrop(), transformation);
+    }
+
+    //top圆角
+    private static MultiTransformation<Bitmap> getTopRounOptions(int radius) {
+        //顶部左边圆角
+        IMRoundedCornersTransformation transformation = new IMRoundedCornersTransformation
+                (radius, 0, IMRoundedCornersTransformation.CornerType.TOP_LEFT);
+        //顶部右边圆角
+        IMRoundedCornersTransformation transformation1 = new IMRoundedCornersTransformation
+                (radius, 0, IMRoundedCornersTransformation.CornerType.TOP_RIGHT);
+        //组合各种Transformation,
+        return new MultiTransformation<>(new CenterCrop(), transformation, transformation1);
     }
 }

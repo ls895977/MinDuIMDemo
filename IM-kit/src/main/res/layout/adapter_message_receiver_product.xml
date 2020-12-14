@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:paddingVertical="@dimen/dp_10"
+    android:paddingHorizontal="@dimen/dp_20"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:singleLine="true"
+        android:gravity="center_horizontal"
+        android:text="下午 1:40"
+        android:visibility="gone"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:textColor="@color/color_999999"
+        android:textSize="@dimen/sp_12" />
+    <View
+        android:id="@+id/tag"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/tv_time"
+        />
+    <ImageView
+        android:id="@+id/iv_avatar"
+        android:layout_width="@dimen/dp_32"
+        android:layout_height="@dimen/dp_32"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_alignRight="@+id/tag"
+        android:layout_below="@+id/tag"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:src="@mipmap/im_icon_avatar_default" />
+    <LinearLayout
+        android:id="@+id/ll_content"
+        android:layout_width="@dimen/dp_200"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/iv_avatar"
+        android:layout_below="@+id/tag"
+        android:background="@drawable/im_shape_ffffff_8dp"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/iv_product_image"
+            android:layout_width="@dimen/dp_200"
+            android:layout_height="@dimen/dp_200"
+            android:scaleType="centerCrop"/>
+        <TextView
+            android:id="@+id/tv_product_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="¥499"
+            android:singleLine="true"
+            android:includeFontPadding="false"
+            android:textSize="@dimen/sp_18"
+            android:layout_marginTop="@dimen/dp_8"
+            android:paddingHorizontal="@dimen/dp_10"
+            android:textColor="@color/color_f54f76"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tv_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="川久保玲体恤简白纯色样黑色logo 男款女款"
+            android:textSize="@dimen/sp_14"
+            android:includeFontPadding="false"
+            android:maxLines="2"
+            android:layout_marginTop="@dimen/dp_5"
+            android:paddingHorizontal="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_10"
+            android:textColor="@color/color_333333"/>
+    </LinearLayout>
+
+</RelativeLayout>

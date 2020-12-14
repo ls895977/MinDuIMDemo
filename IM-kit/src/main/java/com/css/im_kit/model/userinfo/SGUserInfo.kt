@@ -1,8 +1,9 @@
 package com.css.im_kit.model.userinfo
 
 import com.css.im_kit.db.bean.UserInfo
+import java.io.Serializable
 
-class SGUserInfo {
+class SGUserInfo : Serializable {
     var userId: String? = null
     var userName: String? = null
     var avatar: String? = null
