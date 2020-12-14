@@ -11,6 +11,9 @@ interface MessageDao {
     @Query("SELECT  * FROM message WHERE conversationId = (:conversationId)  ORDER BY targetId DESC LIMIT 1")
     suspend fun getLast(conversationId: String): Message
 
+    @Query("SELECT  * FROM message ORDER BY targetId DESC LIMIT 1")
+    suspend fun getLast(): Message
+
     @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) AND isRead = :isRead")
     suspend fun getNoReadData(conversationId: String, isRead: Boolean): List<Message>
 

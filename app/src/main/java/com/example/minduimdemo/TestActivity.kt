@@ -180,7 +180,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     )
                 }
             }
-            IMMessageManager.rewNewMessage(message)
+            IMMessageManager.saveMessage(message)
         }
         /**
          * 发送新消息
@@ -229,7 +229,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     )
                 }
             }
-            IMMessageManager.sendNewMessage(message)
+            IMMessageManager.saveMessage(message)
         }
     }
 

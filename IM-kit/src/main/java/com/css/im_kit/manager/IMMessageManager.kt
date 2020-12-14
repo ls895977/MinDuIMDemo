@@ -5,6 +5,7 @@ import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
+import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.`interface`.onResultMessage
 import com.css.im_kit.model.message.BaseMessageBody
@@ -18,6 +19,8 @@ object IMMessageManager {
 
     //回调列表
     private var messageCallback = arrayListOf<MessageCallback>()
+
+    private var userId: String? = null
 
     /**
      * 开启socket监听
@@ -45,64 +48,39 @@ object IMMessageManager {
     }
 
     /**
-     * 保存接收到的新消息
+     * 保存消息到数据库
      */
-    fun rewNewMessage(message: Message) {
+    fun saveMessage(message: Message) {
         ioScope.launch {
             val task = async {
                 message.receivedTime = Date().time
                 MessageRepository.insert(message)
-                MessageRepository.getLast(IMChatRoomManager.conversationId!!)
+                val dbMessage = MessageRepository.getLast()
+                dbMessage?.let {
+                    val sgMessage = SGMessage.format(it)
+                    sgMessage.messageBody = BaseMessageBody.format(it)
+                    val userInfo = UserInfoRepository.loadById(message.sendUserId)
+                    userInfo?.let { info ->
+                        sgMessage.userInfo = SGUserInfo.format(info)
+                        if (info.userId == userId) {
+                            sgMessage.messageBody?.isSelf = true
+                        }
+                        if (IMChatRoomManager.conversation != null) {
+                            sgMessage.messageBody?.isRead = info.userId == IMChatRoomManager.conversation!!.sendUserId || info.userId == IMChatRoomManager.conversation!!.receiveUserId
+                        } else {
+                            sgMessage.messageBody?.isRead = false
+                        }
+                        return@async sgMessage
+                    }
+                }
+                return@async null
             }
             val result = task.await()
             result?.let { message ->
-                val sgMessage = SGMessage.format(message)
-                sgMessage.messageBody = BaseMessageBody.format(message)
-                if (message.sendUserId == IMChatRoomManager.conversation!!.sendUserId) {
-                    sgMessage.userInfo = SGUserInfo.format(IMChatRoomManager.sendUser)
-                    sgMessage.messageBody?.isSelf = false
-                    sgMessage.messageBody?.isRead = true
-                } else {
-                    sgMessage.userInfo = SGUserInfo.format(IMChatRoomManager.receiveUser)
-                    sgMessage.messageBody?.isSelf = true
-                    sgMessage.messageBody?.isRead = true
-                }
                 messageCallback.forEach {
-                    it.onReceiveMessage(sgMessage)
+                    it.onReceiveMessage(message)
                 }
             }
-
-        }
-    }
-
-    /**
-     * 保存发送的新消息
-     */
-    fun sendNewMessage(message: Message) {
-        ioScope.launch {
-            val task = async {
-                message.receivedTime = Date().time
-                MessageRepository.insert(message)
-                MessageRepository.getLast(IMChatRoomManager.conversationId!!)
-            }
-            val result = task.await()
-            result?.let { message ->
-                val sgMessage = SGMessage.format(message)
-                sgMessage.messageBody = BaseMessageBody.format(message)
-                if (message.sendUserId == IMChatRoomManager.conversation!!.sendUserId) {
-                    sgMessage.userInfo = SGUserInfo.format(IMChatRoomManager.sendUser)
-                    sgMessage.messageBody?.isSelf = false
-                    sgMessage.messageBody?.isRead = true
-                } else {
-                    sgMessage.userInfo = SGUserInfo.format(IMChatRoomManager.receiveUser)
-                    sgMessage.messageBody?.isSelf = true
-                    sgMessage.messageBody?.isRead = true
-                }
-                messageCallback.forEach {
-                    it.onReceiveMessage(sgMessage)
-                }
-            }
-
         }
     }
 }

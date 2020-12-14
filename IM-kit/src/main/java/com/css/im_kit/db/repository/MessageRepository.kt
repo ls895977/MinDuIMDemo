@@ -34,10 +34,16 @@ object MessageRepository {
 
     /**
      * 获取最新消息新消息
+     * conversationId ： 会话id
      */
-    suspend fun getLast(conversationId: String): Message? {
-        return dao?.getLast(conversationId)
+    suspend fun getLast(conversationId: String?): Message? {
+        return if (conversationId.isNullOrEmpty()){
+            dao?.getLast()
+        }else {
+            dao?.getLast(conversationId)
+        }
     }
+
 
     suspend fun update(message: Message) {
         dao?.update(message)

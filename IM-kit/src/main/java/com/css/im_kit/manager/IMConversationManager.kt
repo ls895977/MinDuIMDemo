@@ -79,7 +79,7 @@ object IMConversationManager {
                 conversations.forEach {
                     try {
                         val data = SGConversation()
-                        data.conversationId = it.id.toString()
+                        data.conversationId = it.conversationId
                         val userInfoTask = async { UserInfoRepository.loadById(it.sendUserId) }
                         val messageTask = async { MessageRepository.getLast(it.conversationId) }
                         val userInfoResult = userInfoTask.await()
