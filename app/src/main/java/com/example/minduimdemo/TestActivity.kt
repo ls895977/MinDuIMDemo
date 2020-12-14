@@ -107,11 +107,24 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 IMChatRoomManager
                         .initConversation("111")
                         .addSGConversationListListener(object : ChatRoomCallback {
+                            /**
+                             * 新消息
+                             */
                             override fun onReceiveMessage(message: SGMessage) {
                                 Log.e("111", "1111")
                             }
 
+                            /**
+                             * 会话所有消息
+                             */
                             override fun onMessages(message: List<SGMessage>) {
+                                Log.e("111", "1111")
+                            }
+
+                            /**
+                             * 消息发送成功回调
+                             */
+                            override fun onMessageInProgress(message: SGMessage) {
                                 Log.e("111", "1111")
                             }
 
@@ -186,50 +199,21 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
          * 发送新消息
          */
         binding?.sendNewMessage?.setOnClickListener {
-            val message = when (rewStaue) {
+            when (rewStaue) {
                 MessageType.TEXT -> {
                     rewStaue = MessageType.IMAGE
-                    Message(IMChatRoomManager.conversationId ?: "",
-                            "111",
-                            1607415263000,
-                            0,
-                            "接收到一条消息",
-                            IMChatRoomManager.receiveUser?.userId ?: "",
-                            IMChatRoomManager.sendUser?.userId ?: "",
-                            MessageType.TEXT.str,
-                            true
-                    )
+                    IMChatRoomManager.sendTextMessage("发送一条消息")
                 }
                 MessageType.IMAGE -> {
                     rewStaue = MessageType.COMMODITY
-                    Message(IMChatRoomManager.conversationId ?: "",
-                            "111",
-                            1607415263000,
-                            0,
-                            "http://testimg.supersg.cn/user/773870855045251072.jpeg",
-                            IMChatRoomManager.receiveUser?.userId ?: "",
-                            IMChatRoomManager.sendUser?.userId ?: "",
-                            MessageType.IMAGE.str,
-                            true
-                    )
+                    IMChatRoomManager.sendImageMessage("http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 }
                 MessageType.COMMODITY -> {
                     rewStaue = MessageType.TEXT
                     val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-
-                    Message(IMChatRoomManager.conversationId ?: "",
-                            "111",
-                            1607415263000,
-                            0,
-                            commodityMessage.toJsonString(),
-                            IMChatRoomManager.receiveUser?.userId ?: "",
-                            IMChatRoomManager.sendUser?.userId ?: "",
-                            MessageType.COMMODITY.str,
-                            true
-                    )
+                    IMChatRoomManager.sendCommodityMessage(commodityMessage)
                 }
             }
-            IMMessageManager.saveMessage(message)
         }
     }
 

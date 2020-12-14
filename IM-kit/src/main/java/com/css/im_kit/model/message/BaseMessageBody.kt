@@ -23,10 +23,10 @@ open class BaseMessageBody {
     /**
      * 是否是自己发送的消息
      */
-    var isSelf: Boolean? = null
+    var isSelf: Boolean = false
 
     constructor()
-    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean?) {
+    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean) {
         this.isRead = isRead
         this.receivedTime = receivedTime
         this.sendTime = sendTime

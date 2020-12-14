@@ -29,9 +29,9 @@ object IMDateUtil {
         //时间差（单位：秒）
         val agoTime = nowTime - oldTime
         return when {
-            agoTime <= ONE_DAY -> format(agoTime.times(1000), HH_MM)
+            agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
             agoTime <= ONE_DAY * 2 -> "昨天"
-            else -> format(agoTime.times(1000), YY_MM_DD_HH_MM1)
+            else -> format(oldTime.times(1000), YY_MM_DD_HH_MM1)
         }
     }
 
@@ -43,9 +43,9 @@ object IMDateUtil {
         //时间差（单位：秒）
         val agoTime = nowTime - oldTime
         return when {
-            agoTime <= ONE_DAY -> format(agoTime.times(1000), HH_MM)
-            agoTime <= ONE_DAY * 2 -> "昨天  ${format(agoTime.times(1000), HH_MM)}"
-            else -> format(agoTime.times(1000), YY_MM_DD_HH_MM)
+            agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
+            agoTime <= ONE_DAY * 2 -> "昨天  ${format(oldTime.times(1000), HH_MM)}"
+            else -> format(oldTime.times(1000), YY_MM_DD_HH_MM)
         }
     }
 
@@ -59,11 +59,11 @@ object IMDateUtil {
         return when {
             agoTime < 60 -> "刚刚"
             agoTime <= ONE_HOUR -> "${agoTime / ONE_MINUTE}分钟前"
-            agoTime <= ONE_DAY -> format(agoTime.times(1000), HH_MM)
+            agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
             agoTime <= ONE_DAY * 2 -> "昨天"
             agoTime <= ONE_DAY * 3 -> "前天"
-            agoTime <= ONE_MONTH -> format(agoTime.times(1000), CN_MM_DD)
-            else -> format(agoTime.times(1000), CHN_YYYY_MM_DD)
+            agoTime <= ONE_MONTH -> format(oldTime.times(1000), CN_MM_DD)
+            else -> format(oldTime.times(1000), CHN_YYYY_MM_DD)
         }
     }
 
@@ -71,7 +71,7 @@ object IMDateUtil {
         val calendar = Calendar.getInstance()
         calendar.time = date
         val time = date.time / 1000
-        val now = Date().time / 1000
+        val now = System.currentTimeMillis() / 1000
         val ago = now - time
         return if (ago < 0) {
             "刚刚"
@@ -99,7 +99,7 @@ object IMDateUtil {
 
     @SuppressLint("SimpleDateFormat")
     fun format(time: Long, type: String): String {
-        return SimpleDateFormat(type).format(Date(time))
+        return SimpleDateFormat(type, Locale.getDefault()).format(Date(time))
     }
 
     /**

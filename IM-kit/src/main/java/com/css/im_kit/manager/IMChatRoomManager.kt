@@ -3,7 +3,9 @@ package com.css.im_kit.manager
 import android.util.Log
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.MessageCallback
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Conversation
+import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
@@ -11,10 +13,12 @@ import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.model.message.BaseMessageBody
+import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.*
 
 object IMChatRoomManager {
     var conversationId: String? = null//会话id
@@ -59,12 +63,90 @@ object IMChatRoomManager {
     private var myMessageCallback = object : MessageCallback {
         override fun onReceiveMessage(message: SGMessage) {
             uiScope.launch {
-                MessageRepository.read(arrayListOf(message.messageId!!))
+                MessageRepository.read(arrayListOf(message.messageId))
                 message.messageBody?.isRead = true
                 chatRoomCallback?.onReceiveMessage(message)
             }
         }
     }
+
+    /**
+     * 发送文字消息
+     *
+    var conversationId: String,//聊天室id
+    var messageId: String,//消息id
+    var sendTime: Long,//发送时间
+    var receivedTime: Long,//接收时间
+    var content: String,//内容
+    var sendUserId: String,//发送方id
+    var receiveUserId: String,//接收方id
+    var type: String,
+    var sendType: Boolean,//是否发送成功
+    var isRead: Boolean = false//是否已读
+     */
+    fun sendTextMessage(text: String) {
+        conversationId?.let { id ->
+            conversation?.let { conversation ->
+                val time = System.currentTimeMillis()
+                IMMessageManager.saveMessage(Message(id,
+                        messageId = conversation.receiveUserId + time,
+                        sendTime = time,
+                        receivedTime = time,
+                        content = text,
+                        sendUserId = conversation.receiveUserId,
+                        receiveUserId = conversation.sendUserId,
+                        type = MessageType.TEXT.str,
+                        sendType = false,
+                        isRead = true
+                ))
+            }
+        }
+    }
+
+    /**
+     * 发送图片消息
+     */
+    fun sendImageMessage(img: String) {
+        conversationId?.let { id ->
+            conversation?.let { conversation ->
+                val time = System.currentTimeMillis()
+                IMMessageManager.saveMessage(Message(id,
+                        messageId = conversation.receiveUserId + time,
+                        sendTime = time,
+                        receivedTime = time,
+                        content = img,
+                        sendUserId = conversation.receiveUserId,
+                        receiveUserId = conversation.sendUserId,
+                        type = MessageType.IMAGE.str,
+                        sendType = false,
+                        isRead = true
+                ))
+            }
+        }
+    }
+
+    /**
+     * 发送商品消息
+     */
+    fun sendCommodityMessage(commodityMessage: CommodityMessage) {
+        conversationId?.let { id ->
+            conversation?.let { conversation ->
+                val time = System.currentTimeMillis()
+                IMMessageManager.saveMessage(Message(id,
+                        messageId = conversation.receiveUserId + time,
+                        sendTime = time,
+                        receivedTime = time,
+                        content = commodityMessage.toJsonString(),
+                        sendUserId = conversation.receiveUserId,
+                        receiveUserId = conversation.sendUserId,
+                        type = MessageType.COMMODITY.str,
+                        sendType = false,
+                        isRead = true
+                ))
+            }
+        }
+    }
+
 
     /**
      * 构建

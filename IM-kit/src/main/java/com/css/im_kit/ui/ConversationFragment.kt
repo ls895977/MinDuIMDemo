@@ -36,6 +36,10 @@ class ConversationFragment(private var consavertionId: String, private var userI
                         Log.e("111", "1111")
                     }
 
+                    override fun onMessageInProgress(message: SGMessage) {
+
+                    }
+
                 })
                 .create()
     }

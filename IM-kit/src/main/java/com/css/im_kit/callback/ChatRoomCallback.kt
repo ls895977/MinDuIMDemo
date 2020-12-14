@@ -13,4 +13,9 @@ interface ChatRoomCallback {
      * 全部消息
      */
     fun onMessages(message: List<SGMessage>)
+
+    /**
+     * 发送消息进度
+     */
+    fun onMessageInProgress(message: SGMessage)
 }

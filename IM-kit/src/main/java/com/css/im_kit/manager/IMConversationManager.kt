@@ -1,12 +1,14 @@
 package com.css.im_kit.manager
 
 import android.util.Log
+import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.MessageType
@@ -17,6 +19,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 object IMConversationManager {
+
+    private var isMyMessageCallbackStart = false
 
     //回调列表
     private var sgConversationCallbacks = arrayListOf<SGConversationCallback>()
@@ -33,6 +37,10 @@ object IMConversationManager {
         if (!sgConversations.isNullOrEmpty()) {
             listener.onConversationList(sgConversations)
         }
+        if (!isMyMessageCallbackStart) {
+            isMyMessageCallbackStart = true
+            IMMessageManager.addMessageListener(myMessageCallback)
+        }
     }
 
     /**
@@ -40,6 +48,10 @@ object IMConversationManager {
      */
     fun removeSGConversationListListener(listener: SGConversationCallback) {
         sgConversationCallbacks.remove(listener)
+        if (sgConversationCallbacks.isNullOrEmpty()) {
+            isMyMessageCallbackStart = false
+            IMMessageManager.removeMessageListener(myMessageCallback)
+        }
     }
 
     /**
@@ -54,6 +66,30 @@ object IMConversationManager {
                     }
         }
 
+    }
+
+    /**
+     * socket新消息监听
+     */
+    private var myMessageCallback = object : MessageCallback {
+        override fun onReceiveMessage(message: SGMessage) {
+            uiScope.launch {
+                sgConversations.forEach {
+                    if (message.conversationId == it.conversationId) {
+                        val task = async {
+                            MessageRepository.getNoReadData(message.conversationId)
+                        }
+                        val result = task.await()
+                        it.newsNum = result
+                        it.newMessage = message
+                        sgConversationCallbacks.forEach { callback ->
+                            callback.onConversationList(sgConversations)
+                        }
+                        return@launch
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -93,6 +129,7 @@ object IMConversationManager {
                         }
                         messageResult?.let {
                             val sgMessage = SGMessage()
+                            sgMessage.conversationId = it.conversationId
                             sgMessage.userInfo = data.userInfo
                             sgMessage.messageId = messageResult.messageId
                             sgMessage.messageBody = BaseMessageBody.format(messageResult)
@@ -112,7 +149,7 @@ object IMConversationManager {
                             }
                             data.newMessage = sgMessage
                         }
-                        data.newsNum =  MessageRepository.getNoReadData(it.conversationId)
+                        data.newsNum = MessageRepository.getNoReadData(it.conversationId)
                         sgConversations.add(data)
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -121,11 +158,14 @@ object IMConversationManager {
                 return@async sgConversations
             }
             val result = task.await()
-            sgConversations.clear()
-            sgConversations.addAll(result)
-            sgConversationCallbacks.forEach {
-                it.onConversationList(sgConversations)
+            uiScope.launch {
+                sgConversations.clear()
+                sgConversations.addAll(result)
+                sgConversationCallbacks.forEach {
+                    it.onConversationList(sgConversations)
+                }
             }
+
         }
 
     }

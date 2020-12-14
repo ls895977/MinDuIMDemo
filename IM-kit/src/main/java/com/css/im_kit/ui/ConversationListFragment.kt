@@ -5,13 +5,11 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.databinding.FragmentConversationListBinding
-import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
-import kotlinx.coroutines.launch
 
 class ConversationListFragment(var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
@@ -97,9 +95,7 @@ class ConversationListFragment(var setDataListener: IMListener.SetDataListener) 
     override fun onConversationList(sgConversation: List<SGConversation>) {
         this.conversationList.clear()
         this.conversationList.addAll(sgConversation)
-        uiScope.launch {
-            conversationListAdapter?.notifyDataSetChanged()
-        }
+        conversationListAdapter?.notifyDataSetChanged()
     }
 
     /**

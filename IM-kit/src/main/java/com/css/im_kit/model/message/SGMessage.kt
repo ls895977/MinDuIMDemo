@@ -3,6 +3,7 @@ package com.css.im_kit.model.message
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.model.userinfo.SGUserInfo
+import java.util.*
 
 /**
  * TEXT 文字类型
@@ -17,9 +18,14 @@ enum class MessageType(var str: String) {
 
 class SGMessage : MultiItemEntity {
     /**
+     * 会话id
+     */
+    var conversationId: String = ""
+
+    /**
      * 消息id
      */
-    var messageId: String? = null
+    var messageId: String = ""
 
     /**
      * 消息类型
@@ -36,20 +42,22 @@ class SGMessage : MultiItemEntity {
      */
     var messageBody: BaseMessageBody? = null
 
-
-    constructor(type: MessageType?, userInfo: SGUserInfo?, messageBody: BaseMessageBody?) {
+    constructor()
+    constructor(conversationId: String, messageId: String, type: MessageType?, userInfo: SGUserInfo?, messageBody: BaseMessageBody?) {
+        this.conversationId = conversationId
+        this.messageId = messageId
         this.type = type
         this.userInfo = userInfo
         this.messageBody = messageBody
     }
 
-    constructor()
-
     companion object {
         /**
          * 创建文字消息
          */
-        private fun createTextMessageBody(userInfo: SGUserInfo, messageBody: TextMessageBody) = SGMessage(
+        private fun createTextMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: TextMessageBody) = SGMessage(
+                conversationId,
+                userInfo.userId + System.currentTimeMillis(),
                 MessageType.TEXT,
                 userInfo,
                 messageBody
@@ -58,7 +66,9 @@ class SGMessage : MultiItemEntity {
         /**
          * 创建图片消息
          */
-        private fun createImageMessageBody(userInfo: SGUserInfo, messageBody: ImageMessageBody) = SGMessage(
+        private fun createImageMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: ImageMessageBody) = SGMessage(
+                conversationId,
+                userInfo.userId + System.currentTimeMillis(),
                 MessageType.IMAGE,
                 userInfo,
                 messageBody
@@ -67,7 +77,9 @@ class SGMessage : MultiItemEntity {
         /**
          * 创建图片消息
          */
-        private fun createCommodityMessageBody(userInfo: SGUserInfo, messageBody: CommodityMessageBody) = SGMessage(
+        private fun createCommodityMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: CommodityMessageBody) = SGMessage(
+                conversationId,
+                userInfo.userId + System.currentTimeMillis(),
                 MessageType.COMMODITY,
                 userInfo,
                 messageBody
@@ -76,53 +88,53 @@ class SGMessage : MultiItemEntity {
         /**
          * 创建发送图片消息体
          */
-        fun createSendImageMessageBody(userInfo: SGUserInfo, imageUrl: String) {
+        fun createSendImageMessageBody(conversationId: String, userInfo: SGUserInfo, imageUrl: String) {
             val body = ImageMessageBody(imageUrl)
             body.isSelf = true
-            createImageMessageBody(userInfo, body)
+            createImageMessageBody(conversationId, userInfo, body)
         }
 
         /**
          * 创建图片消息体
          */
-        fun createImageMessageBody(userInfo: SGUserInfo, imageUrl: String) {
+        fun createImageMessageBody(conversationId: String, userInfo: SGUserInfo, imageUrl: String): SGMessage {
             val body = ImageMessageBody(imageUrl)
-            createImageMessageBody(userInfo, body)
+            return createImageMessageBody(conversationId, userInfo, body)
         }
 
         /**
          * 创建发送文字消息体
          */
-        fun createSendTextMessageBody(userInfo: SGUserInfo, text: String) {
+        fun createSendTextMessageBody(conversationId: String, userInfo: SGUserInfo, text: String): SGMessage {
             val body = TextMessageBody(text)
             body.isSelf = true
-            createTextMessageBody(userInfo, body)
+            return createTextMessageBody(conversationId, userInfo, body)
         }
 
         /**
          * 创建文字消息体
          */
-        fun createTextMessageBody(userInfo: SGUserInfo, text: String) {
+        fun createTextMessageBody(conversationId: String, userInfo: SGUserInfo, text: String) {
             val body = TextMessageBody(text)
-            createTextMessageBody(userInfo, body)
+            createTextMessageBody(conversationId, userInfo, body)
         }
 
 
         /**
          * 创建发送商品消息体
          */
-        fun createSendCommodityMessageBody(userInfo: SGUserInfo) {
+        fun createSendCommodityMessageBody(conversationId: String, userInfo: SGUserInfo) {
             val body = CommodityMessageBody()
             body.isSelf = true
-            createCommodityMessageBody(userInfo, body)
+            createCommodityMessageBody(conversationId, userInfo, body)
         }
 
         /**
          * 创建商品消息体
          */
-        fun createCommodityMessageBody(userInfo: SGUserInfo) {
+        fun createCommodityMessageBody(conversationId: String, userInfo: SGUserInfo) {
             val body = CommodityMessageBody()
-            createCommodityMessageBody(userInfo, body)
+            createCommodityMessageBody(conversationId, userInfo, body)
         }
 
         fun format(message: Message): SGMessage {

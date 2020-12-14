@@ -1,8 +1,7 @@
 package com.example.minduimdemo
 
-import android.view.View
 import android.content.Intent
-import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.manager.IMConversationManager
@@ -69,15 +68,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
             when {
                 i.rem(2) == 0 -> {
                     messageBody = ImageMessageBody(false, "1607415263000", "1607415263000", false, "http://testimg.supersg.cn/user/773870855045251072.jpeg")//2020-12-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.IMAGE, userInfo, messageBody), pageSize))
+                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.IMAGE, userInfo, messageBody), pageSize))
                 }
                 i.rem(3) == 0 -> {
                     messageBody = CommodityMessageBody(false, "1604823263000", "1604823263000", false, "commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.COMMODITY, userInfo, messageBody), pageSize))
+                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.COMMODITY, userInfo, messageBody), pageSize))
                 }
                 else -> {
                     messageBody = TextMessageBody(false, "1607501663000", "1607501663000", false, "我是你大爷")//2020-12-09 17:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage(MessageType.TEXT, userInfo, messageBody), pageSize))
+                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.TEXT, userInfo, messageBody), pageSize))
                 }
             }
         }

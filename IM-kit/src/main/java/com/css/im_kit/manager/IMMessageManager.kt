@@ -53,22 +53,18 @@ object IMMessageManager {
     fun saveMessage(message: Message) {
         ioScope.launch {
             val task = async {
-                message.receivedTime = Date().time
+                message.receivedTime = System.currentTimeMillis()
                 MessageRepository.insert(message)
                 val dbMessage = MessageRepository.getLast()
                 dbMessage?.let {
                     val sgMessage = SGMessage.format(it)
                     sgMessage.messageBody = BaseMessageBody.format(it)
+                    sgMessage.conversationId = message.conversationId
                     val userInfo = UserInfoRepository.loadById(message.sendUserId)
                     userInfo?.let { info ->
                         sgMessage.userInfo = SGUserInfo.format(info)
                         if (info.userId == userId) {
                             sgMessage.messageBody?.isSelf = true
-                        }
-                        if (IMChatRoomManager.conversation != null) {
-                            sgMessage.messageBody?.isRead = info.userId == IMChatRoomManager.conversation!!.sendUserId || info.userId == IMChatRoomManager.conversation!!.receiveUserId
-                        } else {
-                            sgMessage.messageBody?.isRead = false
                         }
                         return@async sgMessage
                     }
