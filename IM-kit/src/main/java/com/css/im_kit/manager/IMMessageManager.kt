@@ -13,14 +13,13 @@ import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.*
 
 object IMMessageManager {
 
     //回调列表
     private var messageCallback = arrayListOf<MessageCallback>()
 
-    private var userId: String? = null
+    private var userId = "111111"
 
     /**
      * 开启socket监听
@@ -50,7 +49,7 @@ object IMMessageManager {
     /**
      * 保存消息到数据库
      */
-    fun saveMessage(message: Message) {
+    fun saveMessage(message: Message, isSelf: Boolean) {
         ioScope.launch {
             val task = async {
                 message.receivedTime = System.currentTimeMillis()
@@ -63,7 +62,7 @@ object IMMessageManager {
                     val userInfo = UserInfoRepository.loadById(message.sendUserId)
                     userInfo?.let { info ->
                         sgMessage.userInfo = SGUserInfo.format(info)
-                        if (info.userId == userId) {
+                        if (isSelf) {
                             sgMessage.messageBody?.isSelf = true
                         }
                         return@async sgMessage

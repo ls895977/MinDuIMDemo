@@ -193,7 +193,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     )
                 }
             }
-            IMMessageManager.saveMessage(message)
+            IMMessageManager.saveMessage(message, false)
         }
         /**
          * 发送新消息

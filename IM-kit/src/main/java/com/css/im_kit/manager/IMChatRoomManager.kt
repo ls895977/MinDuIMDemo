@@ -98,7 +98,7 @@ object IMChatRoomManager {
                         type = MessageType.TEXT.str,
                         sendType = false,
                         isRead = true
-                ))
+                ),true)
             }
         }
     }
@@ -120,7 +120,7 @@ object IMChatRoomManager {
                         type = MessageType.IMAGE.str,
                         sendType = false,
                         isRead = true
-                ))
+                ),true)
             }
         }
     }
@@ -142,7 +142,7 @@ object IMChatRoomManager {
                         type = MessageType.COMMODITY.str,
                         sendType = false,
                         isRead = true
-                ))
+                ),true)
             }
         }
     }
