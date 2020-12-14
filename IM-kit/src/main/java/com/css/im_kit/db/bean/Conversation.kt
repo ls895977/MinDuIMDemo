@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey
 data class Conversation(
         var conversationId: String,//会话id
         var sendUserId: String,//发送方id
-        var receiveUserId: String//接收方id
+        var receiveUserId: String,//接收方id
+        var updateTime: String//更新时间
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

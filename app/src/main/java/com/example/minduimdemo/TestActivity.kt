@@ -4,10 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.SGConversationCallback
-import com.css.im_kit.db.bean.CommodityMessage
-import com.css.im_kit.db.bean.Conversation
-import com.css.im_kit.db.bean.Message
-import com.css.im_kit.db.bean.UserInfo
+import com.css.im_kit.db.bean.*
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
@@ -62,13 +59,13 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             ioScope.launch {
                 val list = arrayListOf<Message>()
                 val commodityMessage = CommodityMessage("commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                val message1 = Message("111", "111", 1607415263000, 1607415263000, "1111", "100001", "111111", MessageType.TEXT.str, true)
-                val message2 = Message("222", "222", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str, true)
-                val message3 = Message("333", "333", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str, true)
-                val message4 = Message("111", "444", 1607415263000, 1607415263000, "1111", "111111", "100001", MessageType.TEXT.str, true)
-                val message5 = Message("222", "555", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str, true)
-                val message6 = Message("333", "666", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str, true)
-                val message7 = Message("111", "777", 1607415263000, 1607415263000, "1111", "100004", "111111", MessageType.TEXT.str, true)
+                val message1 = Message("111", "111", 1607415263000, 1607415263000, "1111", "100001", "111111", MessageType.TEXT.str, SendType.SUCCESS.text,true)
+                val message2 = Message("222", "222", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "100002", "111111", MessageType.IMAGE.str,  SendType.SUCCESS.text,true)
+                val message3 = Message("333", "333", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "100003", "111111", MessageType.COMMODITY.str,  SendType.SUCCESS.text,true)
+                val message4 = Message("111", "444", 1607415263000, 1607415263000, "1111", "111111", "100001", MessageType.TEXT.str,  SendType.SUCCESS.text,true)
+                val message5 = Message("222", "555", 1607415263000, 1607415263000, "http://testimg.supersg.cn/user/773870855045251072.jpeg", "111111", "100002", MessageType.IMAGE.str,  SendType.SUCCESS.text,true)
+                val message6 = Message("333", "666", 1607415263000, 1607415263000, commodityMessage.toJsonString(), "111111", "100003", MessageType.COMMODITY.str,  SendType.SUCCESS.text,true)
+                val message7 = Message("111", "777", 1607415263000, 1607415263000, "1111", "100004", "111111", MessageType.TEXT.str,  SendType.SUCCESS.text,true)
                 list.add(message1)
                 list.add(message2)
                 list.add(message3)
@@ -83,10 +80,10 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         binding?.addConversation?.setOnClickListener {
             ioScope.launch {
                 val list = arrayListOf<Conversation>()
-                val conversation1 = Conversation("111", "100001", "111111")
-                val conversation2 = Conversation("222", "100002", "111111")
-                val conversation3 = Conversation("333", "100003", "111111")
-                val conversation4 = Conversation("445", "100004", "111111")
+                val conversation1 = Conversation("111", "100001", "111111", System.currentTimeMillis().toString())
+                val conversation2 = Conversation("222", "100002", "111111", System.currentTimeMillis().toString())
+                val conversation3 = Conversation("333", "100003", "111111", System.currentTimeMillis().toString())
+                val conversation4 = Conversation("445", "100004", "111111", System.currentTimeMillis().toString())
                 list.add(conversation1)
                 list.add(conversation2)
                 list.add(conversation3)
@@ -161,7 +158,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.TEXT.str,
-                            true
+                            SendType.SUCCESS.text,
+                            false
                     )
                 }
                 MessageType.IMAGE -> {
@@ -174,7 +172,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.IMAGE.str,
-                            true
+                            SendType.SUCCESS.text,
+                            false
                     )
                 }
                 MessageType.COMMODITY -> {
@@ -189,7 +188,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                             IMChatRoomManager.sendUser?.userId ?: "",
                             IMChatRoomManager.receiveUser?.userId ?: "",
                             MessageType.COMMODITY.str,
-                            true
+                            SendType.SUCCESS.text,
+                            false
                     )
                 }
             }

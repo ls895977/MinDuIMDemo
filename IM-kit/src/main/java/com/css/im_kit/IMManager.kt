@@ -1,7 +1,6 @@
 package com.css.im_kit
 
 import android.app.Application
-import android.content.Context
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
@@ -19,13 +18,16 @@ object IMManager {
         MessageServiceUtils.init(context)
     }
 
+    var userID: String? = null
+
     /**
      * 连接聊天socket
      * socketUrl 聊天服务地址
      * token 登录凭证
      * onLinkStatus 链接状态反馈
      */
-    fun connect(socketUrl: String, token: String, onLinkStatus: onLinkStatus) {
+    fun connect(socketUrl: String, token: String, userID: String, onLinkStatus: onLinkStatus) {
+        this.userID = userID
         MessageServiceUtils.initService("$socketUrl?token=$token", onLinkStatus)
         //开启socket监听
         IMMessageManager.openSocketListener()

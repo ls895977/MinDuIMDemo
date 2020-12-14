@@ -3,10 +3,7 @@ package com.css.im_kit.manager
 import android.util.Log
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.MessageCallback
-import com.css.im_kit.db.bean.CommodityMessage
-import com.css.im_kit.db.bean.Conversation
-import com.css.im_kit.db.bean.Message
-import com.css.im_kit.db.bean.UserInfo
+import com.css.im_kit.db.bean.*
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
@@ -18,7 +15,6 @@ import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.*
 
 object IMChatRoomManager {
     var conversationId: String? = null//会话id
@@ -96,9 +92,9 @@ object IMChatRoomManager {
                         sendUserId = conversation.receiveUserId,
                         receiveUserId = conversation.sendUserId,
                         type = MessageType.TEXT.str,
-                        sendType = false,
+                        sendType = SendType.SENDING.text,
                         isRead = true
-                ),true)
+                ), true)
             }
         }
     }
@@ -118,9 +114,9 @@ object IMChatRoomManager {
                         sendUserId = conversation.receiveUserId,
                         receiveUserId = conversation.sendUserId,
                         type = MessageType.IMAGE.str,
-                        sendType = false,
+                        sendType = SendType.SENDING.text,
                         isRead = true
-                ),true)
+                ), true)
             }
         }
     }
@@ -140,9 +136,9 @@ object IMChatRoomManager {
                         sendUserId = conversation.receiveUserId,
                         receiveUserId = conversation.sendUserId,
                         type = MessageType.COMMODITY.str,
-                        sendType = false,
+                        sendType = SendType.SENDING.text,
                         isRead = true
-                ),true)
+                ), true)
             }
         }
     }
