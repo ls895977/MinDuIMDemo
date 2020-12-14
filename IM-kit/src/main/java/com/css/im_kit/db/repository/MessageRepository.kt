@@ -44,6 +44,10 @@ object MessageRepository {
         }
     }
 
+    suspend fun getLast(): Message? {
+        return getLast(null)
+    }
+
 
     suspend fun update(message: Message) {
         dao?.update(message)
