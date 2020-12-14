@@ -1,16 +1,20 @@
 package com.css.im_kit.imservice
+
 import android.app.Application
+import android.content.Intent
 import android.text.TextUtils
 import android.util.Log
 import com.css.im_kit.imservice.`interface`.ServiceListener
 import com.css.im_kit.imservice.`interface`.onLinkStatus
 import com.css.im_kit.imservice.`interface`.onResultMessage
 import com.css.im_kit.imservice.coom.ServiceType
+import com.css.im_kit.imservice.service.IMService
 import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
 import com.kongqw.network.monitor.util.NetworkStateUtils
 import java.net.URI
+
 object MessageServiceUtils {
     private var client: JWebSClient? = null
     private var SerViceUrl = ""
@@ -22,6 +26,7 @@ object MessageServiceUtils {
     fun init(application: Application) {
         mApplication = application
     }
+
     /**
      * CHAT_SERVER_URL 聊天服务地址
      * onLinkStatus 链接状态反馈
@@ -36,9 +41,10 @@ object MessageServiceUtils {
             listeners()
             client?.connectBlocking()
         } catch (e: Exception) {
-            Log.e("aa","-----------"+e.toString())
+            Log.e("aa", "-----------" + e.toString())
         }
-
+        val intent = Intent(mApplication, IMService::class.java)
+        mApplication?.startService(intent)
     }
 
     /**
@@ -145,6 +151,7 @@ object MessageServiceUtils {
             }
         })
     }
+
     /**
      * 网络断开时回调
      */
@@ -152,6 +159,7 @@ object MessageServiceUtils {
     fun onNetWorkStateChangeNONE(networkState: NetworkState) {
         onLinkStatus?.onLinkedClose()
     }
+
     /**
      * WIFI连接上的时候回调
      */
@@ -159,6 +167,7 @@ object MessageServiceUtils {
     fun onNetWorkStateChange1(networkState: NetworkState) {
 
     }
+
     /**
      * 连接上WIFI或蜂窝网络的时候回调
      */

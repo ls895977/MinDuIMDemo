@@ -120,7 +120,6 @@ object IMDateUtil {
      * 获取当前系统时间戳
      */
     fun getTime(): Long? {
-        val time: Long = System.currentTimeMillis() / 1000 //获取系统时间的10位的时间戳
-        return time.toLong()
+        return System.currentTimeMillis() / 1000
     }
 }

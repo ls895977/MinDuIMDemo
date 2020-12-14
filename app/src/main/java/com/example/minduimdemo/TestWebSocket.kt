@@ -17,8 +17,9 @@ import com.example.minduimdemo.databinding.TestwebsocketBinding
 import com.google.gson.Gson
 import java.util.*
 
+
 class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
-    //    private var userToken=2////客服1
+//        private var userToken=2////客服1
     private var userToken = 3////客服2
     private val url = "ws://192.168.0.73:9502?token=$userToken"//客服2
     private var myAdapter: TestWebAdapter? = null
@@ -41,7 +42,9 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
         })
     }
 
-    override fun initData() {}
+    override fun initData() {
+
+    }
     override fun initListeners() {
         binding?.tvContext?.setOnClickListener {
             val context: String
@@ -58,7 +61,7 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
             context = Gson().toJson(testbean)
             MessageServiceUtils.sendNewMsg(context)
             //客服1
-//            val contextBean=ContextBean("","",context,"3","2", IMDateUtil.getTime(),"",2000)
+//            val contextBean=ContextBean("", "", binding?.etContext?.text.toString(), "3", "2", IMDateUtil.getTime(), "", 2000)
             //客服2
             val contextBean = ContextBean("", "", binding?.etContext?.text.toString(), "2", "3", IMDateUtil.getTime(), "", 2000)
             myData.add(0, contextBean)
