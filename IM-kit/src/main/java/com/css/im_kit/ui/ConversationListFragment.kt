@@ -13,7 +13,7 @@ import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
 import kotlinx.coroutines.launch
 
-class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
+class ConversationListFragment(var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListAdapter: ConversationListAdapter? = null
@@ -28,7 +28,7 @@ class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFr
 
     override fun initListeners() {
         //设置事件
-        setListener.onSetItemListener()
+        setDataListener.onSetFragmentDataListener()
         //注册监听
         IMConversationManager.addSGConversationListListener(this)
     }
@@ -102,6 +102,9 @@ class ConversationListFragment(var setListener: IMListener.SetListener) : BaseFr
         }
     }
 
+    /**
+     * 退出当前界面才摧毁
+     */
     override fun onDestroy() {
         super.onDestroy()
         IMConversationManager.removeSGConversationListListener(this)

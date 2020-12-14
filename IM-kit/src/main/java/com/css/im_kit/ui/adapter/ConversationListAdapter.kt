@@ -21,7 +21,7 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         //时间
         helper.setGone(R.id.time, !item.newMessage?.messageBody?.receivedTime.isNullOrEmpty())
         item.newMessage?.messageBody?.receivedTime?.let {
-            helper.setText(R.id.time, IMDateUtil.getSimpleTimeNew(it.toLong()))
+            helper.setText(R.id.time, IMDateUtil.getSimpleTime0(it.toLong()))
         }
 
         //最后一条消息（如果是txt,就展示消息内容，反之，类型）

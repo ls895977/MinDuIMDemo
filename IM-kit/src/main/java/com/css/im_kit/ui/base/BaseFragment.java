@@ -1,9 +1,12 @@
 package com.css.im_kit.ui.base;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -42,5 +45,32 @@ public abstract class BaseFragment<V extends ViewDataBinding> extends Fragment {
 
     protected abstract void initListeners();
 
+    //打开软键盘/隐藏软键盘
+    protected void hideSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    //强制隐藏软键盘
+    protected void forceHideSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm.isActive() && requireActivity().getCurrentFocus() != null) {
+            if (requireActivity().getCurrentFocus().getWindowToken() != null) {
+                imm.hideSoftInputFromWindow(requireActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
+    }
+
+    //根据EditText显示软件盘
+    protected void showSoftKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+    }
+
+    //根据EditText隐藏软件盘
+    protected void hideSoftKeyboard(EditText editText) {
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+    }
 
 }

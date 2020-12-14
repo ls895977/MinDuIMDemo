@@ -13,11 +13,42 @@ object IMDateUtil {
     private const val ONE_YEAR: Long = 31104000
     const val YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss"
     const val CN_MM_DD_HH_MM = "MM月dd日 HH:mm"
+    const val YY_MM_DD_HH_MM = "yyyy年MM月dd日 HH:mm"
+    const val YY_MM_DD_HH_MM1 = "yyyy/MM/dd HH:mm"
     const val CHN_YYYY_MM_DD = "yyyy年MM月dd日"
     const val YYYY_MM_DD = "yyyy-MM-dd"
     const val CN_MM_DD = "MM月dd日"
     const val HH_MM = "HH:mm"
     const val HH_MM_SS = "HH:mm:ss"
+
+    fun getSimpleTime0(time: Long): String {
+        //接收到的时间（单位：秒）
+        val oldTime = time.div(1000)
+        //当前的时间（单位：秒）
+        val nowTime = System.currentTimeMillis().div(1000)
+        //时间差（单位：秒）
+        val agoTime = nowTime - oldTime
+        return when {
+            agoTime <= ONE_DAY -> format(agoTime.times(1000), HH_MM)
+            agoTime <= ONE_DAY * 2 -> "昨天"
+            else -> format(agoTime.times(1000), YY_MM_DD_HH_MM1)
+        }
+    }
+
+    fun getSimpleTime1(time: Long): String {
+        //接收到的时间（单位：秒）
+        val oldTime = time.div(1000)
+        //当前的时间（单位：秒）
+        val nowTime = System.currentTimeMillis().div(1000)
+        //时间差（单位：秒）
+        val agoTime = nowTime - oldTime
+        return when {
+            agoTime <= ONE_DAY -> format(agoTime.times(1000), HH_MM)
+            agoTime <= ONE_DAY * 2 -> "昨天  ${format(agoTime.times(1000), HH_MM)}"
+            else -> format(agoTime.times(1000), YY_MM_DD_HH_MM)
+        }
+    }
+
     fun getSimpleTimeNew(time: Long): String {
         //接收到的时间（单位：秒）
         val oldTime = time.div(1000)

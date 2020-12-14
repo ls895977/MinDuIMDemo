@@ -2,6 +2,7 @@ package com.example.minduimdemo
 
 import android.view.View
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Toast
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.manager.IMConversationManager
@@ -14,7 +15,7 @@ import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityMainBinding
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 
-class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
+class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
     private var pageSize = 1
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListFragment: ConversationListFragment? = null
@@ -86,7 +87,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener
     /**
      * Fragment 初始化好了，可以设置值和监听
      */
-    override fun onSetItemListener() {
+    override fun onSetFragmentDataListener() {
         //获取第一次数据
         IMConversationManager.getConversationList()//数据库room拿数据
         //连接状态展示
@@ -101,8 +102,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetListener
     /**
      * 消息点击事件
      */
-    override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>?, view: View?, position: Int) {
+    override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View?, position: Int) {
         Toast.makeText(this, "点击了", Toast.LENGTH_SHORT).show()
+        val sgConversation = adapter.data[position] as SGConversation
+        val intent = Intent(this, ConversationActivity::class.java)
+        intent.putExtra("consavertionId", sgConversation.conversationId)
+        intent.putExtra("userId", sgConversation.userInfo?.userId)
+        intent.putExtra("userName", sgConversation.userInfo?.userName)
+        intent.putExtra("userAvatar", sgConversation.userInfo?.avatar)
+        startActivity(intent)
     }
 
     /**

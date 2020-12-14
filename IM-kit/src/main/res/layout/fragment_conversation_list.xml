@@ -15,7 +15,8 @@
             android:layout_height="@dimen/dp_40"
             android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/dp_20"
-            android:text="连接状态展示" />
+            android:text="连接状态展示"
+            android:visibility="gone" />
 
         <View
             android:layout_width="match_parent"

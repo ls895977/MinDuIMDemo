@@ -1,22 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <data>
-
-        <variable
-            name="userInfo"
-            type="com.css.im_kit.db.bean.UserInfo" />
-    </data>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
+        android:id="@+id/ll_all_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textview_first"
-            android:layout_width="wrap_content"
+        <com.scwang.smart.refresh.layout.SmartRefreshLayout
+            android:id="@+id/refresh_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="@color/color_eeeeee"
+            app:srlEnableLoadMore="false">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_conversation_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/adapter_conversation_list_item" />
+        </com.scwang.smart.refresh.layout.SmartRefreshLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_edit_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{userInfo.nickName}" />
+            android:background="@color/color_f6f6f6"
+            android:gravity="bottom"
+            android:maxHeight="@dimen/dp_144"
+            android:minHeight="@dimen/dp_60"
+            android:paddingVertical="@dimen/dp_10"
+            android:paddingLeft="@dimen/dp_20"
+            android:paddingRight="@dimen/sp_16">
+
+
+            <EditText
+                android:id="@+id/et_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/im_shape_ffffff_25dp"
+                android:lineSpacingExtra="@dimen/dp_1"
+                android:maxHeight="@dimen/dp_124"
+                android:minHeight="@dimen/dp_40"
+                android:paddingHorizontal="@dimen/dp_20"
+                android:paddingVertical="@dimen/dp_8"
+                android:textColor="@color/color_333333"
+                android:textSize="@dimen/sp_16" />
+
+            <ImageView
+                android:id="@+id/iv_pic1"
+                android:layout_width="@dimen/dp_33"
+                android:layout_height="@dimen/dp_40"
+                android:layout_marginHorizontal="@dimen/dp_10"
+                android:gravity="center"
+                android:paddingVertical="@dimen/dp_3"
+                android:src="@mipmap/im_icon_send1" />
+
+            <ImageView
+                android:id="@+id/iv_pic2"
+                android:layout_width="@dimen/dp_33"
+                android:layout_height="@dimen/dp_40"
+                android:gravity="center"
+                android:paddingVertical="@dimen/dp_3"
+                android:src="@mipmap/im_icon_send3" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_pic_view"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="@dimen/dp_33"
+                android:layout_height="@dimen/dp_40"
+                android:gravity="center"
+                android:paddingVertical="@dimen/dp_3"
+                android:src="@mipmap/im_icon_send3" />
+        </LinearLayout>
+
     </LinearLayout>
+
 </layout>
