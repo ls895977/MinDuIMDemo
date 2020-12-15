@@ -22,11 +22,11 @@ class ConversationListFragment(var setDataListener: IMListener.SetDataListener) 
         conversationList = arrayListOf()
         conversationListAdapter = ConversationListAdapter(this@ConversationListFragment.requireContext(), conversationList)
         binding!!.rvConversationList.adapter = conversationListAdapter
+        //设置事件
+        setDataListener.onSetFragmentDataListener()
     }
 
     override fun initListeners() {
-        //设置事件
-        setDataListener.onSetFragmentDataListener()
         //注册监听
         IMConversationManager.addSGConversationListListener(this)
     }
@@ -102,7 +102,7 @@ class ConversationListFragment(var setDataListener: IMListener.SetDataListener) 
      * 退出当前界面才摧毁
      */
     override fun onDestroy() {
-        super.onDestroy()
         IMConversationManager.removeSGConversationListListener(this)
+        super.onDestroy()
     }
 }

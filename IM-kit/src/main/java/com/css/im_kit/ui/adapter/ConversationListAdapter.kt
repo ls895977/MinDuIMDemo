@@ -7,6 +7,7 @@ import com.css.im_kit.R
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.TextMessageBody
+import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMGlideUtil
 
@@ -27,7 +28,7 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         //最后一条消息（如果是txt,就展示消息内容，反之，类型）
         when (item.newMessage?.type) {
             MessageType.TEXT -> {
-                helper.setText(R.id.message_content, (item.newMessage?.messageBody as TextMessageBody).text)
+                helper.setText(R.id.message_content, FaceTextUtil.toSpannableStringList(context, (item.newMessage?.messageBody as TextMessageBody).text))
             }
             MessageType.IMAGE -> {
                 helper.setText(R.id.message_content, "[图片]")

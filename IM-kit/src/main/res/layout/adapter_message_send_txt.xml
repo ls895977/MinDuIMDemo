@@ -4,44 +4,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
-    android:paddingVertical="@dimen/dp_10"
+    android:orientation="horizontal"
     android:paddingHorizontal="@dimen/dp_20"
-    android:orientation="horizontal">
+    android:paddingVertical="@dimen/dp_10">
 
     <TextView
         android:id="@+id/tv_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_20"
         android:ellipsize="end"
+        android:gravity="center_horizontal"
         android:includeFontPadding="false"
         android:singleLine="true"
-        android:gravity="center_horizontal"
         android:text="下午 1:40"
-        android:visibility="gone"
-        android:layout_marginBottom="@dimen/dp_20"
         android:textColor="@color/color_999999"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone" />
+
+    <View
+        android:id="@+id/tag"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@+id/tv_time" />
+
     <ImageView
         android:id="@+id/iv_avatar"
         android:layout_width="@dimen/dp_32"
         android:layout_height="@dimen/dp_32"
-        android:layout_marginTop="@dimen/dp_5"
-        android:layout_below="@+id/tv_time"
-        android:layout_marginRight="@dimen/dp_10"
+        android:layout_below="@+id/tag"
+        android:layout_alignRight="@+id/tag"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_4"
         android:src="@mipmap/im_icon_avatar_default" />
 
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:includeFontPadding="false"
-        android:layout_toRightOf="@+id/iv_avatar"
-        android:layout_below="@+id/tv_time"
-        android:lineSpacingExtra="@dimen/dp_2"
+        android:layout_below="@+id/tag"
+        android:layout_toLeftOf="@+id/iv_avatar"
+        android:background="@drawable/im_shape_f54f76_8dp"
         android:maxWidth="@dimen/dp_240"
-        android:text="dsdsaddasasdioajdasjapPkpdapdkpajkwpeqpekapwakapksdkpakdsp"
         android:padding="@dimen/dp_10"
-        android:background="@drawable/im_shape_ffffff_8dp"
-        android:textColor="@color/color_333333"
+        android:textColor="@color/white"
         android:textSize="@dimen/sp_16" />
+
 </RelativeLayout>

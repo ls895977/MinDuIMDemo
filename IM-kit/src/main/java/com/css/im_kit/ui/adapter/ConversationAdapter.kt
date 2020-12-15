@@ -2,6 +2,7 @@ package com.css.im_kit.ui.adapter
 
 import android.app.Activity
 import android.content.Context
+import android.text.SpannableString
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
@@ -13,12 +14,14 @@ import com.css.im_kit.model.message.CommodityMessageBody
 import com.css.im_kit.model.message.ImageMessageBody
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.message.TextMessageBody
+import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMDensityUtils
 import com.css.im_kit.utils.IMGlideUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 
 class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMessage>) : BaseMultiItemQuickAdapter<SGMessage, BaseViewHolder>(data) {
@@ -39,12 +42,12 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         val time = if (item.messageBody?.isSelf!!) item.messageBody?.sendTime?.toLong() else item.messageBody?.receivedTime?.toLong()
         time?.let {
             helper.setText(R.id.tv_time, IMDateUtil.getSimpleTime1(time))
-            if (data.size == 1) {
+            if (helper.adapterPosition == 0) {
                 helper.setGone(R.id.tv_time, true)
             } else {
                 val timeNext = if (data[helper.adapterPosition - 1].messageBody?.isSelf!!) data[helper.adapterPosition].messageBody?.sendTime?.toLong() else data[helper.adapterPosition - 1].messageBody?.receivedTime?.toLong()
                 timeNext?.let {
-                    if ((time - timeNext) > 5 * 60 * 1000) {//大于5分钟显示时间
+                    if (abs(time - timeNext) > 5 * 60 * 1000) {//大于5分钟显示时间
                         helper.setGone(R.id.tv_time, true)
                     }
                 }
@@ -52,15 +55,17 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         }
 
         //头像
-        IMGlideUtil.loadAvatar(activity, item.userInfo?.avatar, helper.getView(R.id.user_avatar))
+        IMGlideUtil.loadAvatar(activity, item.userInfo?.avatar, helper.getView(R.id.iv_avatar))
 
         when (item.itemType) {
             //send
             1 -> {//txt
-                helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text)
+                helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
             }
             2 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
+                //点击事件
+                helper.addOnClickListener(R.id.iv_content)
             }
             3 -> {//product
                 val message = item.messageBody as CommodityMessageBody
@@ -73,10 +78,12 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
             //receiver
             4 -> {//txt
-                helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text)
+                helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
             }
             5 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
+                //点击事件
+                helper.addOnClickListener(R.id.iv_content)
             }
             6 -> {//product
                 val message = item.messageBody as CommodityMessageBody
@@ -96,6 +103,9 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 //                helper.getView<TextView>(R.id.tv_send)
             }
         }
+
+        //长按
+        helper.addOnLongClickListener(R.id.item_view)
     }
 
     /**

@@ -105,7 +105,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         Toast.makeText(this, "点击了", Toast.LENGTH_SHORT).show()
         val sgConversation = adapter.data[position] as SGConversation
         val intent = Intent(this, ConversationActivity::class.java)
-        intent.putExtra("consavertionId", sgConversation.conversationId)
+        intent.putExtra("conversationId", sgConversation.conversationId)
         intent.putExtra("userId", sgConversation.userInfo?.userId)
         intent.putExtra("userName", sgConversation.userInfo?.userName)
         intent.putExtra("userAvatar", sgConversation.userInfo?.avatar)
