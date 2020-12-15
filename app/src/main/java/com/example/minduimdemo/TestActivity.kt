@@ -9,6 +9,7 @@ import com.css.im_kit.db.bean.*
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.`interface`.onLinkStatus
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.manager.IMConversationManager
@@ -223,11 +224,15 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             val userId = "111111"
             IMManager.connect(url, token, userId, object : onLinkStatus {
                 override fun onLinkedSuccess() {
-                    Toast.makeText(this@TestActivity, "连接socket成功", Toast.LENGTH_SHORT).show()
+                    uiScope.launch {
+                        Toast.makeText(this@TestActivity, "连接socket成功", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
                 override fun onLinkedClose() {
-                    Toast.makeText(this@TestActivity, "连接socket失败", Toast.LENGTH_SHORT).show()
+                    uiScope.launch {
+                        Toast.makeText(this@TestActivity, "连接socket失败", Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
         }
