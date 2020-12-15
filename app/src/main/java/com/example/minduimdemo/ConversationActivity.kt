@@ -1,5 +1,6 @@
 package com.example.minduimdemo
 
+import android.view.View
 import android.widget.Toast
 import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.manager.IMChatRoomManager
@@ -7,6 +8,7 @@ import com.css.im_kit.ui.ConversationFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityConversationBinding
+import java.util.*
 
 class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener {
     private var conversationId = ""
@@ -39,7 +41,17 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
      * 开始设置数据\监听等
      */
     override fun onSetFragmentDataListener() {
+        //拉去回话数据
         conversationFragment?.updateData()
+        //发送商品消息点击事件
+        conversationFragment?.addProductOnClickListener(View.OnClickListener {
+            //发送商品消息（选择商品等后续逻辑） TODO
+
+        })
+        //发送图片消息点击事件
+        conversationFragment?.addPicOnClickListener(View.OnClickListener {
+            //发送图片消息（选择图片等后续逻辑） TODO
+        })
     }
 
     override fun onDestroy() {
@@ -47,5 +59,6 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         Toast.makeText(this, "退出会话", Toast.LENGTH_SHORT).show()
         super.onDestroy()
     }
+
 
 }

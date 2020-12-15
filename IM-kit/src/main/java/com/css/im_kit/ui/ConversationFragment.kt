@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
+import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
@@ -59,7 +60,7 @@ class ConversationFragment(private var conversationId: String, private var userI
         }
 
         /**
-         * 软件盘监听
+         * 软件盘显示、隐藏监听
          */
         IMSoftKeyBoardListenerUtil.setListener(requireActivity(), object : IMSoftKeyBoardListenerUtil.OnSoftKeyBoardChangeListener {
             override fun keyBoardShow(height: Int) {
@@ -83,7 +84,7 @@ class ConversationFragment(private var conversationId: String, private var userI
                 }
             }
         })
-        //点击事件 TODO
+        //点击事件
         adapter!!.setOnItemChildClickListener { adapter, view, position ->
             hideView()
             when (view.id) {
@@ -94,11 +95,10 @@ class ConversationFragment(private var conversationId: String, private var userI
 
                 }
                 R.id.item_view -> {
-                    hideView()
                 }
             }
         }
-        //长按删除  TODO
+        //长按删除
         adapter!!.setOnItemLongClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.item_view -> {
@@ -150,16 +150,6 @@ class ConversationFragment(private var conversationId: String, private var userI
             IMChatRoomManager.sendTextMessage(sendText)
             binding?.etContent?.setText("")
         }
-        //发送商品
-        binding!!.llSendProduct.setOnClickListener {
-
-        }
-
-        //发送图片
-        binding!!.llSendPic.setOnClickListener {
-
-        }
-
         //输入区
         binding?.etContent?.setOnClickListener {
             nowCheckTag = 0
@@ -304,5 +294,20 @@ class ConversationFragment(private var conversationId: String, private var userI
     override fun onDestroy() {
         hideSoftKeyboard(binding?.etContent)
         super.onDestroy()
+    }
+
+    /**
+     * 添加输入区（商品按钮）点击事件
+     */
+    fun addProductOnClickListener(clickListener: View.OnClickListener) {
+        binding!!.llSendProduct.setOnClickListener(clickListener)
+
+    }
+
+    /**
+     * 添加输入区（图片按钮）点击事件
+     */
+    fun addPicOnClickListener(clickListener: View.OnClickListener) {
+        binding!!.llSendPic.setOnClickListener(clickListener)
     }
 }
