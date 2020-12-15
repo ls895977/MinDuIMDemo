@@ -45,7 +45,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/im_shape_ffffff_25dp"
-                android:lineSpacingExtra="@dimen/dp_1"
                 android:maxHeight="@dimen/dp_124"
                 android:minHeight="@dimen/dp_40"
                 android:paddingHorizontal="@dimen/dp_20"
@@ -62,28 +61,48 @@
                 android:paddingVertical="@dimen/dp_3"
                 android:src="@mipmap/im_icon_send1" />
 
-            <ImageView
-                android:id="@+id/iv_pic2"
-                android:layout_width="@dimen/dp_33"
-                android:layout_height="@dimen/dp_40"
-                android:gravity="center"
-                android:paddingVertical="@dimen/dp_3"
-                android:src="@mipmap/im_icon_send3" />
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_40">
+
+                <ImageView
+                    android:id="@+id/iv_pic2"
+                    android:layout_width="@dimen/dp_33"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/dp_3"
+                    android:src="@mipmap/im_icon_send3" />
+
+                <TextView
+                    android:id="@+id/tv_send"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="@dimen/dp_5"
+                    android:background="@drawable/im_shape_f54f76_4dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/dp_8"
+                    android:text="发送"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/sp_14"
+                    android:visibility="gone" />
+            </FrameLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/ll_pic_view"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:visibility="gone">
+            android:layout_height="@dimen/dp_285">
 
-            <ImageView
-                android:layout_width="@dimen/dp_33"
-                android:layout_height="@dimen/dp_40"
-                android:gravity="center"
-                android:paddingVertical="@dimen/dp_3"
-                android:src="@mipmap/im_icon_send3" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_emoji_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/adapter_message_emoji_item" />
         </LinearLayout>
 
     </LinearLayout>
