@@ -9,6 +9,7 @@ import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
+import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.BaseMessageBody
@@ -163,12 +164,15 @@ object IMChatRoomManager {
                         resultMessage.forEach { message ->
                             val sgMessage = SGMessage.format(message)
                             sgMessage.messageBody = BaseMessageBody.format(message)
-                            if (message.send_account == IMManager.userID) {
-                                sgMessage.userInfo = null
-                                sgMessage.messageBody?.isSelf = true
-                            } else {
-                                sgMessage.userInfo = null
-                                sgMessage.messageBody?.isSelf = false
+                            sgMessage.messageBody?.isSelf = message.send_account == IMManager.userID
+                            val user = UserInfoRepository.loadById(
+                                    if (message.send_account == IMManager.userID)
+                                        message.send_account
+                                    else
+                                        message.receive_account
+                            )
+                            user?.let {
+                                sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
                             }
                             sgMessages.add(sgMessage)
                         }
@@ -190,7 +194,9 @@ object IMChatRoomManager {
                     return@async sgMessages
                 }
                 val result = task.await()
-                chatRoomCallback?.onMessages(result)
+                uiScope.launch {
+                    chatRoomCallback?.onMessages(result)
+                }
             }
         }
     }
