@@ -24,7 +24,7 @@ public class TestApplication extends Application {
     static {
         //设置全局的Header构建器
         SmartRefreshLayout.setDefaultRefreshHeaderCreator((context, layout) -> {
-            layout.setPrimaryColorsId(R.color.white, R.color.color_333333);//全局设置主题颜色
+            layout.setPrimaryColorsId(R.color.color_transparent, R.color.color_333333);//全局设置主题颜色
             ClassicsHeader classicsHeader = new ClassicsHeader(context);
             classicsHeader.setAccentColor(ContextCompat.getColor(context, R.color.color_999999));
             classicsHeader.setTextSizeTitle(14.0f);

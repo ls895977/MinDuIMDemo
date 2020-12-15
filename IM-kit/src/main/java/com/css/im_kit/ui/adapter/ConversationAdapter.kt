@@ -2,7 +2,6 @@ package com.css.im_kit.ui.adapter
 
 import android.app.Activity
 import android.content.Context
-import android.text.SpannableString
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
@@ -71,7 +70,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
                 val message = item.messageBody as CommodityMessageBody
                 helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
-                IMGlideUtil.loadRoundTop2Img(activity, message.commodityPrice, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
+                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
                 helper.addOnClickListener(R.id.ll_content)
             }
@@ -89,7 +88,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
                 val message = item.messageBody as CommodityMessageBody
                 helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
-                IMGlideUtil.loadRoundTop2Img(activity, message.commodityPrice, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
+                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
                 helper.addOnClickListener(R.id.ll_content)
             }
@@ -133,8 +132,6 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
             } else {
                 IMGlideUtil.loadRound4Img(context, url, img, IMDensityUtils.dp2px(context, 8f))
             }
-
         }
-
     }
 }

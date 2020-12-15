@@ -31,15 +31,37 @@
         android:layout_marginRight="@dimen/dp_10"
         android:src="@mipmap/im_icon_avatar_default" />
 
-    <TextView
-        android:id="@+id/tv_content"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/dp_200"
         android:layout_below="@+id/tv_time"
         android:layout_toRightOf="@+id/iv_avatar"
-        android:background="@drawable/im_shape_ffffff_8dp"
-        android:maxWidth="@dimen/dp_240"
-        android:padding="@dimen/dp_10"
-        android:textColor="@color/color_333333"
-        android:textSize="@dimen/sp_16" />
+        android:background="@android:color/transparent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLength="10"
+            android:singleLine="true"
+            android:text="nameadadsadsabdsndajdnsnadn"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_12" />
+
+        <TextView
+            android:id="@+id/tv_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/im_shape_ffffff_8dp"
+            android:maxWidth="@dimen/dp_240"
+            android:padding="@dimen/dp_10"
+            android:text="adsadsadsdasdsdadsadsadasdsadas"
+            android:textColor="@color/color_333333"
+            android:textSize="@dimen/sp_16" />
+    </LinearLayout>
+
 </RelativeLayout>

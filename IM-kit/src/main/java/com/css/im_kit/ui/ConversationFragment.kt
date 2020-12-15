@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
-import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
