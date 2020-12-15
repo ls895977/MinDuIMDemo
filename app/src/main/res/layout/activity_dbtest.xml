@@ -15,18 +15,6 @@
             android:text="添加用户" />
 
         <Button
-            android:id="@+id/addMessage"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:text="添加消息" />
-
-        <Button
-            android:id="@+id/addConversation"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:text="添加会话" />
-
-        <Button
             android:id="@+id/getSGConversation"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"

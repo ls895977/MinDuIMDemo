@@ -14,10 +14,10 @@ import com.css.im_kit.utils.IMGlideUtil
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
         //头像
-        IMGlideUtil.loadAvatar(context, item.userInfo?.avatar, helper.getView(R.id.user_avatar))
+        IMGlideUtil.loadAvatar(context, item.shop?.log, helper.getView(R.id.user_avatar))
 
         //用户名
-        helper.setText(R.id.user_name, item.userInfo?.userName)
+        helper.setText(R.id.user_name, item.shop?.shop_name)
 
         //时间
         helper.setGone(R.id.time, !item.newMessage?.messageBody?.receivedTime.isNullOrEmpty())
@@ -39,8 +39,8 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         }
 
         //未读消息条数
-        helper.setText(R.id.message_count, item.newsNum.toString())
-        helper.setGone(R.id.message_count, item.newsNum > 0)
+        helper.setText(R.id.message_count, item.unread_account.toString())
+        helper.setGone(R.id.message_count, item.unread_account > 0)
 
         //点击事件
         helper.addOnClickListener(R.id.item_view)

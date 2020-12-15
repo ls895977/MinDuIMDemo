@@ -14,6 +14,7 @@ import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.manager.IMChatRoomManager
+import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.adapter.ConversationAdapter
 import com.css.im_kit.ui.adapter.EmojiAdapter
@@ -25,7 +26,7 @@ import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 
 
-class ConversationFragment(private var conversationId: String, private var userInfo: UserInfo, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>() {
+class ConversationFragment(private var conversation: SGConversation, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>() {
     private var keyboardTag = false//软键盘状态
     private var emojiTag = false//表情区域状态
     private var picTag = false//照相机区域状态
@@ -247,7 +248,7 @@ class ConversationFragment(private var conversationId: String, private var userI
     fun updateData() {
         Toast.makeText(requireContext(), "进入会话", Toast.LENGTH_SHORT).show()
         IMChatRoomManager
-                .initConversation(conversationId)
+                .initConversation(conversation)
                 .addSGConversationListListener(object : ChatRoomCallback {
                     override fun onReceiveMessage(message: SGMessage) {
                         //发送成功，接收到消息，插入当前返回的这一条Message

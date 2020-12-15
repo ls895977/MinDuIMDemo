@@ -1,14 +1,16 @@
 package com.css.im_kit.manager
 
 import android.util.Log
+import com.css.im_kit.IMManager
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.MessageCallback
-import com.css.im_kit.db.bean.*
+import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.ioScope
-import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
-import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
+import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
@@ -17,10 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 object IMChatRoomManager {
-    var conversationId: String? = null//会话id
-    var sendUser: UserInfo? = null
-    var receiveUser: UserInfo? = null
-    var conversation: Conversation? = null
+    var conversation: SGConversation? = null
 
     //回调列表
     private var chatRoomCallback: ChatRoomCallback? = null
@@ -28,8 +27,8 @@ object IMChatRoomManager {
     /**
      * 进入聊天室
      */
-    fun initConversation(conversationId: String): IMChatRoomManager {
-        this.conversationId = conversationId
+    fun initConversation(conversation: SGConversation): IMChatRoomManager {
+        this.conversation = conversation
         return this
     }
 
@@ -46,9 +45,6 @@ object IMChatRoomManager {
      */
     fun dismissSgMessageCallback() {
         this.chatRoomCallback = null
-        this.conversationId = null
-        this.sendUser = null
-        this.receiveUser = null
         this.conversation = null
         IMMessageManager.removeMessageListener(myMessageCallback)
     }
@@ -69,55 +65,54 @@ object IMChatRoomManager {
     /**
      * 发送文字消息
      *
-    var conversationId: String,//聊天室id
-    var messageId: String,//消息id
-    var sendTime: Long,//发送时间
-    var receivedTime: Long,//接收时间
-    var content: String,//内容
-    var sendUserId: String,//发送方id
-    var receiveUserId: String,//接收方id
-    var type: String,
-    var sendType: Boolean,//是否发送成功
-    var isRead: Boolean = false//是否已读
+    var message_id: String,//消息id
+    var send_account: String,//发送账号
+    var receive_account: String,//接收账号
+    var shop_id: String,//店铺id
+    var message_type: String,//消息类型
+    var read_status: Boolean,//是否未读
+    var send_status: String,//是否发送成功
+    var send_time: Long,//发送时间
+    var receive_time: Long,//接收时间
+    var message: String//消息内容
      */
     fun sendTextMessage(text: String) {
-        conversationId?.let { id ->
-            conversation?.let { conversation ->
-                val time = System.currentTimeMillis()
-                IMMessageManager.saveMessage(Message(id,
-                        messageId = conversation.receiveUserId + time,
-                        sendTime = time,
-                        receivedTime = time,
-                        content = text,
-                        sendUserId = conversation.receiveUserId,
-                        receiveUserId = conversation.sendUserId,
-                        type = MessageType.TEXT.str,
-                        sendType = SendType.SENDING.text,
-                        isRead = true
-                ), true)
-            }
+        conversation?.let { conversation ->
+            val time = System.currentTimeMillis()
+            IMMessageManager.saveMessage(Message(
+                    message_id = IMManager.userID + time,
+                    send_account = IMManager.userID!!,
+                    receive_account = conversation.chat_account ?: "",
+                    shop_id = conversation.shop_id ?: "",
+                    message_type = MessageType.TEXT.str,
+                    read_status = false,
+                    send_status = SendType.SENDING.text,
+                    send_time = time,
+                    receive_time = time,
+                    message = text
+            ), true)
         }
+
     }
 
     /**
      * 发送图片消息
      */
     fun sendImageMessage(img: String) {
-        conversationId?.let { id ->
-            conversation?.let { conversation ->
-                val time = System.currentTimeMillis()
-                IMMessageManager.saveMessage(Message(id,
-                        messageId = conversation.receiveUserId + time,
-                        sendTime = time,
-                        receivedTime = time,
-                        content = img,
-                        sendUserId = conversation.receiveUserId,
-                        receiveUserId = conversation.sendUserId,
-                        type = MessageType.IMAGE.str,
-                        sendType = SendType.SENDING.text,
-                        isRead = true
-                ), true)
-            }
+        conversation?.let { conversation ->
+            val time = System.currentTimeMillis()
+            IMMessageManager.saveMessage(Message(
+                    message_id = IMManager.userID + time,
+                    send_account = IMManager.userID!!,
+                    receive_account = conversation.chat_account ?: "",
+                    shop_id = conversation.shop_id ?: "",
+                    message_type = MessageType.IMAGE.str,
+                    read_status = false,
+                    send_status = SendType.SENDING.text,
+                    send_time = time,
+                    receive_time = time,
+                    message = img
+            ), true)
         }
     }
 
@@ -125,22 +120,22 @@ object IMChatRoomManager {
      * 发送商品消息
      */
     fun sendCommodityMessage(commodityMessage: CommodityMessage) {
-        conversationId?.let { id ->
-            conversation?.let { conversation ->
-                val time = System.currentTimeMillis()
-                IMMessageManager.saveMessage(Message(id,
-                        messageId = conversation.receiveUserId + time,
-                        sendTime = time,
-                        receivedTime = time,
-                        content = commodityMessage.toJsonString(),
-                        sendUserId = conversation.receiveUserId,
-                        receiveUserId = conversation.sendUserId,
-                        type = MessageType.COMMODITY.str,
-                        sendType = SendType.SENDING.text,
-                        isRead = true
-                ), true)
-            }
+        conversation?.let { conversation ->
+            val time = System.currentTimeMillis()
+            IMMessageManager.saveMessage(Message(
+                    message_id = IMManager.userID + time,
+                    send_account = IMManager.userID!!,
+                    receive_account = conversation.chat_account ?: "",
+                    shop_id = conversation.shop_id ?: "",
+                    message_type = MessageType.COMMODITY.str,
+                    read_status = false,
+                    send_status = SendType.SENDING.text,
+                    send_time = time,
+                    receive_time = time,
+                    message = commodityMessage.toJsonString()
+            ), true)
         }
+
     }
 
 
@@ -156,27 +151,24 @@ object IMChatRoomManager {
      * 获取消息列表
      */
     private fun getMessages() {
-        if (conversationId.isNullOrEmpty()) {
+        if (conversation == null) {
             Log.e("SGIM", "聊天室为空")
             return
         } else {
             ioScope.launch {
                 val task = async {
-                    conversation = ConversationRepository.findConversation(conversationId!!)
                     val sgMessages = arrayListOf<SGMessage>()
-                    conversation?.let {
-                        val resultMessage = MessageRepository.getMessage(conversationId!!)
-                        sendUser = UserInfoRepository.loadById(conversation!!.sendUserId)
-                        receiveUser = UserInfoRepository.loadById(conversation!!.receiveUserId)
+                    conversation?.let { conversation ->
+                        val resultMessage = MessageRepository.getMessage(conversation.shop_id ?: "")
                         resultMessage.forEach { message ->
                             val sgMessage = SGMessage.format(message)
                             sgMessage.messageBody = BaseMessageBody.format(message)
-                            if (message.sendUserId == conversation!!.sendUserId) {
-                                sgMessage.userInfo = SGUserInfo.format(sendUser)
-                                sgMessage.messageBody?.isSelf = false
-                            } else {
-                                sgMessage.userInfo = SGUserInfo.format(receiveUser)
+                            if (message.send_account == IMManager.userID) {
+                                sgMessage.userInfo = null
                                 sgMessage.messageBody?.isSelf = true
+                            } else {
+                                sgMessage.userInfo = null
+                                sgMessage.messageBody?.isSelf = false
                             }
                             sgMessages.add(sgMessage)
                         }
@@ -185,7 +177,7 @@ object IMChatRoomManager {
                     sgMessages.filter {
                         it.messageBody?.isRead == false
                     }.forEach {
-                        it.messageId?.let { it1 ->
+                        it.messageId.let { it1 ->
                             noReadMessageId.add(it1)
                         }
                     }

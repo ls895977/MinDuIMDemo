@@ -2,37 +2,50 @@ package com.css.im_kit.db.bean
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.css.im_kit.imservice.bean.SendMessageBean
+import com.css.im_kit.imservice.bean.ReceiveMessageBean
+import com.css.im_kit.model.message.MessageType
 
 /**
  * 消息
  */
 @Entity
 data class Message(
-        var conversationId: String,//聊天室id
-        var messageId: String,//消息id
-        var sendTime: Long,//发送时间
-        var receivedTime: Long,//接收时间
-        var content: String,//内容
-        var sendUserId: String,//发送方id
-        var receiveUserId: String,//接收方id
-        var type: String,
-        var sendType: Int = 0,//是否发送成功
-        var isRead: Boolean//是否已读
+        var message_id: String,//消息id
+        var send_account: String,//发送账号
+        var receive_account: String,//接收账号
+        var shop_id: String,//店铺id
+        var message_type: String,//消息类型
+        var read_status: Boolean,//是否未读
+        var send_status: Int,//是否发送成功
+        var send_time: Long,//发送时间
+        var receive_time: Long,//接收时间
+        var message: String//消息内容
+
 ) {
     @PrimaryKey(autoGenerate = true)
-    var targetId = 0//id
+    var id = 0//id
+    var extend: String? = ""//扩展消息
 
     /**
-     * 转换为service发送消息数据类型
-    String content;
-    String chat_id;
-    String receive_id;
-    String send_id;
-    String type;
+     *
+     *    var m_id: String,
+    var shop_id: String,
+    var type: Int,
+    var content: String,
+    var receive_account: String,
+    var send_account: String,
+    var time: Long,
+    var extend: String?,
+    var code: Int = 0
      */
-    fun toSendMessageBean(): SendMessageBean {
-        return SendMessageBean(this.content, this.conversationId, this.receiveUserId, this.sendUserId, this.type)
+    fun toSendMessageBean(): ReceiveMessageBean {
+        val type: Int = when (message_type) {
+            MessageType.TEXT.str -> 1
+            MessageType.IMAGE.str -> 3
+            MessageType.COMMODITY.str -> 2
+            else -> 1
+        }
+        return ReceiveMessageBean(message_id, shop_id, type, message_id, receive_account, send_account, send_time, extend, 2000)
     }
 }
 

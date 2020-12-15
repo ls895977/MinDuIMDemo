@@ -6,8 +6,6 @@ import android.widget.Toast
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.*
-import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.ui.ConversationListFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
@@ -45,7 +43,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         //加载
         binding!!.refreshView.setOnLoadMoreListener { refreshLayout: RefreshLayout ->
             pageSize++
-            conversationListFragment?.addDataList(getData())
+//            conversationListFragment?.addDataList(getData())
             //连接状态展示
             conversationListFragment?.updateContentShowView(false, "连接状态展示>连接成功（假的）")
             refreshLayout.finishLoadMore()
@@ -60,28 +58,28 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     /**
      * 加载更多，假数据
      */
-    private fun getData(): ArrayList<SGConversation> {
-        conversationList.clear()
-        for (i in 1..10) {
-            val userInfo = SGUserInfo("conversationId${pageSize}${i}", "name${pageSize}${i}", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-            val messageBody: BaseMessageBody
-            when {
-                i.rem(2) == 0 -> {
-                    messageBody = ImageMessageBody(false, "1607415263000", "1607415263000", false, "http://testimg.supersg.cn/user/773870855045251072.jpeg")//2020-12-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.IMAGE, userInfo, messageBody), pageSize))
-                }
-                i.rem(3) == 0 -> {
-                    messageBody = CommodityMessageBody(false, "1604823263000", "1604823263000", false, "commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.COMMODITY, userInfo, messageBody), pageSize))
-                }
-                else -> {
-                    messageBody = TextMessageBody(false, "1607501663000", "1607501663000", false, "我是你大爷")//2020-12-09 17:14:23
-                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.TEXT, userInfo, messageBody), pageSize))
-                }
-            }
-        }
-        return conversationList
-    }
+//    private fun getData(): ArrayList<SGConversation> {
+//        conversationList.clear()
+//        for (i in 1..10) {
+//            val userInfo = SGUserInfo("conversationId${pageSize}${i}", "name${pageSize}${i}", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+//            val messageBody: BaseMessageBody
+//            when {
+//                i.rem(2) == 0 -> {
+//                    messageBody = ImageMessageBody(false, "1607415263000", "1607415263000", false, "http://testimg.supersg.cn/user/773870855045251072.jpeg")//2020-12-08 16:14:23
+//                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.IMAGE, userInfo, messageBody), pageSize))
+//                }
+//                i.rem(3) == 0 -> {
+//                    messageBody = CommodityMessageBody(false, "1604823263000", "1604823263000", false, "commodityId", "commodityName", "commodityImage", "commodityPrice")//2020-11-08 16:14:23
+//                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.COMMODITY, userInfo, messageBody), pageSize))
+//                }
+//                else -> {
+//                    messageBody = TextMessageBody(false, "1607501663000", "1607501663000", false, "我是你大爷")//2020-12-09 17:14:23
+//                    conversationList.add(SGConversation("conversationId${pageSize}${i}", userInfo, SGMessage("conversationId${pageSize}${i}", "111", MessageType.TEXT, userInfo, messageBody), pageSize))
+//                }
+//            }
+//        }
+//        return conversationList
+//    }
 
     /**
      * Fragment 初始化好了，可以设置值和监听
@@ -103,12 +101,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
      */
     override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View?, position: Int) {
         Toast.makeText(this, "点击了", Toast.LENGTH_SHORT).show()
-        val sgConversation = adapter.data[position] as SGConversation
         val intent = Intent(this, ConversationActivity::class.java)
-        intent.putExtra("conversationId", sgConversation.conversationId)
-        intent.putExtra("userId", sgConversation.userInfo?.userId)
-        intent.putExtra("userName", sgConversation.userInfo?.userName)
-        intent.putExtra("userAvatar", sgConversation.userInfo?.avatar)
+        intent.putExtra("conversation", adapter.data[position] as SGConversation)
         startActivity(intent)
     }
 

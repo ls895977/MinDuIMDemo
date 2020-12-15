@@ -2,6 +2,7 @@ package com.css.im_kit.db.repository
 
 import android.content.Context
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.imDb
 
@@ -13,15 +14,22 @@ object MessageRepository {
         dao = context.imDb().messageDao
     }
 
-    fun setOnResultMessage() {
-
-    }
-
     /**
      * 获取消息列表
      */
-    suspend fun getMessage(conversationId: String): List<Message> {
-        return dao?.getMessages(conversationId) ?: arrayListOf()
+    suspend fun getMessage(shop_id: String): List<Message> {
+        return dao?.getMessages(shop_id) ?: arrayListOf()
+    }
+
+    /**
+     * 修改单条消息的发送状态
+     *
+    SENDING(0),
+    SUCCESS(1),
+    FAIL(2)
+     */
+    suspend fun changeMessageSendType(sendType: SendType, messageId: String) {
+        dao?.changeMessageSendType(sendType.text, arrayListOf(messageId))
     }
 
     suspend fun insert(message: Message) {
@@ -37,9 +45,9 @@ object MessageRepository {
      * conversationId ： 会话id
      */
     suspend fun getLast(conversationId: String?): Message? {
-        return if (conversationId.isNullOrEmpty()){
+        return if (conversationId.isNullOrEmpty()) {
             dao?.getLast()
-        }else {
+        } else {
             dao?.getLast(conversationId)
         }
     }
@@ -64,8 +72,8 @@ object MessageRepository {
         dao?.read(messageIds, true)
     }
 
-    suspend fun getNoReadData(conversationId: String): Int {
-        return dao?.getNoReadData(conversationId, false)?.size ?: 0
+    suspend fun getNoReadData(shop_id: String): Int {
+        return dao?.getNoReadData(shop_id, false)?.size ?: 0
     }
 
     suspend fun delete(message: Message) {

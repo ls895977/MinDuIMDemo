@@ -4,21 +4,23 @@ import com.css.im_kit.db.bean.UserInfo
 import java.io.Serializable
 
 class SGUserInfo : Serializable {
-    var userId: String? = null
-    var userName: String? = null
+    var account: String? = null
+    var nickname: String? = null
+    var user_type: String? = null
     var avatar: String? = null
 
-    constructor(userId: String?, userName: String?, avatar: String?) {
-        this.userId = userId
-        this.userName = userName
+
+    constructor()
+    constructor(account: String?, nickname: String?, user_type: String?, avatar: String?) {
+        this.account = account
+        this.nickname = nickname
+        this.user_type = user_type
         this.avatar = avatar
     }
 
-    constructor()
-
     companion object {
         fun format(userInfo: UserInfo?): SGUserInfo {
-            return SGUserInfo(userInfo?.userId, userInfo?.nickName, userInfo?.avatar)
+            return SGUserInfo(userInfo?.account, userInfo?.nickname, "", userInfo?.avatar)
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.css.im_kit
 
 import android.app.Application
-import com.css.im_kit.db.repository.ConversationRepository
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.imservice.MessageServiceUtils
@@ -11,7 +10,6 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 
 object IMManager {
     fun build(context: Application) {
-        ConversationRepository.build(context)
         MessageRepository.build(context)
         UserInfoRepository.build(context)
         NetworkMonitorManager.getInstance().init(context)

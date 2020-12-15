@@ -2,6 +2,8 @@ package com.css.im_kit.imservice.bean
 
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
+import com.css.im_kit.db.gson
+import com.css.im_kit.model.message.MessageType
 
 data class ReceiveMessageBean(
         /**
@@ -15,39 +17,53 @@ data class ReceiveMessageBean(
          * code : 2000
          */
         var m_id: String,
-        var type: String,
+        var shop_id: String,
+        var type: Int,
         var content: String,
-        var receive_id: String,
-        var send_id: String,
+        var receive_account: String,
+        var send_account: String,
         var time: Long,
-        var extra: String,
+        var extend: String?,
         var code: Int = 0
 ) {
 
     /**
-    var conversationId: String,//聊天室id
-    var messageId: String,//消息id
-    var sendTime: Long,//发送时间
-    var receivedTime: Long,//接收时间
-    var content: String,//内容
-    var sendUserId: String,//发送方id
-    var receiveUserId: String,//接收方id
-    var type: String,
-    var sendType: Int = 0,//是否发送成功
-    var isRead: Boolean//是否已读
+    var message_id: String,//消息id
+    var send_account: String,//发送账号
+    var receive_account: String,//接收账号
+    var shop_id: String,//店铺id
+    var message_type: String,//消息类型
+    var read_status: Boolean,//是否未读
+    var send_status: Int,//是否发送成功
+    var send_time: Long,//发送时间
+    var receive_time: Long,//接收时间
+    var message: String//消息内容
+    var extend: String? = ""//扩展消息
      */
     fun toDBMessage(): Message {
-        return Message(
-                conversationId = "",
-                messageId = m_id,
-                sendTime = time,
-                receivedTime = System.currentTimeMillis(),
-                content = content,
-                sendUserId = send_id,
-                receiveUserId = receive_id,
-                type = type,
-                sendType = SendType.SUCCESS.text,
-                isRead = false
+        val type: String = when (type) {
+            1 -> MessageType.TEXT.str
+            3 -> MessageType.IMAGE.str
+            2 -> MessageType.COMMODITY.str
+            else -> MessageType.TEXT.str
+        }
+        val message = Message(
+                message_id = m_id,
+                send_account = send_account,
+                receive_account = receive_account,
+                shop_id = shop_id,
+                message_type = type,
+                read_status = false,
+                send_status = SendType.SUCCESS.text,
+                send_time = time,
+                receive_time = System.currentTimeMillis(),
+                message = content
         )
+        message.extend = extend
+        return message
+    }
+
+    fun toJsonString(): String {
+        return gson.toJson(this)
     }
 }

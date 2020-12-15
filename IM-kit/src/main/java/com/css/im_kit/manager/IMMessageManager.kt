@@ -1,7 +1,10 @@
 package com.css.im_kit.manager
 
+import android.util.Log
+import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
@@ -26,10 +29,29 @@ object IMMessageManager {
     fun openSocketListener() {
         MessageServiceUtils.setOnResultMessage(object : onResultMessage {
             override fun onMessage(context: String) {
+                Log.e("收到一条消息", context)
                 val receiveMessage = gson.fromJson(context, ReceiveMessageBean::class.java)
-                saveMessage(receiveMessage.toDBMessage(), false)
+
+                if (receiveMessage.send_account == IMManager.userID) {
+                    changeMessageStatus(receiveMessage)
+                } else {
+                    val message = receiveMessage.toDBMessage()
+                    message.read_status = true
+                    saveMessage(message, false)
+                }
             }
         })
+    }
+
+    /**
+     * 修改消息状态 成功/失败
+     */
+    private fun changeMessageStatus(message: ReceiveMessageBean) {
+        ioScope.launch {
+            if (message.code == 2000) {
+                MessageRepository.changeMessageSendType(SendType.SUCCESS, message.m_id)
+            }
+        }
     }
 
     /**
@@ -52,14 +74,14 @@ object IMMessageManager {
     fun saveMessage(message: Message, isSelf: Boolean) {
         ioScope.launch {
             val task = async {
-                message.receivedTime = System.currentTimeMillis()
+                message.receive_time = System.currentTimeMillis()
                 MessageRepository.insert(message)
                 val dbMessage = MessageRepository.getLast()
                 dbMessage?.let {
                     val sgMessage = SGMessage.format(it)
                     sgMessage.messageBody = BaseMessageBody.format(it)
-                    sgMessage.conversationId = message.conversationId
-                    val userInfo = UserInfoRepository.loadById(message.sendUserId)
+                    sgMessage.shopId = message.shop_id
+                    val userInfo = UserInfoRepository.loadById(message.send_account)
                     userInfo?.let { info ->
                         sgMessage.userInfo = SGUserInfo.format(info)
                         sgMessage.messageBody?.isSelf = isSelf

@@ -61,7 +61,7 @@ object UserInfoRepository {
             dao?.getAll()?.collect { userInfos ->
                 var isUpdate = false
                 userInfos.forEach {
-                    if (it.userId == user.userId) {
+                    if (it.account == user.account) {
                         user.id = it.id
                         dao?.update(user)
                         isUpdate = true

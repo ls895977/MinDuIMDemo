@@ -2,8 +2,8 @@ package com.example.minduimdemo
 
 import android.view.View
 import android.widget.Toast
-import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.manager.IMChatRoomManager
+import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.ConversationFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
@@ -11,23 +11,23 @@ import com.example.minduimdemo.databinding.ActivityConversationBinding
 import java.util.*
 
 class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener {
-    private var conversationId = ""
-    private var userInfo: UserInfo? = null
+    private var conversation: SGConversation? = null
     private var conversationFragment: ConversationFragment? = null
 
     override fun layoutResource(): Int = R.layout.activity_conversation
 
     override fun initView() {
-        conversationId = intent.getStringExtra("conversationId") ?: ""
-        val userId = intent.getStringExtra("userId") ?: ""
-        val userName = intent.getStringExtra("userName") ?: ""
-        val userAvatar = intent.getStringExtra("userAvatar") ?: ""
-        userInfo = UserInfo(userName, userAvatar, userId)
-        binding.nickName = userName
+        conversation = intent.getSerializableExtra("conversation") as SGConversation?
+//        if (conversation?.chat_user?.user_type == "shop") {
+            binding.nickName = conversation?.shop?.shop_name
+//        } else {
+//            binding.nickName = conversation?.chat_user?.nickname
+//        }
+
     }
 
     override fun initData() {
-        conversationFragment = userInfo?.let { ConversationFragment(conversationId, it, this) }
+        conversationFragment = conversation?.let { ConversationFragment(it, this) }
         val transaction = this@ConversationActivity.supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, conversationFragment!!)
         transaction.commit()

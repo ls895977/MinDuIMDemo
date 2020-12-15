@@ -3,7 +3,7 @@ package com.css.im_kit.model.message
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.model.userinfo.SGUserInfo
-import java.util.*
+import java.io.Serializable
 
 /**
  * TEXT 文字类型
@@ -16,11 +16,11 @@ enum class MessageType(var str: String) {
     COMMODITY("COMMODITY");
 }
 
-class SGMessage : MultiItemEntity {
+class SGMessage :Serializable, MultiItemEntity {
     /**
      * 会话id
      */
-    var conversationId: String = ""
+    var shopId: String = ""
 
     /**
      * 消息id
@@ -43,8 +43,8 @@ class SGMessage : MultiItemEntity {
     var messageBody: BaseMessageBody? = null
 
     constructor()
-    constructor(conversationId: String, messageId: String, type: MessageType?, userInfo: SGUserInfo?, messageBody: BaseMessageBody?) {
-        this.conversationId = conversationId
+    constructor(shopId: String, messageId: String, type: MessageType?, userInfo: SGUserInfo?, messageBody: BaseMessageBody?) {
+        this.shopId = shopId
         this.messageId = messageId
         this.type = type
         this.userInfo = userInfo
@@ -57,7 +57,7 @@ class SGMessage : MultiItemEntity {
          */
         private fun createTextMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: TextMessageBody) = SGMessage(
                 conversationId,
-                userInfo.userId + System.currentTimeMillis(),
+                userInfo.account + System.currentTimeMillis(),
                 MessageType.TEXT,
                 userInfo,
                 messageBody
@@ -68,7 +68,7 @@ class SGMessage : MultiItemEntity {
          */
         private fun createImageMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: ImageMessageBody) = SGMessage(
                 conversationId,
-                userInfo.userId + System.currentTimeMillis(),
+                userInfo.account + System.currentTimeMillis(),
                 MessageType.IMAGE,
                 userInfo,
                 messageBody
@@ -79,7 +79,7 @@ class SGMessage : MultiItemEntity {
          */
         private fun createCommodityMessageBody(conversationId: String, userInfo: SGUserInfo, messageBody: CommodityMessageBody) = SGMessage(
                 conversationId,
-                userInfo.userId + System.currentTimeMillis(),
+                userInfo.account + System.currentTimeMillis(),
                 MessageType.COMMODITY,
                 userInfo,
                 messageBody
@@ -139,8 +139,8 @@ class SGMessage : MultiItemEntity {
 
         fun format(message: Message): SGMessage {
             val sgMessage = SGMessage()
-            sgMessage.messageId = message.messageId
-            sgMessage.type = when (message.type) {
+            sgMessage.messageId = message.message_id
+            sgMessage.type = when (message.message_type) {
                 MessageType.TEXT.str -> {
                     MessageType.TEXT
                 }
@@ -172,10 +172,10 @@ class SGMessage : MultiItemEntity {
                 if (messageBody?.isSelf == true) 1 else 4
             }
             MessageType.IMAGE -> {
-                if (messageBody!!.isSelf == true) 2 else 5
+                if (messageBody?.isSelf == true) 2 else 5
             }
             MessageType.COMMODITY -> {
-                if (messageBody!!.isSelf == true) 3 else 6
+                if (messageBody?.isSelf == true) 3 else 6
             }
             else -> 0
         }

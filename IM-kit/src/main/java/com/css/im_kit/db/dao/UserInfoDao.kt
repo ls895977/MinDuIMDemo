@@ -9,11 +9,8 @@ interface UserInfoDao {
     @Query("SELECT * FROM userinfo")
     fun getAll(): Flow<List<UserInfo>>
 
-    @Query("SELECT * FROM userinfo WHERE userId IN (:userIds)")
-    fun loadAllByIds(userIds: ArrayList<String>): Flow<List<UserInfo>>
-
-    @Query("SELECT * FROM userinfo WHERE userId = (:userId)")
-    suspend fun loadAllById(userId: String): UserInfo
+    @Query("SELECT * FROM userinfo WHERE account = (:account)")
+    suspend fun loadAllById(account: String): UserInfo
 
     @Insert
     suspend fun insert(users: UserInfo)
@@ -33,12 +30,12 @@ interface UserInfoDao {
     /**
      * 修改昵称
      */
-    @Query("UPDATE userinfo SET nickName = :userName WHERE userId = :userId")
+    @Query("UPDATE userinfo SET nickName = :userName WHERE account = :userId")
     suspend fun updateUserName(userId: String, userName: String)
 
     /**
      * 修改头像
      */
-    @Query("UPDATE userinfo SET avatar = :avatar WHERE userId = :userId")
+    @Query("UPDATE userinfo SET avatar = :avatar WHERE account = :userId")
     suspend fun updateAvatar(userId: String, avatar: String)
 }

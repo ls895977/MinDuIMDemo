@@ -5,17 +5,20 @@ import com.css.im_kit.db.bean.Message
 
 @Dao
 interface MessageDao {
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) ORDER BY receivedTime ASC")
-    suspend fun getMessages(conversationId: String): List<Message>
+    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) ORDER BY receive_time ASC")
+    suspend fun getMessages(shop_id: String): List<Message>
 
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId)  ORDER BY targetId DESC LIMIT 1")
-    suspend fun getLast(conversationId: String): Message
+    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id)  ORDER BY id DESC LIMIT 1")
+    suspend fun getLast(shop_id: String): Message
 
-    @Query("SELECT  * FROM message ORDER BY targetId DESC LIMIT 1")
+    @Query("SELECT  * FROM message ORDER BY id DESC LIMIT 1")
     suspend fun getLast(): Message
 
-    @Query("SELECT  * FROM message WHERE conversationId = (:conversationId) AND isRead = :isRead")
-    suspend fun getNoReadData(conversationId: String, isRead: Boolean): List<Message>
+    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND read_status = :isRead")
+    suspend fun getNoReadData(shop_id: String, isRead: Boolean): List<Message>
+
+    @Query("UPDATE message SET send_status = :sendType WHERE message_id IN (:messageIds) ")
+    suspend fun changeMessageSendType(sendType: Int, messageIds: List<String>)
 
     @Insert
     suspend fun insert(users: Message)
@@ -38,6 +41,6 @@ interface MessageDao {
     /**
      * 设置消息已读
      */
-    @Query("UPDATE message SET isRead = :isRead WHERE messageId IN (:messageIds)")
+    @Query("UPDATE message SET read_status = :isRead WHERE message_id IN (:messageIds)")
     suspend fun read(messageIds: List<String>, isRead: Boolean)
 }

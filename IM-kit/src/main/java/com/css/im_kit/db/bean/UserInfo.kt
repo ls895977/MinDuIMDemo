@@ -8,15 +8,11 @@ import androidx.room.PrimaryKey
  */
 @Entity
 data class UserInfo(
-        var nickName: String,
-        var avatar: String,
-        var userId: String
+        var account: String,
+        var user_type: String,
+        var nickname: String,
+        var avatar: String
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
-
-
-    override fun toString(): String {
-        return nickName
-    }
 }

@@ -5,20 +5,17 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.css.im_kit.db.bean.Conversation
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.UserInfo
-import com.css.im_kit.db.dao.ConversationDao
 import com.css.im_kit.db.dao.MessageDao
 import com.css.im_kit.db.dao.UserInfoDao
 
-@Database(entities = [UserInfo::class, Message::class, Conversation::class], version = 1)
+@Database(entities = [UserInfo::class, Message::class], version = 1)
 @TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract val userDao: UserInfoDao
     abstract val messageDao: MessageDao
-    abstract val conversationDao: ConversationDao
 
 
     // 通过伴生对象实现单例模式
