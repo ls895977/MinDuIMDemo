@@ -1,12 +1,9 @@
 package com.css.im_kit.ui
 
-import android.app.Activity
-import android.graphics.Rect
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
@@ -15,8 +12,6 @@ import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.UserInfo
-import com.css.im_kit.db.ioScope
-import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.adapter.ConversationAdapter
@@ -25,17 +20,15 @@ import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.bean.EmojiBean
 import com.css.im_kit.ui.listener.IMListener
 import com.css.im_kit.utils.FaceTextUtil
+import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
 import com.scwang.smart.refresh.layout.api.RefreshLayout
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
-class ConversationFragment(private var conversationId: String, private var userInfo: UserInfo, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>(), View.OnTouchListener {
-    private var editTag = false//输入区域状态
+class ConversationFragment(private var conversationId: String, private var userInfo: UserInfo, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>() {
     private var keyboardTag = false//软键盘状态
     private var emojiTag = false//表情区域状态
     private var picTag = false//照相机区域状态
+    private var nowCheckTag = 0//当前是哪个区域需要展示，1 表情区域，2 照相机区域，0其他区域
     private var messageList = arrayListOf<SGMessage>()
     private var adapter: ConversationAdapter? = null
     private var adapterEmoji: EmojiAdapter? = null
@@ -64,10 +57,35 @@ class ConversationFragment(private var conversationId: String, private var userI
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             refreshLayout.finishRefresh()
         }
-        //列表向下滑动，隐藏输入区域
-        binding?.rvConversationList?.setOnTouchListener(this)
-        //点击事件
-        adapter?.setOnItemChildClickListener { adapter, view, position ->
+
+        /**
+         * 软件盘监听
+         */
+        IMSoftKeyBoardListenerUtil.setListener(requireActivity(), object : IMSoftKeyBoardListenerUtil.OnSoftKeyBoardChangeListener {
+            override fun keyBoardShow(height: Int) {
+                keyboardTag = true
+                //滚动到底部
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+            }
+
+            override fun keyBoardHide(height: Int) {
+                keyboardTag = false
+                if (nowCheckTag == 1) {
+                    //显示表情输入区
+                    binding?.llEmojiView?.visibility = View.VISIBLE
+                    //滚动到底部
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                } else if (nowCheckTag == 2) {
+                    //显示图片输入区
+                    binding?.llPicView?.visibility = View.VISIBLE
+                    //滚动到底部
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                }
+            }
+        })
+        //点击事件 TODO
+        adapter!!.setOnItemChildClickListener { adapter, view, position ->
+            hideView()
             when (view.id) {
                 R.id.iv_content -> {//图片，看大图
 
@@ -75,10 +93,13 @@ class ConversationFragment(private var conversationId: String, private var userI
                 R.id.ll_content -> {//商品，进详情
 
                 }
+                R.id.item_view -> {
+                    hideView()
+                }
             }
         }
-        //长按
-        adapter?.setOnItemLongClickListener { adapter, view, position ->
+        //长按删除  TODO
+        adapter!!.setOnItemLongClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.item_view -> {
 
@@ -86,8 +107,9 @@ class ConversationFragment(private var conversationId: String, private var userI
             }
             return@setOnItemLongClickListener false
         }
+
         //输入区
-        binding?.etContent?.addTextChangedListener {
+        binding!!.etContent.addTextChangedListener {
             val str = binding?.etContent?.text.toString()
             if (str.isNotEmpty()) {
                 binding?.tvSend?.visibility = View.VISIBLE
@@ -97,31 +119,30 @@ class ConversationFragment(private var conversationId: String, private var userI
         }
 
         //表情点击事件
-        adapterEmoji?.setOnItemChildClickListener { adapter, view, position ->
+        adapterEmoji!!.setOnItemChildClickListener { adapter, view, position ->
             when (view.id) {
                 R.id.item_view -> {
-                    if (position == adapter.data.size - 1) {
-                        //点击  删除 按钮
-                        binding?.etContent?.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-                    } else {
-                        //点击了表情,则添加到输入框中
-                        var sendText = binding?.etContent?.text.toString()
-                        val name: EmojiBean = adapter.getItem(position) as EmojiBean
-                        val key: String = name.text.toString()
-                        val start: Int = binding?.etContent?.selectionStart!!
-                        val aps: SpannableString = FaceTextUtil.toSpannableString(requireActivity(), "${sendText.substring(0, start)}${key}${sendText.substring(start)}")
-                        binding?.etContent?.setText(aps)
-                        // 定位光标位置
-                        val info: CharSequence = binding?.etContent?.text!!
-                        if (info is Spannable) {
-                            Selection.setSelection(info, start + key.length)
-                        }
+                    //点击了表情,则添加到输入框中
+                    val sendText = binding?.etContent?.text.toString()
+                    val name: EmojiBean = adapter.getItem(position) as EmojiBean
+                    val key: String = name.text.toString()
+                    val start: Int = binding?.etContent?.selectionStart!!
+                    val aps: SpannableString = FaceTextUtil.toSpannableString(requireActivity(), "${sendText.substring(0, start)}${key}${sendText.substring(start)}")
+                    binding?.etContent?.setText(aps)
+                    // 定位光标位置
+                    val info: CharSequence = binding?.etContent?.text!!
+                    if (info is Spannable) {
+                        Selection.setSelection(info, start + key.length)
                     }
                 }
             }
         }
+        //删除表情点击事件
+        binding!!.ivDeleceEmoji.setOnClickListener {
+            binding?.etContent?.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
+        }
         //发送消息
-        binding?.tvSend?.setOnClickListener {
+        binding!!.tvSend.setOnClickListener {
             val sendText = binding?.etContent?.text.toString()
             if (sendText.isEmpty()) {
                 return@setOnClickListener
@@ -129,64 +150,103 @@ class ConversationFragment(private var conversationId: String, private var userI
             IMChatRoomManager.sendTextMessage(sendText)
             binding?.etContent?.setText("")
         }
+        //发送商品
+        binding!!.llSendProduct.setOnClickListener {
 
-
-        //输入区 TODO
-        binding?.etContent?.setOnClickListener {
-            if (emojiTag) {
-                emojiTag = false
-                binding?.llPicView?.visibility = View.GONE
-            }
-            scrollToBottom()
         }
-        //输入区 TODO
-        binding?.etContent?.setOnFocusChangeListener { _, b ->
-            if (b) {
+
+        //发送图片
+        binding!!.llSendPic.setOnClickListener {
+
+        }
+
+        //输入区
+        binding?.etContent?.setOnClickListener {
+            nowCheckTag = 0
+            //获取当前软键盘的状态，true打开，false隐藏
+            if (!keyboardTag) {//先隐藏显示区域》再显示软件盘》滚到底部
+                //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
                 if (emojiTag) {
                     emojiTag = false
+                    binding?.llEmojiView?.visibility = View.GONE
+                }
+                //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
+                if (picTag) {
+                    picTag = false
                     binding?.llPicView?.visibility = View.GONE
                 }
+                showSoftKeyboard(binding?.etContent)
             }
-            scrollToBottom()
         }
-        //表情输入区 TODO
+        //表情输入区
         binding?.ivPic1?.setOnClickListener {
-            keyboardTag = isSoftShowing(requireActivity())
-            if (keyboardTag) {
-                hideSoftKeyboard()
-                uiScope.launch {
-                    async {
-                        delay(50)
-                        emojiTag = true
-                        binding?.llPicView?.visibility = View.VISIBLE
-                    }
+            nowCheckTag = 0
+            emojiTag = !emojiTag
+            if (emojiTag) {//先关闭展开布局》再显示表情输入区
+                //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
+                if (picTag) {
+                    picTag = false
+                    binding?.llPicView?.visibility = View.GONE
+                    //显示表情输入区
+                    binding?.llEmojiView?.visibility = View.VISIBLE
+                    //滚动到底部
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    return@setOnClickListener
                 }
+                //隐藏输入区（软键盘）(只有显示的时候才隐藏，你面重复)
+                if (keyboardTag) {
+                    nowCheckTag = 1
+                    hideSoftKeyboard(binding?.etContent)
+                    return@setOnClickListener
+                }
+                //显示表情输入区
+                binding?.llEmojiView?.visibility = View.VISIBLE
+                //滚动到底部
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             } else {
-                emojiTag = !emojiTag
-                binding?.llPicView?.visibility = if (emojiTag) View.VISIBLE else View.GONE
+                //隐藏表情输入区
+                binding?.llEmojiView?.visibility = View.GONE
+                //展示软件盘区
+                if (!keyboardTag) {
+                    showSoftKeyboard(binding?.etContent)
+                }
             }
-            scrollToBottom()
+
         }
-        //图片输入区  TODO
+        //图片输入区
         binding?.ivPic2?.setOnClickListener {
-            scrollToBottom()
+            nowCheckTag = 0
+            picTag = !picTag
+            if (picTag) {//先关闭展开布局》再显示图片输入区
+                //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
+                if (emojiTag) {
+                    emojiTag = false
+                    binding?.llEmojiView?.visibility = View.GONE
+                    //显示图片输入区
+                    binding?.llPicView?.visibility = View.VISIBLE
+                    //滚动到底部
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    return@setOnClickListener
+                }
+                //隐藏输入区（软键盘）(只有显示的时候才隐藏，你面重复)
+                if (keyboardTag) {
+                    nowCheckTag = 2
+                    hideSoftKeyboard(binding?.etContent)
+                    return@setOnClickListener
+                }
+                //显示图片输入区
+                binding?.llPicView?.visibility = View.VISIBLE
+                //滚动到底部
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+            } else {
+                //隐藏图片输入区
+                binding?.llPicView?.visibility = View.GONE
+                //展示软件盘区
+                if (!keyboardTag) {
+                    showSoftKeyboard(binding?.etContent)
+                }
+            }
         }
-
-
-    }
-
-    /**
-     * 判断软键盘是否打开
-     * @param activity
-     * @return
-     */
-    private fun isSoftShowing(activity: Activity): Boolean {
-        //获取当前屏幕内容的高度
-        val screenHeight = activity.window.decorView.height
-        //获取View可见区域的bottom
-        val rect = Rect()
-        activity.window.decorView.getWindowVisibleDisplayFrame(rect)
-        return (screenHeight - rect.bottom) > 0
     }
 
     /**
@@ -203,14 +263,14 @@ class ConversationFragment(private var conversationId: String, private var userI
                         //发送成功，接收到消息，插入当前返回的这一条Message
                         messageList.add(message)
                         adapter?.notifyItemChanged(messageList.size)
-                        scrollToBottom()
+                        binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
                     }
 
                     override fun onMessages(message: List<SGMessage>) {
                         //拉去数据库没聊天列表
                         messageList.addAll(message)
                         adapter?.notifyDataSetChanged()
-                        scrollToBottom()
+                        binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
                     }
 
                     override fun onMessageInProgress(message: SGMessage) {
@@ -225,51 +285,24 @@ class ConversationFragment(private var conversationId: String, private var userI
      * 隐藏输入区域
      */
     private fun hideView() {
-        editTag = false
         //关闭键盘
         keyboardTag = false
-        hideSoftKeyboard()
+        hideSoftKeyboard(binding?.etContent)
         //隐藏表情区域
         emojiTag = false
+        binding?.llEmojiView?.visibility = View.GONE
+        //图片区域
+        picTag = false
         binding?.llPicView?.visibility = View.GONE
         //隐藏发送按钮
-        picTag = false
         binding?.tvSend?.visibility = View.GONE
     }
 
     /**
-     * 将消息列表滑动到底部
+     * 摧毁时关闭软件盘
      */
-    private fun scrollToBottom() {
-        editTag = keyboardTag || emojiTag || picTag
-        uiScope.launch {
-            async {
-                delay(100)
-                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
-            }
-        }
-    }
-
-    /**
-     * 监听向下滑动隐藏输入区域
-     */
-    private var sy = 0
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when (v?.id) {
-            R.id.rv_conversation_list -> when (event!!.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    sy = event.rawY.toInt()
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val dy: Int = event.rawY.toInt() - sy
-                    if (dy > 0) {
-                        if (editTag) {
-                            hideView()
-                        }
-                    }
-                }
-            }
-        }
-        return false
+    override fun onDestroy() {
+        hideSoftKeyboard(binding?.etContent)
+        super.onDestroy()
     }
 }

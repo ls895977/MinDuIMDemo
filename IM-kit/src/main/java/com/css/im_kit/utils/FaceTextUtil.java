@@ -86,8 +86,6 @@ public class FaceTextUtil {
         faceTexts.add(new EmojiBean("\\face_58", R.drawable.face_58));
         faceTexts.add(new EmojiBean("\\face_59", R.drawable.face_59));
         faceTexts.add(new EmojiBean("\\face_60", R.drawable.face_60));
-        faceTexts.add(new EmojiBean("\\emotion_del_normal", R.drawable.emotion_del_normal));
-        faceTexts.add(new EmojiBean("\\emotion_del_down", R.drawable.emotion_del_down));
     }
 
     public static String parse(String s) {
@@ -100,9 +98,7 @@ public class FaceTextUtil {
 
     /**
      * toSpannableString
-     *
-     * @return SpannableString
-     * @throws
+     * 聊天列表使用
      */
     public static SpannableString toSpannableStringList(Context context, String text) {
         if (!TextUtils.isEmpty(text)) {
@@ -132,9 +128,7 @@ public class FaceTextUtil {
 
     /**
      * toSpannableString
-     *
-     * @return SpannableString
-     * @throws
+     * 回话列表使用
      */
     public static SpannableString toSpannableString(Context context, String text) {
         if (!TextUtils.isEmpty(text)) {

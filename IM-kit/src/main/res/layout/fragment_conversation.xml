@@ -91,20 +91,104 @@
 
         </LinearLayout>
 
+        <FrameLayout
+            android:id="@+id/ll_emoji_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_285"
+            android:background="@color/color_f6f6f6"
+            android:gravity="center_horizontal"
+            android:visibility="gone">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                android:paddingStart="@dimen/dp_8">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_emoji_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_285"
+                    android:background="@color/color_f6f6f6"
+                    android:overScrollMode="never"
+                    android:paddingHorizontal="@dimen/dp_10"
+                    android:paddingBottom="@dimen/dp_60"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
+                    tools:listitem="@layout/adapter_message_emoji_item" />
+            </androidx.core.widget.NestedScrollView>
+
+            <ImageView
+                android:id="@+id/iv_delece_emoji"
+                android:layout_width="@dimen/dp_61"
+                android:layout_height="@dimen/dp_41"
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:background="@drawable/im_shape_ffffff_8dp"
+                android:paddingHorizontal="@dimen/dp_18"
+                android:paddingVertical="@dimen/dp_8"
+                android:src="@drawable/im_icon_del" />
+        </FrameLayout>
+
         <LinearLayout
             android:id="@+id/ll_pic_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_285">
+            android:layout_height="@dimen/dp_285"
+            android:background="@color/color_f6f6f6"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/dp_40"
+            android:paddingVertical="@dimen/dp_20"
+            android:visibility="gone">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_emoji_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/adapter_message_emoji_item" />
+            <LinearLayout
+                android:id="@+id/ll_send_product"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_60"
+                    android:layout_height="@dimen/dp_60"
+                    android:background="@drawable/im_shape_ffffff_8dp"
+                    android:src="@drawable/im_icon_product" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="10dp"
+                    android:includeFontPadding="false"
+                    android:text="商品"
+                    android:textColor="@color/color_999999"
+                    android:textSize="@dimen/sp_12" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_send_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_60"
+                    android:layout_height="@dimen/dp_60"
+                    android:background="@drawable/im_shape_ffffff_8dp"
+                    android:src="@drawable/im_icon_pic" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginVertical="10dp"
+                    android:includeFontPadding="false"
+                    android:text="图片"
+                    android:textColor="@color/color_999999"
+                    android:textSize="@dimen/sp_12" />
+            </LinearLayout>
+
         </LinearLayout>
-
     </LinearLayout>
 
 </layout>

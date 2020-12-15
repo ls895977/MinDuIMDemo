@@ -105,6 +105,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         }
 
         //长按
+        helper.addOnClickListener(R.id.item_view)
         helper.addOnLongClickListener(R.id.item_view)
     }
 
