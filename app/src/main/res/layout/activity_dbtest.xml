@@ -49,5 +49,11 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
             android:text="发送新消息" />
+
+        <Button
+            android:id="@+id/initSocket"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:text="连接socket" />
     </LinearLayout>
 </layout>
