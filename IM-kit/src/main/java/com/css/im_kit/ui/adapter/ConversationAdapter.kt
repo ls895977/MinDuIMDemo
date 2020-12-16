@@ -2,12 +2,14 @@ package com.css.im_kit.ui.adapter
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.AnimationDrawable
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.css.im_kit.R
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.model.message.CommodityMessageBody
 import com.css.im_kit.model.message.ImageMessageBody
@@ -55,6 +57,26 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
         //头像
         IMGlideUtil.loadAvatar(activity, item.userInfo?.avatar, helper.getView(R.id.iv_avatar))
+
+        //昵称 TODO
+//        helper.setVisible(R.id.tv_content, item.userInfo?.user_type == "1")
+        helper.setText(R.id.tv_content, item.userInfo?.nickname)
+
+        //加载圈
+        val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
+        if (item.messageBody?.sendType == SendType.SENDING) {
+            //判断是否在运行
+            if (!animationDrawable.isRunning) {
+                //开启帧动画
+                animationDrawable.start()
+            }
+        } else {
+            if (animationDrawable.isRunning) {
+                //开启帧动画
+                animationDrawable.stop()
+            }
+        }
+
 
         when (item.itemType) {
             //send

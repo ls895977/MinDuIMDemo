@@ -2,11 +2,12 @@ package com.css.im_kit.model.message
 
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.google.gson.Gson
 import java.io.Serializable
 
-open class BaseMessageBody: Serializable {
+open class BaseMessageBody : Serializable {
     /**
      * 是否新消息
      */
@@ -26,6 +27,11 @@ open class BaseMessageBody: Serializable {
      * 是否是自己发送的消息
      */
     var isSelf: Boolean = false
+
+    /**
+     * 是否是自己发送的消息
+     */
+    var sendType: SendType = SendType.SENDING
 
     constructor()
     constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean) {
