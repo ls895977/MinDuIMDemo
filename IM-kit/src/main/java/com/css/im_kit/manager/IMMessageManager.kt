@@ -33,15 +33,10 @@ object IMMessageManager {
             override fun onMessage(context: String) {
                 Log.e("收到一条消息", context)
                 val receiveMessage = gson.fromJson(context, ReceiveMessageBean::class.java)
-                when {
-                    //自己发的消息回执
-                    receiveMessage.send_account == IMManager.userID -> {
+                //系统返回消息回执
+                when (receiveMessage.type) {
+                    DBMessageType.CLIENTRECEIPT.value, DBMessageType.SERVERRECEIPT.value -> {
                         changeMessageStatus(receiveMessage)
-                    }
-                    //系统返回消息回执
-                    receiveMessage.type == DBMessageType.CLIENTRECEIPT.value ||
-                            receiveMessage.type == DBMessageType.SERVERRECEIPT.value -> {
-
                     }
                     //新消息
                     else -> {
