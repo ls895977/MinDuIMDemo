@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserInfoDao {
     @Query("SELECT * FROM userinfo")
-    fun getAll(): Flow<List<UserInfo>>
+    suspend fun getAll(): List<UserInfo>
 
     @Query("SELECT * FROM userinfo WHERE account = (:account)")
     suspend fun loadAllById(account: String): UserInfo

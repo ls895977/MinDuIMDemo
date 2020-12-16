@@ -15,7 +15,6 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.md5
@@ -73,7 +72,7 @@ object IMChatRoomManager {
                         val message = MessageRepository.getMessage4messageId(messageID)
                         message?.let {
                             val sgMessage = SGMessage.format(message)
-                            if (message.send_account == IMManager.userID){
+                            if (message.send_account == IMManager.userID) {
                                 sgMessage.messageBody?.isSelf = true
                             }
                             val user = UserInfoRepository.loadById(
@@ -116,20 +115,25 @@ object IMChatRoomManager {
             val time = System.currentTimeMillis()
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
-            IMMessageManager.saveMessage(Message(
-                    m_id = (IMManager.userID + time).md5(),
-                    send_account = IMManager.userID!!,
-                    receive_account = conversation.chat_account ?: "",
-                    shop_id = conversation.shop_id ?: "",
-                    message_type = DBMessageType.TEXT.value,
-                    read_status = false,
-                    send_status = SendType.SENDING.text,
-                    send_time = time,
-                    receive_time = time,
-                    message = text,
-                    source = source!!.value,
-                    extend = gson.toJson(extend)
-            ), true)
+            ioScope.launch {
+                async {
+                    IMMessageManager.saveMessage(Message(
+                            m_id = (IMManager.userID + time).md5(),
+                            send_account = IMManager.userID!!,
+                            receive_account = conversation.chat_account ?: "",
+                            shop_id = conversation.shop_id ?: "",
+                            message_type = DBMessageType.TEXT.value,
+                            read_status = false,
+                            send_status = SendType.SENDING.text,
+                            send_time = time,
+                            receive_time = time,
+                            message = text,
+                            source = source!!.value,
+                            extend = gson.toJson(extend)
+                    ), true)
+                }
+            }
+
         }
 
     }
@@ -176,20 +180,24 @@ object IMChatRoomManager {
             val time = System.currentTimeMillis()
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
-            IMMessageManager.saveMessage(Message(
-                    m_id = (IMManager.userID + time).md5(),
-                    send_account = IMManager.userID!!,
-                    receive_account = conversation.chat_account ?: "",
-                    shop_id = conversation.shop_id ?: "",
-                    message_type = DBMessageType.IMAGE.value,
-                    read_status = false,
-                    send_status = SendType.SENDING.text,
-                    send_time = time,
-                    receive_time = time,
-                    message = img,
-                    source = source!!.value,
-                    extend = gson.toJson(extend)
-            ), true)
+            ioScope.launch {
+                async {
+                    IMMessageManager.saveMessage(Message(
+                            m_id = (IMManager.userID + time).md5(),
+                            send_account = IMManager.userID!!,
+                            receive_account = conversation.chat_account ?: "",
+                            shop_id = conversation.shop_id ?: "",
+                            message_type = DBMessageType.IMAGE.value,
+                            read_status = false,
+                            send_status = SendType.SENDING.text,
+                            send_time = time,
+                            receive_time = time,
+                            message = img,
+                            source = source!!.value,
+                            extend = gson.toJson(extend)
+                    ), true)
+                }
+            }
         }
     }
 
@@ -201,20 +209,24 @@ object IMChatRoomManager {
             val time = System.currentTimeMillis()
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
-            IMMessageManager.saveMessage(Message(
-                    m_id = (IMManager.userID + time).md5(),
-                    send_account = IMManager.userID!!,
-                    receive_account = conversation.chat_account ?: "",
-                    shop_id = conversation.shop_id ?: "",
-                    message_type = DBMessageType.RICH.value,
-                    read_status = false,
-                    send_status = SendType.SENDING.text,
-                    send_time = time,
-                    receive_time = time,
-                    message = commodityMessage.toJsonString(),
-                    source = source!!.value,
-                    extend = gson.toJson(extend)
-            ), true)
+            ioScope.launch {
+                async {
+                    IMMessageManager.saveMessage(Message(
+                            m_id = (IMManager.userID + time).md5(),
+                            send_account = IMManager.userID!!,
+                            receive_account = conversation.chat_account ?: "",
+                            shop_id = conversation.shop_id ?: "",
+                            message_type = DBMessageType.RICH.value,
+                            read_status = false,
+                            send_status = SendType.SENDING.text,
+                            send_time = time,
+                            receive_time = time,
+                            message = commodityMessage.toJsonString(),
+                            source = source!!.value,
+                            extend = gson.toJson(extend)
+                    ), true)
+                }
+            }
         }
 
     }
@@ -245,12 +257,7 @@ object IMChatRoomManager {
                         resultMessage.forEach { message ->
                             val sgMessage = SGMessage.format(message)
                             sgMessage.messageBody?.isSelf = message.send_account == IMManager.userID
-                            val user = UserInfoRepository.loadById(
-                                    if (message.send_account == IMManager.userID)
-                                        message.send_account
-                                    else
-                                        message.receive_account
-                            )
+                            val user = UserInfoRepository.loadById(message.send_account)
                             user?.let {
                                 sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
                             }

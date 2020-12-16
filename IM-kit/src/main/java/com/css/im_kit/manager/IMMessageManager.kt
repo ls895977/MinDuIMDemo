@@ -9,6 +9,7 @@ import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.`interface`.onResultMessage
 import com.css.im_kit.imservice.bean.DBMessageType
@@ -42,7 +43,12 @@ object IMMessageManager {
                     else -> {
                         val message = receiveMessage.toDBMessage()
                         message.read_status = true
-                        saveMessage(message, false)
+                        uiScope.launch {
+                            async {
+                                saveMessage(message, false)
+                            }
+                        }
+
                     }
                 }
             }

@@ -4,9 +4,6 @@ import android.content.Context
 import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.dao.UserInfoDao
 import com.css.im_kit.db.imDb
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 
 object UserInfoRepository {
     private var dao: UserInfoDao? = null
@@ -15,8 +12,8 @@ object UserInfoRepository {
         dao = context.imDb().userDao
     }
 
-    fun getAll(): Flow<List<UserInfo>> {
-        return dao?.getAll() ?: flow { arrayListOf<UserInfo>() }
+    suspend fun getAll(): List<UserInfo>? {
+        return dao?.getAll()
     }
 
     suspend fun loadById(userId: String): UserInfo? {
@@ -58,7 +55,7 @@ object UserInfoRepository {
      */
     suspend fun insertOrUpdateUser(user: UserInfo): Boolean {
         try {
-            dao?.getAll()?.collect { userInfos ->
+            dao?.getAll()?.let { userInfos ->
                 var isUpdate = false
                 userInfos.forEach {
                     if (it.account == user.account) {
