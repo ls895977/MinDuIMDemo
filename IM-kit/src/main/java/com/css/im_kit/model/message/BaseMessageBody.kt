@@ -62,6 +62,17 @@ open class BaseMessageBody : Serializable {
             baseMessageBody.isRead = message.read_status
             baseMessageBody.sendTime = message.send_time.toString()
             baseMessageBody.receivedTime = message.receive_time.toString()
+            baseMessageBody.sendType = when (message.send_status) {
+                1 -> {
+                    SendType.SUCCESS
+                }
+                2 -> {
+                    SendType.FAIL
+                }
+                else -> {
+                    SendType.SENDING
+                }
+            }
             return baseMessageBody
         }
     }

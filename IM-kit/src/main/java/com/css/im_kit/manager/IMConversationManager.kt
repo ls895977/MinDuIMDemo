@@ -79,6 +79,9 @@ object IMConversationManager {
                 }
             }
         }
+
+        override fun onSendMessageReturn(shop_id:String,messageID: String) {
+        }
     }
 
     private fun integrationConversation(conversations: MutableList<SGConversation>) {

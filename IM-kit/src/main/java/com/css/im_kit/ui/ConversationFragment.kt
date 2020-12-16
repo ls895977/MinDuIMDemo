@@ -303,6 +303,14 @@ class ConversationFragment(private var conversation: SGConversation, var setData
 
                     override fun onMessageInProgress(message: SGMessage) {
                         //消息发送进度
+                        messageList.forEachIndexed { index, sgMessage ->
+                            if (sgMessage.messageId == message.messageId) {
+                                sgMessage.messageBody = message.messageBody
+                                adapter?.notifyItemChanged(index)
+                                return@forEachIndexed
+                            }
+                        }
+
                     }
 
                 })

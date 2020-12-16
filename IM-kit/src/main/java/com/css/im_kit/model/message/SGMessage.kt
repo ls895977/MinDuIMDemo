@@ -2,6 +2,7 @@ package com.css.im_kit.model.message
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
@@ -141,6 +142,8 @@ class SGMessage : Serializable, MultiItemEntity {
         fun format(message: Message): SGMessage {
             val sgMessage = SGMessage()
             sgMessage.messageId = message.m_id
+            val extend = gson.fromJson(message.extend, HashMap::class.java)
+            sgMessage.shopId = extend["shop_id"].toString()
             sgMessage.type = when (message.message_type) {
                 DBMessageType.TEXT.value -> {
                     MessageType.TEXT

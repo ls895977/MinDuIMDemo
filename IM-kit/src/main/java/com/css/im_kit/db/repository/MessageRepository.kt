@@ -22,6 +22,14 @@ object MessageRepository {
     }
 
     /**
+     * 获取消息
+     * messageId 消息id
+     */
+    suspend fun getMessage4messageId(messageId: String): Message? {
+        return dao?.getMessage4messageId(messageId)
+    }
+
+    /**
      * 修改单条消息的发送状态
      *
     SENDING(0),
@@ -44,11 +52,11 @@ object MessageRepository {
      * 获取最新消息新消息
      * conversationId ： 会话id
      */
-    suspend fun getLast(conversationId: String?): Message? {
-        return if (conversationId.isNullOrEmpty()) {
+    suspend fun getLast(shop_id: String?): Message? {
+        return if (shop_id.isNullOrEmpty()) {
             dao?.getLast()
         } else {
-            dao?.getLast(conversationId)
+            dao?.getLast(shop_id)
         }
     }
 

@@ -20,6 +20,9 @@ interface MessageDao {
     @Query("UPDATE message SET send_status = :sendType WHERE m_id IN (:messageIds) ")
     suspend fun changeMessageSendType(sendType: Int, messageIds: List<String>)
 
+    @Query("SELECT  * FROM message WHERE m_id = (:messageIds)  ORDER BY id DESC LIMIT 1")
+    suspend fun getMessage4messageId(messageIds: String): Message
+
     @Insert
     suspend fun insert(users: Message)
 

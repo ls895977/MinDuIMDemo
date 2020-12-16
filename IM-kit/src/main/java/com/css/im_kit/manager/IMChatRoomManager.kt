@@ -65,6 +65,36 @@ object IMChatRoomManager {
                 chatRoomCallback?.onReceiveMessage(message)
             }
         }
+
+        override fun onSendMessageReturn(shop_id: String, messageID: String) {
+            if (shop_id == conversation?.shop_id) {
+                uiScope.launch {
+                    val task = async {
+                        val message = MessageRepository.getMessage4messageId(messageID)
+                        message?.let {
+                            val sgMessage = SGMessage.format(message)
+                            if (message.send_account == IMManager.userID){
+                                sgMessage.messageBody?.isSelf = true
+                            }
+                            val user = UserInfoRepository.loadById(
+                                    if (message.send_account == IMManager.userID)
+                                        message.send_account
+                                    else
+                                        message.receive_account
+                            )
+                            user?.let {
+                                sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
+                            }
+                            return@async sgMessage
+                        }
+                    }
+                    val result = task.await()
+                    result?.let {
+                        chatRoomCallback?.onMessageInProgress(it)
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -214,7 +244,6 @@ object IMChatRoomManager {
                         val resultMessage = MessageRepository.getMessage(conversation.shop_id ?: "")
                         resultMessage.forEach { message ->
                             val sgMessage = SGMessage.format(message)
-                            sgMessage.messageBody = BaseMessageBody.format(message)
                             sgMessage.messageBody?.isSelf = message.send_account == IMManager.userID
                             val user = UserInfoRepository.loadById(
                                     if (message.send_account == IMManager.userID)

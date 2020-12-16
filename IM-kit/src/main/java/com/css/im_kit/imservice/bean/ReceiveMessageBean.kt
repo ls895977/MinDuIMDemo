@@ -6,25 +6,26 @@ import com.css.im_kit.db.gson
 
 data class ReceiveMessageBean(
         /**
-         * m_id : 160768300748
-         * type : 0
-         * content : 2234
-         * receive_id : 2
-         * send_id : 1
-         * time : 1607683007
-         * extra :
-         * code : 2000
+         *code	string	是	状态 '20000'-成功 '40000'-失败
+        m_id	string	是	消息ID
+        type	int	是	消息类型-见备注
+        source	int	是	消息来源-见备注
+        receive_account	string	是	接收方账号
+        send_account	string	是	发送方账号
+        content	string	是	消息内容
+        time	int	是	消息时间-时间戳
+        extend.shop_id	int	是	聊天店铺ID
          */
-        var message_id: String,
+        var code: Int,
+        var m_id: String,
         var type: Int,
         var source: Int,
         var receive_account: String,
         var send_account: String,
         var content: String,
         var time: Long,
-        var shop_id: String,
-        var extend: String?,
-        var code: Int
+        var extend: HashMap<String, String>?
+
 ) {
 
     /**
@@ -43,10 +44,10 @@ data class ReceiveMessageBean(
      */
     fun toDBMessage(): Message {
         return Message(
-                m_id = message_id,
+                m_id = m_id,
                 send_account = send_account,
                 receive_account = receive_account,
-                shop_id = shop_id,
+                shop_id = extend?.get("shop_id") ?: "",
                 source = source,
                 message_type = type,
                 read_status = false,
@@ -54,7 +55,7 @@ data class ReceiveMessageBean(
                 send_time = time,
                 receive_time = System.currentTimeMillis(),
                 message = content,
-                extend = extend ?: ""
+                extend = gson.toJson(extend)
         )
     }
 
