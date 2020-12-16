@@ -87,4 +87,7 @@ dependencies {
     implementation "org.java-websocket:Java-WebSocket:1.5.1"
     //监听网络状态变化
     api 'com.github.kongqw:NetworkMonitor:1.0.1'
+
+    //图片查看器
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 }

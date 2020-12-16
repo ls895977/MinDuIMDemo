@@ -1,20 +1,26 @@
 package com.css.im_kit.ui
 
+import android.content.Intent
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
-import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.message.ImageMessageBody
+import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
+import com.css.im_kit.model.message.TextMessageBody
+import com.css.im_kit.ui.activity.BigPicActivity
 import com.css.im_kit.ui.adapter.ConversationAdapter
 import com.css.im_kit.ui.adapter.EmojiAdapter
 import com.css.im_kit.ui.base.BaseFragment
@@ -88,13 +94,45 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         adapter!!.setOnItemChildClickListener { adapter, view, position ->
             hideView()
             when (view.id) {
+                R.id.tv_content -> {//文字消息点击
+                    ((adapter.data[position] as SGMessage).messageBody as TextMessageBody).text?.let {
+                        val mIntent = Intent(requireContext(), BigPicActivity::class.java)
+                        mIntent.putExtra("imageUrl", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+//                        startActivity(mIntent)
+                        val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
+                        ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
+                    }
+                }
                 R.id.iv_content -> {//图片，看大图
-
+                    ((adapter.data[position] as SGMessage).messageBody as ImageMessageBody).imageUrl?.let {
+                        val mIntent = Intent(requireContext(), BigPicActivity::class.java)
+                        mIntent.putExtra("imageUrl", it)
+//                        startActivity(mIntent)
+                        val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
+                        ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
+                    }
                 }
                 R.id.ll_content -> {//商品，进详情
 
+
+                }
+                R.id.loading_image -> {//消息发送失败》重发(只有自己的消息可以重发)
+                    (adapter.data[position] as SGMessage).type?.let {
+                        when (it) {
+                            MessageType.TEXT -> {
+
+                            }
+                            MessageType.IMAGE -> {
+
+                            }
+                            MessageType.COMMODITY -> {
+
+                            }
+                        }
+                    }
                 }
                 R.id.item_view -> {
+
                 }
             }
         }

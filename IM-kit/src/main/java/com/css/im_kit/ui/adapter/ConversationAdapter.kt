@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
-
 class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMessage>) : BaseMultiItemQuickAdapter<SGMessage, BaseViewHolder>(data) {
     init {
         //消息type（文本、图片、商品）我发送的1/2/3；别人的4/5/6。
@@ -60,32 +59,43 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
         //昵称 TODO
 //        helper.setVisible(R.id.tv_content, item.userInfo?.user_type == "1")
-        helper.setText(R.id.tv_content, item.userInfo?.nickname)
-        helper.setGone(R.id.tv_content, true)
+        helper.setText(R.id.tv_user_name, item.userInfo?.nickname)
+        helper.setGone(R.id.tv_user_name, item.messageBody?.isSelf!!)
 
         //加载圈(自己的才有)
-        if (item.messageBody?.isSelf!!) {
-            val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
-            if (item.messageBody?.sendType == SendType.SENDING) {
-                helper.setGone(R.id.loading_image, true)
-                //判断是否在运行
-                if (!animationDrawable.isRunning) {
-                    //开启帧动画
-                    animationDrawable.start()
-                }
-            } else {
-                helper.setGone(R.id.loading_image, false)
-                if (animationDrawable.isRunning) {
-                    //开启帧动画
-                    animationDrawable.stop()
+        item.messageBody?.isSelf?.let {
+            if (it) {
+                helper.setBackgroundRes(R.id.loading_image, R.drawable.anim_loading_location)
+                val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
+                if (item.messageBody?.sendType == SendType.SENDING) {//发送中
+                    helper.setGone(R.id.loading_image, true)
+                    //判断是否在运行
+                    if (!animationDrawable.isRunning) {
+                        //开启帧动画
+                        animationDrawable.start()
+                    }
+                } else if (item.messageBody?.sendType == SendType.FAIL) {//发送失败
+                    helper.setGone(R.id.loading_image, true)
+                    helper.setBackgroundRes(R.id.loading_image, R.drawable.im_loading_default)
+                    //重新发送
+                    helper.addOnClickListener(R.id.loading_image)
+                } else {//发送成功
+                    helper.setGone(R.id.loading_image, false)
+                    if (animationDrawable.isRunning) {
+                        //开启帧动画
+                        animationDrawable.stop()
+                    }
                 }
             }
         }
+
 
         when (item.itemType) {
             //send
             1 -> {//txt
                 helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
+                //点击事件
+                helper.addOnClickListener(R.id.tv_content)
             }
             2 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
