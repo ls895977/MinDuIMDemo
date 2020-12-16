@@ -1,4 +1,4 @@
-package com.css.im_kit.utils;
+package com.example.minduimdemo.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,11 +13,6 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.ImageViewTarget;
-import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.css.im_kit.R;
 import com.luck.picture.lib.engine.ImageEngine;
 import com.luck.picture.lib.listener.OnImageCompleteCallback;
@@ -25,6 +20,11 @@ import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.widget.longimage.ImageSource;
 import com.luck.picture.lib.widget.longimage.ImageViewState;
 import com.luck.picture.lib.widget.longimage.SubsamplingScaleImageView;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 
 /**
  * Created by zb on 2019/12/1.

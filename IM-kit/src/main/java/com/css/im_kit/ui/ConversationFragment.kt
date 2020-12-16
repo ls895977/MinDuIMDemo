@@ -16,6 +16,7 @@ import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.ImageMessageBody
@@ -30,6 +31,9 @@ import com.css.im_kit.ui.listener.IMListener
 import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
 import com.scwang.smart.refresh.layout.api.RefreshLayout
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ConversationFragment(private var conversation: SGConversation, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>() {
@@ -72,6 +76,16 @@ class ConversationFragment(private var conversation: SGConversation, var setData
          */
         IMSoftKeyBoardListenerUtil.setListener(requireActivity(), object : IMSoftKeyBoardListenerUtil.OnSoftKeyBoardChangeListener {
             override fun keyBoardShow(height: Int) {
+                //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
+//                if (emojiTag) {
+                emojiTag = false
+                binding?.llEmojiView?.visibility = View.GONE
+//                }
+                //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
+//                if (picTag) {
+                picTag = false
+                binding?.llPicView?.visibility = View.GONE
+//                }
                 keyboardTag = true
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
@@ -97,13 +111,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             hideView()
             when (view.id) {
                 R.id.tv_content -> {//文字消息点击
-//                    IMChatRoomManager.sendImageMessage("http://testimg.supersg.cn/user/773870855045251072.jpeg")
-//                    ((adapter.data[position] as SGMessage).messageBody as TextMessageBody).text?.let {
-//                        val mIntent = Intent(requireContext(), BigPicActivity::class.java)
-//                        mIntent.putExtra("imageUrl", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-//                        val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
-//                        ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
-//                    }
+
                 }
                 R.id.iv_content -> {//图片，看大图
                     ((adapter.data[position] as SGMessage).messageBody as ImageMessageBody).imageUrl?.let {
@@ -184,17 +192,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         binding?.etContent?.setOnClickListener {
             nowCheckTag = 0
             //获取当前软键盘的状态，true打开，false隐藏
-            if (!keyboardTag) {//先隐藏显示区域》再显示软件盘》滚到底部
-                //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
-                if (emojiTag) {
-                    emojiTag = false
-                    binding?.llEmojiView?.visibility = View.GONE
-                }
-                //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
-                if (picTag) {
-                    picTag = false
-                    binding?.llPicView?.visibility = View.GONE
-                }
+            if (!keyboardTag) {
                 showSoftKeyboard(binding?.etContent)
             }
         }
@@ -224,14 +222,16 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             } else {
-                //隐藏表情输入区
-                binding?.llEmojiView?.visibility = View.GONE
                 //展示软件盘区
-                if (!keyboardTag) {
-                    showSoftKeyboard(binding?.etContent)
+                showSoftKeyboard(binding?.etContent)
+                uiScope.launch {
+                    async {
+                        delay(100)
+                        //隐藏表情输入区
+                        binding?.llEmojiView?.visibility = View.GONE
+                    }
                 }
             }
-
         }
         //图片输入区
         binding?.ivPic2?.setOnClickListener {
@@ -259,11 +259,14 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             } else {
-                //隐藏图片输入区
-                binding?.llPicView?.visibility = View.GONE
                 //展示软件盘区
-                if (!keyboardTag) {
-                    showSoftKeyboard(binding?.etContent)
+                showSoftKeyboard(binding?.etContent)
+                uiScope.launch {
+                    async {
+                        delay(100)
+                        //隐藏图片输入区
+                        binding?.llPicView?.visibility = View.GONE
+                    }
                 }
             }
         }
@@ -276,12 +279,8 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             IMChatRoomManager.sendTextMessage(sendText)
             binding?.etContent?.setText("")
         }
-        // 发送图片消息
-        binding!!.llSendPic.setOnClickListener {
-//            IMChatRoomManager.sendImageMessage("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608120424517&di=3abbf05c1c500622017ab15b277de074&imgtype=0&src=http%3A%2F%2Fimage.bitauto.com%2Fdealer%2Fnews%2F100041135%2F752e877a-9dc7-4d4a-ba58-7cebb49970fc.jpg")
-            IMChatRoomManager.sendImageMessage("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608120549318&di=279042dca12b7bc6fe874286fb2d5dd3&imgtype=0&src=http%3A%2F%2Fa4.att.hudong.com%2F25%2F99%2F19300000421423134190997943822.jpg")
-        }
     }
+
 
     /**
      * Activity
@@ -316,9 +315,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                                 return@forEachIndexed
                             }
                         }
-
                     }
-
                 })
                 .create()
     }
@@ -360,5 +357,21 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      */
     fun sendProductMessage(commodityMessage: CommodityMessage) {
         IMChatRoomManager.sendCommodityMessage(commodityMessage)
+    }
+
+    /**
+     * 添加输入区（图片按钮）点击事件
+     */
+    fun addImageOnClickListener(clickListener: View.OnClickListener) {
+        binding!!.llSendPic.setOnClickListener(clickListener)
+    }
+
+    /**
+     * 选择图片后，发送图片消息
+     */
+    fun sendImageMessage(images: ArrayList<String>) {
+        images.forEach {
+            IMChatRoomManager.sendImageMessage(it)
+        }
     }
 }

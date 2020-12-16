@@ -80,7 +80,7 @@ dependencies {
     implementation 'com.scwang.smart:refresh-layout-kernel:2.0.1'      //核心必须依赖
     implementation 'com.scwang.smart:refresh-header-classics:2.0.1'    //经典刷新头
     //图片加载
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    api 'com.github.bumptech.glide:glide:4.11.0'
 
     api 'com.google.code.gson:gson:2.8.6'
     //通讯
@@ -90,6 +90,5 @@ dependencies {
 
     //图片查看器
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
-    //打开相册
-    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0'
+
 }

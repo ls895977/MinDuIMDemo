@@ -1,4 +1,4 @@
-package com.css.im_kit.utils;
+package com.example.minduimdemo.utils;
 
 import android.app.Activity;
 
