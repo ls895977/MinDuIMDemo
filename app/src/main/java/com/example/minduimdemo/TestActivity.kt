@@ -19,7 +19,6 @@ import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.base.BaseActivity
 import com.example.minduimdemo.databinding.ActivityDbtestBinding
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallback {
@@ -38,7 +37,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             ioScope.launch {
                 val list = arrayListOf<UserInfo>()
                 val userInfo4 = UserInfo("183ff3fd37", "2", "崔勇", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo5 = UserInfo("8116f90a21", "1", "夏鹏", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo5 = UserInfo("8116f90a21", "1", "夏鹏", "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608121391539&di=24b6d407f954abdc1fc874a189f1bfcb&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201510%2F01%2F20151001174653_L3wEF.jpeg")
                 val userInfo = UserInfo("100001", "2", "昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo1 = UserInfo("100002", "2", "昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo2 = UserInfo("100003", "2", "昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
@@ -54,7 +53,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                     UserInfoRepository.getAll()
                 }
                 val result = stak.await()
-                result.collect {
+                result?.let {
                     binding?.addUser?.text = "添加用户" + it.size
                 }
             }
@@ -140,8 +139,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         binding?.initSocket?.setOnClickListener {
             val url = "ws://192.168.0.73:9502"
-            val token = "183ff3fd37"
-            val userId = "183ff3fd37"
+            val token = "8116f90a21"
+            val userId = "8116f90a21"
             IMManager.connect(url, token, userId, object : onLinkStatus {
                 override fun onLinkedSuccess() {
                     uiScope.launch {
