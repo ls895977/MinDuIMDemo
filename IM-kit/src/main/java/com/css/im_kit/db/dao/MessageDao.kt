@@ -17,7 +17,7 @@ interface MessageDao {
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND read_status = :isRead")
     suspend fun getNoReadData(shop_id: String, isRead: Boolean): List<Message>
 
-    @Query("UPDATE message SET send_status = :sendType WHERE message_id IN (:messageIds) ")
+    @Query("UPDATE message SET send_status = :sendType WHERE m_id IN (:messageIds) ")
     suspend fun changeMessageSendType(sendType: Int, messageIds: List<String>)
 
     @Insert
@@ -41,6 +41,6 @@ interface MessageDao {
     /**
      * 设置消息已读
      */
-    @Query("UPDATE message SET read_status = :isRead WHERE message_id IN (:messageIds)")
+    @Query("UPDATE message SET read_status = :isRead WHERE m_id IN (:messageIds)")
     suspend fun read(messageIds: List<String>, isRead: Boolean)
 }

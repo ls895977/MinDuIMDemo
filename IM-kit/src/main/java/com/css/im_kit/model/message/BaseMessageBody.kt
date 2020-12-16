@@ -4,7 +4,7 @@ import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
-import com.google.gson.Gson
+import com.css.im_kit.imservice.bean.DBMessageType
 import java.io.Serializable
 
 open class BaseMessageBody : Serializable {
@@ -45,13 +45,13 @@ open class BaseMessageBody : Serializable {
         fun format(message: Message): BaseMessageBody {
             val baseMessageBody: BaseMessageBody
             baseMessageBody = when (message.message_type) {
-                MessageType.TEXT.str -> {
+                DBMessageType.TEXT.value -> {
                     TextMessageBody(message.message)
                 }
-                MessageType.IMAGE.str -> {
+                DBMessageType.IMAGE.value -> {
                     ImageMessageBody(message.message)
                 }
-                MessageType.COMMODITY.str -> {
+                DBMessageType.RICH.value -> {
                     val commodityMessage = gson.fromJson(message.message, CommodityMessage::class.java)
                     CommodityMessageBody.toCommodityMessageBody(commodityMessage)
                 }

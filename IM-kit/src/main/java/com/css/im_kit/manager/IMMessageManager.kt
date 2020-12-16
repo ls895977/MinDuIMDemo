@@ -48,9 +48,7 @@ object IMMessageManager {
      */
     private fun changeMessageStatus(message: ReceiveMessageBean) {
         ioScope.launch {
-            if (message.code == 2000) {
-                MessageRepository.changeMessageSendType(SendType.SUCCESS, message.m_id)
-            }
+            MessageRepository.changeMessageSendType(SendType.SUCCESS, message.message_id)
         }
     }
 
@@ -93,6 +91,7 @@ object IMMessageManager {
             val result = task.await()
             result?.let { msg ->
                 if (isSelf) {
+                    Log.e("发送消息",message.toSendMessageBean().toJsonString())
                     MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
                 }
                 messageCallback.forEach {

@@ -3,13 +3,21 @@ package com.css.im_kit.imservice.bean
 import com.css.im_kit.db.gson
 
 class SendMessageBean(
+        var m_id: String,
+        var type: Int,
+        var source: Int,
+        var receive_account: String,
+        var send_account: String,
         var content: String,
-        var chat_id: String,
-        var receive_id: String,
-        var send_id: String,
-        var type: String
+        var time: Long,
+        var extend: HashMap<String,String>
+
 ) {
     fun toJsonString(): String {
         return gson.toJson(this)
+    }
+
+    fun extendToJsonString(): String {
+        return gson.toJson(extend)
     }
 }

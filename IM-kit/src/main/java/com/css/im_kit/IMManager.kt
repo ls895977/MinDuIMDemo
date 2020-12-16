@@ -9,14 +9,18 @@ import com.css.im_kit.manager.IMMessageManager
 import com.kongqw.network.monitor.NetworkMonitorManager
 
 object IMManager {
-    fun build(context: Application) {
+    fun build(context: Application, app_id: String, app_secret: String) {
         MessageRepository.build(context)
         UserInfoRepository.build(context)
         NetworkMonitorManager.getInstance().init(context)
         MessageServiceUtils.init(context)
+        this.app_id = app_id
+        this.app_secret = app_secret
     }
 
     var userID: String? = null
+    var app_id: String? = null
+    var app_secret: String? = null
 
     /**
      * 连接聊天socket

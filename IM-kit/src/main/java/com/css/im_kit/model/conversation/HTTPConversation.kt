@@ -1,6 +1,5 @@
 package com.css.im_kit.model.conversation
 
-import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
 
@@ -33,7 +32,7 @@ chat_account_info	object
 聊天人的信息
  *
  */
-class SGConversation : Serializable {
+class HTTPConversation : Serializable {
     /**
      * 会话列表id
      */
@@ -54,10 +53,23 @@ class SGConversation : Serializable {
      */
     var shop_id: String? = null
 
+
     /**
-     * 最新消息
+     * 消息类型
      */
-    var newMessage: SGMessage? = null
+    var message_type: Int = 0
+
+    /**
+     * 消息创建时间
+     */
+    var created_time: String? = null
+    var updated_time: String? = null
+    var data_state: String? = null
+
+    /**
+     * 聊天内容
+     */
+    var content: String? = null
 
     /**
      * 新消息数量
@@ -75,20 +87,20 @@ class SGConversation : Serializable {
     var shop: Shop? = null
 
     constructor()
-    constructor(id: String?, account: String?, chat_account: String?, shop_id: String?, newMessage: SGMessage?, unread_account: Int, chat_account_info: SGUserInfo?, shop: Shop?) {
+    constructor(id: String?, account: String?, chat_account: String?, shop_id: String?, message_type: Int, created_time: String?, updated_time: String?, data_state: String?, content: String?, unread_account: Int, chat_account_info: SGUserInfo?, shop: Shop?) {
         this.id = id
         this.account = account
         this.chat_account = chat_account
         this.shop_id = shop_id
-        this.newMessage = newMessage
+        this.message_type = message_type
+        this.created_time = created_time
+        this.updated_time = updated_time
+        this.data_state = data_state
+        this.content = content
         this.unread_account = unread_account
         this.chat_account_info = chat_account_info
         this.shop = shop
     }
-}
 
-class Shop(
-        var shop_id: String,
-        var shop_name: String,
-        var log: String
-) : Serializable
+
+}

@@ -37,12 +37,12 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         binding?.addUser?.setOnClickListener {
             ioScope.launch {
                 val list = arrayListOf<UserInfo>()
-                val userInfo4 = UserInfo("222222", "", "本人", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo5 = UserInfo("111111", "shop", "测试1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo = UserInfo("100001", "shop", "昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo1 = UserInfo("100002", "shop", "昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo2 = UserInfo("100003", "shop", "昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo3 = UserInfo("100004", "shop", "昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo4 = UserInfo("183ff3fd37", "1", "本人", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo5 = UserInfo("8116f90a21", "2", "夏鹏", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo = UserInfo("100001", "2", "昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo1 = UserInfo("100002", "2", "昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo2 = UserInfo("100003", "2", "昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo3 = UserInfo("100004", "2", "昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 list.add(userInfo)
                 list.add(userInfo1)
                 list.add(userInfo2)

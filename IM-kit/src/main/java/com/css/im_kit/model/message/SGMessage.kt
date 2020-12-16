@@ -2,6 +2,7 @@ package com.css.im_kit.model.message
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
 
@@ -16,7 +17,7 @@ enum class MessageType(var str: String) {
     COMMODITY("COMMODITY");
 }
 
-class SGMessage :Serializable, MultiItemEntity {
+class SGMessage : Serializable, MultiItemEntity {
     /**
      * 会话id
      */
@@ -139,16 +140,30 @@ class SGMessage :Serializable, MultiItemEntity {
 
         fun format(message: Message): SGMessage {
             val sgMessage = SGMessage()
-            sgMessage.messageId = message.message_id
+            sgMessage.messageId = message.m_id
             sgMessage.type = when (message.message_type) {
-                MessageType.TEXT.str -> {
+                DBMessageType.TEXT.value -> {
                     MessageType.TEXT
                 }
-                MessageType.IMAGE.str -> {
+                DBMessageType.IMAGE.value -> {
                     MessageType.IMAGE
                 }
-                MessageType.COMMODITY.str -> {
+                //TODO 富文本消息需扩展出商品类型
+                DBMessageType.RICH.value -> {
                     MessageType.COMMODITY
+                }
+                //TODO 下面未实现功能
+                DBMessageType.VIDEO.value -> {
+                    MessageType.TEXT
+                }
+                DBMessageType.VOICE.value -> {
+                    MessageType.TEXT
+                }
+                DBMessageType.CLIENTRECEIPT.value -> {
+                    MessageType.TEXT
+                }
+                DBMessageType.SERVERRECEIPT.value -> {
+                    MessageType.TEXT
                 }
                 else -> {
                     MessageType.TEXT

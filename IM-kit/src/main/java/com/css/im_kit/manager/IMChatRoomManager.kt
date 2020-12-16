@@ -7,20 +7,24 @@ import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
+import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
+import com.css.im_kit.imservice.bean.DBMessageSource
+import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.BaseMessageBody
-import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
+import com.css.im_kit.utils.md5
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 object IMChatRoomManager {
     var conversation: SGConversation? = null
+    var source: DBMessageSource? = null
 
     //回调列表
     private var chatRoomCallback: ChatRoomCallback? = null
@@ -80,20 +84,58 @@ object IMChatRoomManager {
     fun sendTextMessage(text: String) {
         conversation?.let { conversation ->
             val time = System.currentTimeMillis()
+            val extend = hashMapOf<Any, Any>()
+            extend["shop_id"] = conversation.shop_id.toString()
             IMMessageManager.saveMessage(Message(
-                    message_id = IMManager.userID + time,
+                    m_id = (IMManager.userID + time).md5(),
                     send_account = IMManager.userID!!,
                     receive_account = conversation.chat_account ?: "",
                     shop_id = conversation.shop_id ?: "",
-                    message_type = MessageType.TEXT.str,
+                    message_type = DBMessageType.TEXT.value,
                     read_status = false,
                     send_status = SendType.SENDING.text,
                     send_time = time,
                     receive_time = time,
-                    message = text
+                    message = text,
+                    source = source!!.value,
+                    extend = gson.toJson(extend)
             ), true)
         }
 
+    }
+
+    private fun getMessageSource() {
+        ioScope.launch {
+            val userInfo = UserInfoRepository.loadById(IMManager.userID!!)
+            val chatUserInfo = UserInfoRepository.loadById(conversation?.chat_account!!)
+            if (userInfo != null && chatUserInfo != null) {
+                source = when (userInfo.user_type) {
+                    "1" -> {
+                        when (chatUserInfo.user_type) {
+                            "1" -> {
+                                DBMessageSource.USER2USER
+                            }
+                            else -> DBMessageSource.USER2SERVICE
+                        }
+                    }
+                    "2" -> {
+                        when (chatUserInfo.user_type) {
+                            else -> {
+                                DBMessageSource.SERVICE2USER
+                            }
+                        }
+                    }
+                    else -> {
+                        when (chatUserInfo.user_type) {
+                            "1" -> {
+                                DBMessageSource.SYSTEM2USER
+                            }
+                            else -> DBMessageSource.SYSTEM2SERVICE
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -102,17 +144,21 @@ object IMChatRoomManager {
     fun sendImageMessage(img: String) {
         conversation?.let { conversation ->
             val time = System.currentTimeMillis()
+            val extend = hashMapOf<Any, Any>()
+            extend["shop_id"] = conversation.shop_id.toString()
             IMMessageManager.saveMessage(Message(
-                    message_id = IMManager.userID + time,
+                    m_id = (IMManager.userID + time).md5(),
                     send_account = IMManager.userID!!,
                     receive_account = conversation.chat_account ?: "",
                     shop_id = conversation.shop_id ?: "",
-                    message_type = MessageType.IMAGE.str,
+                    message_type = DBMessageType.IMAGE.value,
                     read_status = false,
                     send_status = SendType.SENDING.text,
                     send_time = time,
                     receive_time = time,
-                    message = img
+                    message = img,
+                    source = source!!.value,
+                    extend = gson.toJson(extend)
             ), true)
         }
     }
@@ -123,17 +169,21 @@ object IMChatRoomManager {
     fun sendCommodityMessage(commodityMessage: CommodityMessage) {
         conversation?.let { conversation ->
             val time = System.currentTimeMillis()
+            val extend = hashMapOf<Any, Any>()
+            extend["shop_id"] = conversation.shop_id.toString()
             IMMessageManager.saveMessage(Message(
-                    message_id = IMManager.userID + time,
+                    m_id = (IMManager.userID + time).md5(),
                     send_account = IMManager.userID!!,
                     receive_account = conversation.chat_account ?: "",
                     shop_id = conversation.shop_id ?: "",
-                    message_type = MessageType.COMMODITY.str,
+                    message_type = DBMessageType.RICH.value,
                     read_status = false,
                     send_status = SendType.SENDING.text,
                     send_time = time,
                     receive_time = time,
-                    message = commodityMessage.toJsonString()
+                    message = commodityMessage.toJsonString(),
+                    source = source!!.value,
+                    extend = gson.toJson(extend)
             ), true)
         }
 
@@ -145,6 +195,7 @@ object IMChatRoomManager {
      */
     fun create() {
         getMessages()
+        getMessageSource()
         IMMessageManager.addMessageListener(myMessageCallback)
     }
 

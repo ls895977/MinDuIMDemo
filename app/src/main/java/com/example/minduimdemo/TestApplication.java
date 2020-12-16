@@ -17,7 +17,7 @@ public class TestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        IMManager.INSTANCE.build(this);
+        IMManager.INSTANCE.build(this,"","");
     }
 
     //static 代码段可以防止内存泄露

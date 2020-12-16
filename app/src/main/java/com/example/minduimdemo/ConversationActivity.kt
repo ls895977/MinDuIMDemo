@@ -8,7 +8,6 @@ import com.css.im_kit.ui.ConversationFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityConversationBinding
-import java.util.*
 
 class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener {
     private var conversation: SGConversation? = null
@@ -18,11 +17,11 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
 
     override fun initView() {
         conversation = intent.getSerializableExtra("conversation") as SGConversation?
-//        if (conversation?.chat_user?.user_type == "shop") {
+        if (conversation?.shop != null) {
             binding.nickName = conversation?.shop?.shop_name
-//        } else {
-//            binding.nickName = conversation?.chat_user?.nickname
-//        }
+        } else {
+            binding.nickName = conversation?.chat_account_info?.nickname
+        }
 
     }
 

@@ -86,13 +86,22 @@ object IMConversationManager {
         ioScope.launch {
             val task = async {
                 val sGConversation = SGConversation()
-                sGConversation.chat_account = "222222"
-                sGConversation.unread_account = 2
-                sGConversation.account = "111111"
+                /**
+                 *   this.id = id
+                this.account = account
+                this.chat_account = chat_account
+                this.shop_id = shop_id
+                this.newMessage = newMessage
+                this.unread_account = unread_account
+                this.chat_account_info = chat_account_info
+                this.shop = shop
+                 */
                 sGConversation.id = "111"
+                sGConversation.account = "183ff3fd37"
+                sGConversation.chat_account = "8116f90a21"
                 sGConversation.shop_id = "10086"
                 sGConversation.newMessage = SGMessage(
-                        shopId = "111111",
+                        shopId = "10086",
                         messageId = "22222222",
                         messageBody = TextMessageBody("dgdgdgdf"),
                         type = MessageType.TEXT,
@@ -103,6 +112,7 @@ object IMConversationManager {
                                 avatar = "geegege"
                         )
                 )
+                sGConversation.unread_account = 2
                 sGConversation.shop = Shop("111","店铺名","http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 conversations.add(sGConversation)
                 return@async conversations
