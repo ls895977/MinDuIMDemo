@@ -18,9 +18,14 @@ object IMManager {
         this.app_secret = app_secret
     }
 
-    var userID: String? = null
+    var account: String? = null
     var app_id: String? = null
     var app_secret: String? = null
+
+    /**
+     * 聊天列表url地址
+     */
+    var chatListUrl: String? = null
 
     /**
      * 连接聊天socket
@@ -29,11 +34,12 @@ object IMManager {
      * onLinkStatus 链接状态反馈
      */
     fun connect(socketUrl: String, token: String, userID: String, onLinkStatus: onLinkStatus) {
-        this.userID = userID
+        this.account = userID
         MessageServiceUtils.initService("$socketUrl?account=$token", onLinkStatus)
         //开启socket监听
         IMMessageManager.openSocketListener()
     }
+
 
     /**
      * 重新链接

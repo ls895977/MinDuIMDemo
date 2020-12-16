@@ -100,8 +100,8 @@ object IMConversationManager {
                 this.shop = shop
                  */
                 sGConversation.id = "111"
-                sGConversation.account = "183ff3fd37"
-                sGConversation.chat_account = "8116f90a21"
+                sGConversation.account = "8116f90a21"
+                sGConversation.chat_account = "183ff3fd37"
                 sGConversation.shop_id = "10086"
                 sGConversation.newMessage = SGMessage(
                         shopId = "10086",

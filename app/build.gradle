@@ -22,8 +22,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = appSourceCompatibility
-        targetCompatibility = appTargetCompatibility
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = "1.8"
     }
     dataBinding {
         enabled true

@@ -72,11 +72,11 @@ object IMChatRoomManager {
                         val message = MessageRepository.getMessage4messageId(messageID)
                         message?.let {
                             val sgMessage = SGMessage.format(message)
-                            if (message.send_account == IMManager.userID) {
+                            if (message.send_account == IMManager.account) {
                                 sgMessage.messageBody?.isSelf = true
                             }
                             val user = UserInfoRepository.loadById(
-                                    if (message.send_account == IMManager.userID)
+                                    if (message.send_account == IMManager.account)
                                         message.send_account
                                     else
                                         message.receive_account
@@ -118,8 +118,8 @@ object IMChatRoomManager {
             ioScope.launch {
                 async {
                     IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.userID + time).md5(),
-                            send_account = IMManager.userID!!,
+                            m_id = (IMManager.account + time).md5(),
+                            send_account = IMManager.account!!,
                             receive_account = conversation.chat_account ?: "",
                             shop_id = conversation.shop_id ?: "",
                             message_type = DBMessageType.TEXT.value,
@@ -140,7 +140,7 @@ object IMChatRoomManager {
 
     private fun getMessageSource() {
         ioScope.launch {
-            val userInfo = UserInfoRepository.loadById(IMManager.userID!!)
+            val userInfo = UserInfoRepository.loadById(IMManager.account!!)
             val chatUserInfo = UserInfoRepository.loadById(conversation?.chat_account!!)
             if (userInfo != null && chatUserInfo != null) {
                 source = when (userInfo.user_type) {
@@ -183,8 +183,8 @@ object IMChatRoomManager {
             ioScope.launch {
                 async {
                     IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.userID + time).md5(),
-                            send_account = IMManager.userID!!,
+                            m_id = (IMManager.account + time).md5(),
+                            send_account = IMManager.account!!,
                             receive_account = conversation.chat_account ?: "",
                             shop_id = conversation.shop_id ?: "",
                             message_type = DBMessageType.IMAGE.value,
@@ -212,8 +212,8 @@ object IMChatRoomManager {
             ioScope.launch {
                 async {
                     IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.userID + time).md5(),
-                            send_account = IMManager.userID!!,
+                            m_id = (IMManager.account + time).md5(),
+                            send_account = IMManager.account!!,
                             receive_account = conversation.chat_account ?: "",
                             shop_id = conversation.shop_id ?: "",
                             message_type = DBMessageType.RICH.value,
@@ -256,7 +256,7 @@ object IMChatRoomManager {
                         val resultMessage = MessageRepository.getMessage(conversation.shop_id ?: "")
                         resultMessage.forEach { message ->
                             val sgMessage = SGMessage.format(message)
-                            sgMessage.messageBody?.isSelf = message.send_account == IMManager.userID
+                            sgMessage.messageBody?.isSelf = message.send_account == IMManager.account
                             val user = UserInfoRepository.loadById(message.send_account)
                             user?.let {
                                 sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
