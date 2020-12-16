@@ -20,7 +20,7 @@ class SGUserInfo : Serializable {
 
     companion object {
         fun format(userInfo: UserInfo?): SGUserInfo {
-            return SGUserInfo(userInfo?.account, userInfo?.nickname, "", userInfo?.avatar)
+            return SGUserInfo(userInfo?.account, userInfo?.nickname, userInfo?.user_type, userInfo?.avatar)
         }
     }
 }
