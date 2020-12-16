@@ -72,7 +72,8 @@
                 android:layout_height="@dimen/dp_30"
                 android:layout_gravity="center_vertical"
                 android:padding="@dimen/dp_5"
-                android:src="@drawable/anim_loading_location" />
+                android:src="@drawable/anim_loading_location"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_content"

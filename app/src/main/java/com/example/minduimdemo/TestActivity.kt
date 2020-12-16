@@ -140,8 +140,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         binding?.initSocket?.setOnClickListener {
             val url = "ws://192.168.0.73:9502"
-            val token = "111111"
-            val userId = "111111"
+            val token = "183ff3fd37"
+            val userId = "183ff3fd37"
             IMManager.connect(url, token, userId, object : onLinkStatus {
                 override fun onLinkedSuccess() {
                     uiScope.launch {

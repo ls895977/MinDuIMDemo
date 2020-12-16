@@ -26,7 +26,7 @@ object IMManager {
      */
     fun connect(socketUrl: String, token: String, userID: String, onLinkStatus: onLinkStatus) {
         this.userID = userID
-        MessageServiceUtils.initService("$socketUrl?token=$token", onLinkStatus)
+        MessageServiceUtils.initService("$socketUrl?account=$token", onLinkStatus)
         //开启socket监听
         IMMessageManager.openSocketListener()
     }

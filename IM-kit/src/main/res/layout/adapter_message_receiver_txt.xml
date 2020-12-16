@@ -61,7 +61,6 @@
             android:background="@drawable/im_shape_ffffff_8dp"
             android:maxWidth="@dimen/dp_240"
             android:padding="@dimen/dp_10"
-            android:text="adsadsadsdasdsdadsadsadasdsadas"
             android:textColor="@color/color_333333"
             android:textSize="@dimen/sp_16" />
     </LinearLayout>

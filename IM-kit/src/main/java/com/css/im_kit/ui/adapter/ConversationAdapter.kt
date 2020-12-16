@@ -61,22 +61,26 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         //昵称 TODO
 //        helper.setVisible(R.id.tv_content, item.userInfo?.user_type == "1")
         helper.setText(R.id.tv_content, item.userInfo?.nickname)
+        helper.setGone(R.id.tv_content, true)
 
-        //加载圈
-        val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
-        if (item.messageBody?.sendType == SendType.SENDING) {
-            //判断是否在运行
-            if (!animationDrawable.isRunning) {
-                //开启帧动画
-                animationDrawable.start()
-            }
-        } else {
-            if (animationDrawable.isRunning) {
-                //开启帧动画
-                animationDrawable.stop()
+        //加载圈(自己的才有)
+        if (item.messageBody?.isSelf!!) {
+            val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
+            if (item.messageBody?.sendType == SendType.SENDING) {
+                helper.setGone(R.id.loading_image, true)
+                //判断是否在运行
+                if (!animationDrawable.isRunning) {
+                    //开启帧动画
+                    animationDrawable.start()
+                }
+            } else {
+                helper.setGone(R.id.loading_image, false)
+                if (animationDrawable.isRunning) {
+                    //开启帧动画
+                    animationDrawable.stop()
+                }
             }
         }
-
 
         when (item.itemType) {
             //send
