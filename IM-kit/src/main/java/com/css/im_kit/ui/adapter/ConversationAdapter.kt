@@ -58,9 +58,8 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         IMGlideUtil.loadAvatar(activity, item.userInfo?.avatar, helper.getView(R.id.iv_avatar))
 
         //昵称 TODO
-//        helper.setVisible(R.id.tv_content, item.userInfo?.user_type == "1")
         helper.setText(R.id.tv_user_name, item.userInfo?.nickname)
-        helper.setGone(R.id.tv_user_name, item.messageBody?.isSelf!!)
+        helper.setGone(R.id.tv_user_name, item.userInfo?.user_type == "2" && item.messageBody?.isSelf == false)
 
         //加载圈(自己的才有)
         item.messageBody?.isSelf?.let {

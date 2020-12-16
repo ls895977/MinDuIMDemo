@@ -90,4 +90,6 @@ dependencies {
 
     //图片查看器
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    //打开相册
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.6.0'
 }

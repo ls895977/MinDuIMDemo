@@ -10,16 +10,17 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.ImageMessageBody
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
-import com.css.im_kit.model.message.TextMessageBody
 import com.css.im_kit.ui.activity.BigPicActivity
 import com.css.im_kit.ui.adapter.ConversationAdapter
 import com.css.im_kit.ui.adapter.EmojiAdapter
@@ -48,6 +49,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     override fun initData() {
         messageList = arrayListOf()
         adapter = ConversationAdapter(requireActivity(), messageList)
+        (binding?.rvConversationList?.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
         binding?.rvConversationList?.adapter = adapter
         //设置事件
         setDataListener.onSetFragmentDataListener()
@@ -95,19 +97,18 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             hideView()
             when (view.id) {
                 R.id.tv_content -> {//文字消息点击
-                    ((adapter.data[position] as SGMessage).messageBody as TextMessageBody).text?.let {
-                        val mIntent = Intent(requireContext(), BigPicActivity::class.java)
-                        mIntent.putExtra("imageUrl", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-//                        startActivity(mIntent)
-                        val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
-                        ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
-                    }
+//                    IMChatRoomManager.sendImageMessage("http://testimg.supersg.cn/user/773870855045251072.jpeg")
+//                    ((adapter.data[position] as SGMessage).messageBody as TextMessageBody).text?.let {
+//                        val mIntent = Intent(requireContext(), BigPicActivity::class.java)
+//                        mIntent.putExtra("imageUrl", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+//                        val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
+//                        ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
+//                    }
                 }
                 R.id.iv_content -> {//图片，看大图
                     ((adapter.data[position] as SGMessage).messageBody as ImageMessageBody).imageUrl?.let {
                         val mIntent = Intent(requireContext(), BigPicActivity::class.java)
                         mIntent.putExtra("imageUrl", it)
-//                        startActivity(mIntent)
                         val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
                         ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
                     }
@@ -178,15 +179,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         //删除表情点击事件
         binding!!.ivDeleceEmoji.setOnClickListener {
             binding?.etContent?.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
-        }
-        //发送消息
-        binding!!.tvSend.setOnClickListener {
-            val sendText = binding?.etContent?.text.toString()
-            if (sendText.isEmpty()) {
-                return@setOnClickListener
-            }
-            IMChatRoomManager.sendTextMessage(sendText)
-            binding?.etContent?.setText("")
         }
         //输入区
         binding?.etContent?.setOnClickListener {
@@ -275,6 +267,20 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 }
             }
         }
+        //发送消息
+        binding!!.tvSend.setOnClickListener {
+            val sendText = binding?.etContent?.text.toString()
+            if (sendText.isEmpty()) {
+                return@setOnClickListener
+            }
+            IMChatRoomManager.sendTextMessage(sendText)
+            binding?.etContent?.setText("")
+        }
+        // 发送图片消息
+        binding!!.llSendPic.setOnClickListener {
+//            IMChatRoomManager.sendImageMessage("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608120424517&di=3abbf05c1c500622017ab15b277de074&imgtype=0&src=http%3A%2F%2Fimage.bitauto.com%2Fdealer%2Fnews%2F100041135%2F752e877a-9dc7-4d4a-ba58-7cebb49970fc.jpg")
+            IMChatRoomManager.sendImageMessage("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608120549318&di=279042dca12b7bc6fe874286fb2d5dd3&imgtype=0&src=http%3A%2F%2Fa4.att.hudong.com%2F25%2F99%2F19300000421423134190997943822.jpg")
+        }
     }
 
     /**
@@ -347,13 +353,12 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      */
     fun addProductOnClickListener(clickListener: View.OnClickListener) {
         binding!!.llSendProduct.setOnClickListener(clickListener)
-
     }
 
     /**
-     * 添加输入区（图片按钮）点击事件
+     * 选择商品后，发送商品消息
      */
-    fun addPicOnClickListener(clickListener: View.OnClickListener) {
-        binding!!.llSendPic.setOnClickListener(clickListener)
+    fun sendProductMessage(commodityMessage: CommodityMessage) {
+        IMChatRoomManager.sendCommodityMessage(commodityMessage)
     }
 }

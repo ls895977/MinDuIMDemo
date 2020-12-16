@@ -2,6 +2,7 @@ package com.example.minduimdemo
 
 import android.view.View
 import android.widget.Toast
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.ConversationFragment
@@ -45,11 +46,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         //发送商品消息点击事件
         conversationFragment?.addProductOnClickListener(View.OnClickListener {
             //发送商品消息（选择商品等后续逻辑） TODO
-
-        })
-        //发送图片消息点击事件
-        conversationFragment?.addPicOnClickListener(View.OnClickListener {
-            //发送图片消息（选择图片等后续逻辑） TODO
+            conversationFragment?.sendProductMessage(CommodityMessage("sdsa", "测试商品", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "200"))
         })
     }
 

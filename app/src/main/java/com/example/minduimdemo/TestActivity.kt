@@ -37,8 +37,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         binding?.addUser?.setOnClickListener {
             ioScope.launch {
                 val list = arrayListOf<UserInfo>()
-                val userInfo4 = UserInfo("183ff3fd37", "1", "崔勇", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo5 = UserInfo("8116f90a21", "2", "夏鹏", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo4 = UserInfo("183ff3fd37", "2", "崔勇", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo5 = UserInfo("8116f90a21", "1", "夏鹏", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo = UserInfo("100001", "2", "昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo1 = UserInfo("100002", "2", "昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo2 = UserInfo("100003", "2", "昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
@@ -140,8 +140,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         binding?.initSocket?.setOnClickListener {
             val url = "ws://192.168.0.73:9502"
-            val token = "8116f90a21"
-            val userId = "8116f90a21"
+            val token = "183ff3fd37"
+            val userId = "183ff3fd37"
             IMManager.connect(url, token, userId, object : onLinkStatus {
                 override fun onLinkedSuccess() {
                     uiScope.launch {
