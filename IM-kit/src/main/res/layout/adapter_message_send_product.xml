@@ -68,11 +68,11 @@
 
             <ImageView
                 android:id="@+id/loading_image"
-                android:layout_width="@dimen/dp_30"
-                android:layout_height="@dimen/dp_30"
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
                 android:layout_gravity="center_vertical"
-                android:padding="@dimen/dp_5"
-                android:src="@drawable/anim_loading_location"
+                android:layout_marginRight="@dimen/dp_5"
+                android:background="@drawable/anim_loading_location"
                 android:visibility="gone" />
 
             <LinearLayout

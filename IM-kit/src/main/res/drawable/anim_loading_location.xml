@@ -3,26 +3,26 @@
     android:oneshot="false">
     <item
         android:drawable="@drawable/im_loading_1"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_2"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_3"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_4"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_5"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_6"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_7"
-        android:duration="125" />
+        android:duration="80" />
     <item
         android:drawable="@drawable/im_loading_8"
-        android:duration="125" />
+        android:duration="80" />
 </animation-list>
