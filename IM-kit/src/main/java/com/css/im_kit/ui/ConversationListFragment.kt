@@ -69,7 +69,8 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * @showStr：显示文字内容
      */
     fun updateContentShowView(flag: Boolean, showStr: String) {
-        binding?.tvConnectStatus?.visibility = if (flag) View.VISIBLE else View.GONE
+        binding?.llConnect?.visibility = if (flag) View.VISIBLE else View.GONE
+        binding?.vLine?.visibility = if (flag) View.VISIBLE else View.GONE
         binding?.tvConnectStatus?.text = showStr
     }
 

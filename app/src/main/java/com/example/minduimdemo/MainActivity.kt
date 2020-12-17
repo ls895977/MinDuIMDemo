@@ -94,7 +94,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
                 uiScope.launch {
                     isConnected = true
                     //连接状态展示
-                    conversationListFragment?.updateContentShowView(true, "连接状态展示>连接socket成功")
+                    conversationListFragment?.updateContentShowView(false, "客服系统连接成功")
                     //获取第一次数据
                     IMConversationManager.getConversationList()//数据库room拿数据
                 }
@@ -104,7 +104,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
                 uiScope.launch {
                     isConnected = false
                     //连接状态展示
-                    conversationListFragment?.updateContentShowView(true, "连接状态展示>连接socket失败")
+                    conversationListFragment?.updateContentShowView(true, "客服系统连接失败")
                 }
             }
         })
