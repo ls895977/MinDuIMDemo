@@ -76,17 +76,15 @@ class ConversationFragment(private var conversation: SGConversation, var setData
          */
         IMSoftKeyBoardListenerUtil.setListener(requireActivity(), object : IMSoftKeyBoardListenerUtil.OnSoftKeyBoardChangeListener {
             override fun keyBoardShow(height: Int) {
-                //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
-//                if (emojiTag) {
-                emojiTag = false
-                binding?.llEmojiView?.visibility = View.GONE
-//                }
-                //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
-//                if (picTag) {
-                picTag = false
-                binding?.llPicView?.visibility = View.GONE
-//                }
                 keyboardTag = true
+                //隐藏表情输入区
+                emojiTag = false
+                binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send1)
+                binding?.llEmojiView?.visibility = View.GONE
+                //隐藏图片输入区
+                picTag = false
+                binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
+                binding?.llPicView?.visibility = View.GONE
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             }
@@ -201,6 +199,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             nowCheckTag = 0
             emojiTag = !emojiTag
             if (emojiTag) {//先关闭展开布局》再显示表情输入区
+                binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send2)
                 //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
                 if (picTag) {
                     picTag = false
@@ -222,6 +221,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             } else {
+                binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send1)
                 //展示软件盘区
                 showSoftKeyboard(binding?.etContent)
                 uiScope.launch {
@@ -238,6 +238,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             nowCheckTag = 0
             picTag = !picTag
             if (picTag) {//先关闭展开布局》再显示图片输入区
+                binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send4)
                 //隐藏表情输入区(只有显示的时候才隐藏，你面重复)
                 if (emojiTag) {
                     emojiTag = false
@@ -259,6 +260,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
             } else {
+                binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
                 //展示软件盘区
                 showSoftKeyboard(binding?.etContent)
                 uiScope.launch {

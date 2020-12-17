@@ -55,7 +55,7 @@
                 android:text="sdasdsdadsda"
                 android:textColor="@color/color_333333"
                 android:textSize="@dimen/sp_12"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/iv_content"
