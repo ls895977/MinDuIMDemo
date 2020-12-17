@@ -93,8 +93,6 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
             //send
             1 -> {//txt
                 helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
-                //点击事件
-                helper.addOnClickListener(R.id.tv_content)
             }
             2 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }

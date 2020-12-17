@@ -20,10 +20,7 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.CommodityMessageBody
-import com.css.im_kit.model.message.ImageMessageBody
-import com.css.im_kit.model.message.MessageType
-import com.css.im_kit.model.message.SGMessage
+import com.css.im_kit.model.message.*
 import com.css.im_kit.ui.activity.BigPicActivity
 import com.css.im_kit.ui.adapter.ConversationAdapter
 import com.css.im_kit.ui.adapter.EmojiAdapter
@@ -110,9 +107,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         adapter!!.setOnItemChildClickListener { adapter, view, position ->
             hideView()
             when (view.id) {
-                R.id.tv_content -> {//文字消息点击
-
-                }
                 R.id.iv_content -> {//图片，看大图
                     ((adapter.data[position] as SGMessage).messageBody as ImageMessageBody).imageUrl?.let {
                         val mIntent = Intent(requireContext(), BigPicActivity::class.java)
@@ -124,26 +118,43 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 R.id.ll_content -> {//商品，进详情
                     setClickProductListener.onGoProductDetail((adapter.data[position] as SGMessage).messageBody as CommodityMessageBody)
                 }
-                R.id.loading_image -> {//消息发送失败》重发(只有自己的消息可以重发)
-                    (adapter.data[position] as SGMessage).type?.let {
-                        when (it) {
-                            MessageType.TEXT -> {
-
-                            }
-                            MessageType.IMAGE -> {
-
-                            }
-                            MessageType.COMMODITY -> {
-
+                R.id.loading_image -> {//消息发送失败》重发!!!!!(只有自己的消息可以重发)
+                    (adapter.data[position] as SGMessage).let {
+                        ioScope.launch {
+                            async {
+                                when (it.type) {
+                                    MessageType.TEXT -> {
+                                        (it.messageBody as TextMessageBody).text?.let { it1 -> IMChatRoomManager.sendTextMessage(it1) }
+                                    }
+                                    MessageType.IMAGE -> {
+                                        (it.messageBody as ImageMessageBody).imageUrl?.let { it1 -> IMChatRoomManager.sendImageMessage(it1) }
+                                    }
+                                    MessageType.COMMODITY -> {
+                                        (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
+                                    }
+                                    else -> return@async
+                                }
                             }
                         }
                     }
                 }
-                R.id.iv_close -> {//关闭发送商品消息（type=7）
-
+                R.id.iv_close -> {//关闭发送商品消息（type=7）TODO
+                    adapter.data.removeAt(position)
+                    adapter.notifyDataSetChanged()
                 }
-                R.id.tv_send -> {//发送商品（type=7）
-
+                R.id.tv_send -> {//发送商品（type=7） TODO
+                    (adapter.data[position] as SGMessage).let {
+                        ioScope.launch {
+                            async {
+                                when (it.type) {
+                                    MessageType.COMMODITY -> {
+                                        (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
+                                    }
+                                    else -> return@async
+                                }
+                            }
+                        }
+                    }
                 }
                 R.id.item_view -> {//整个item
 
