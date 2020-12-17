@@ -16,9 +16,11 @@ import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.message.CommodityMessageBody
 import com.css.im_kit.model.message.ImageMessageBody
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
@@ -36,7 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class ConversationFragment(private var conversation: SGConversation, var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationBinding?>() {
+class ConversationFragment(private var conversation: SGConversation, var setDataListener: IMListener.SetDataListener, var setClickProductListener: IMListener.SetClickProductListener) : BaseFragment<FragmentConversationBinding?>() {
     private var keyboardTag = false//软键盘状态
     private var emojiTag = false//表情区域状态
     private var picTag = false//照相机区域状态
@@ -120,8 +122,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     }
                 }
                 R.id.ll_content -> {//商品，进详情
-
-
+                    setClickProductListener.onGoProductDetail((adapter.data[position] as SGMessage).messageBody as CommodityMessageBody)
                 }
                 R.id.loading_image -> {//消息发送失败》重发(只有自己的消息可以重发)
                     (adapter.data[position] as SGMessage).type?.let {
@@ -138,7 +139,13 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         }
                     }
                 }
-                R.id.item_view -> {
+                R.id.iv_close -> {//关闭发送商品消息（type=7）
+
+                }
+                R.id.tv_send -> {//发送商品（type=7）
+
+                }
+                R.id.item_view -> {//整个item
 
                 }
             }
@@ -156,7 +163,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         //输入区
         binding!!.etContent.addTextChangedListener {
             val str = binding?.etContent?.text.toString()
-            if (str.isNotEmpty()) {
+            if (str.trim().isNotEmpty()) {
                 binding?.tvSend?.visibility = View.VISIBLE
             } else {
                 binding?.tvSend?.visibility = View.GONE
@@ -357,8 +364,14 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     /**
      * 选择商品后，发送商品消息
      */
-    fun sendProductMessage(commodityMessage: CommodityMessage) {
-        IMChatRoomManager.sendCommodityMessage(commodityMessage)
+    fun sendProductMessage(commodityMessageS: ArrayList<CommodityMessage>) {
+        ioScope.launch {
+            async {
+                commodityMessageS.forEach {
+                    IMChatRoomManager.sendCommodityMessage(it)
+                }
+            }
+        }
     }
 
     /**
@@ -372,8 +385,24 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * 选择图片后，发送图片消息
      */
     fun sendImageMessage(images: ArrayList<String>) {
-        images.forEach {
-            IMChatRoomManager.sendImageMessage(it)
+        ioScope.launch {
+            async {
+                images.forEach {
+                    IMChatRoomManager.sendImageMessage(it)
+                }
+            }
+        }
+    }
+
+    /**
+     * （用户端，商品详情）进入聊天时，发送一条当前本书第商品消息
+     * （type=7）
+     */
+    fun sendProductMessage(commodityMessage: CommodityMessage) {
+        ioScope.launch {
+            async {
+                IMChatRoomManager.sendCommodityMessage(commodityMessage)
+            }
         }
     }
 }

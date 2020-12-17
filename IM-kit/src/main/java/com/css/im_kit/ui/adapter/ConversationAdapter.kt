@@ -130,11 +130,13 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
             //本地消息（发送在本地的）
             7 -> {//product
-//                helper.getView<ImageView>(R.id.iv_product_image)
-//                helper.getView<TextView>(R.id.tv_product_name)
-//                helper.getView<TextView>(R.id.tv_product_price)
-//                helper.getView<ImageView>(R.id.iv_close)
-//                helper.getView<TextView>(R.id.tv_send)
+                val message = item.messageBody as CommodityMessageBody
+                helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
+                helper.setText(R.id.tv_product_name, message.commodityName)
+                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
+                //点击事件
+                helper.addOnClickListener(R.id.iv_close)
+                helper.addOnClickListener(R.id.tv_send)
             }
         }
 

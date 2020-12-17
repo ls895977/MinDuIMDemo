@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.message.CommodityMessageBody
 import com.css.im_kit.ui.ConversationFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
@@ -15,7 +16,7 @@ import com.example.minduimdemo.utils.ChooseCameraPicUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 
-class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener {
+class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener, IMListener.SetClickProductListener {
     private var conversation: SGConversation? = null
     private var conversationFragment: ConversationFragment? = null
 
@@ -32,14 +33,13 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
     }
 
     override fun initData() {
-        conversationFragment = conversation?.let { ConversationFragment(it, this) }
+        conversationFragment = conversation?.let { ConversationFragment(it, this, this) }
         val transaction = this@ConversationActivity.supportFragmentManager.beginTransaction()
         transaction.replace(R.id.container, conversationFragment!!)
         transaction.commit()
     }
 
-    override fun initListeners() {
-    }
+    override fun initListeners() {}
 
     /**
      * Fragment初始化好了
@@ -50,8 +50,9 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         conversationFragment?.updateData()
         //发送商品消息点击事件
         conversationFragment?.addProductOnClickListener(View.OnClickListener {
-            //发送商品消息（选择商品等后续逻辑） TODO
-            conversationFragment?.sendProductMessage(CommodityMessage("sdsa", "测试商品", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "200"))
+            val commodityMessageLists = arrayListOf<CommodityMessage>()
+            commodityMessageLists.add(CommodityMessage("sdsa", "测试商品", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "200"))
+            conversationFragment?.sendProductMessage(commodityMessageLists)
         })
         conversationFragment?.addImageOnClickListener(View.OnClickListener {
             ChooseCameraPicUtil.choosePic(this)
@@ -95,11 +96,18 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         }
     }
 
-    override fun onDestroy() {
-        IMChatRoomManager.dismissSgMessageCallback()
-        Toast.makeText(this, "退出会话", Toast.LENGTH_SHORT).show()
-        super.onDestroy()
+    /**
+     * 点击了商品消息》跳转商品详情
+     */
+    override fun onGoProductDetail(productMessage: CommodityMessageBody?) {
+        Toast.makeText(this, "跳转商品详情", Toast.LENGTH_SHORT).show()
     }
 
-
+    /**
+     * 退出回话
+     */
+    override fun onDestroy() {
+        IMChatRoomManager.dismissSgMessageCallback()
+        super.onDestroy()
+    }
 }

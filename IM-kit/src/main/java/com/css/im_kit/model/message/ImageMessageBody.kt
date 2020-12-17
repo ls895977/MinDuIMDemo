@@ -6,6 +6,7 @@ package com.css.im_kit.model.message
 class ImageMessageBody : BaseMessageBody {
     var imageUrl: String? = null
 
+
     constructor() : super()
     constructor(imageUrl: String?) : super() {
         this.imageUrl = imageUrl
