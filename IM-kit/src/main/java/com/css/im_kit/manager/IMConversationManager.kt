@@ -1,24 +1,21 @@
 package com.css.im_kit.manager
 
-import android.util.Log
 import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.uiScope
-import com.css.im_kit.http.BaseData
 import com.css.im_kit.http.Retrofit
-import com.css.im_kit.model.conversation.HTTPConversation
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.withContext
+import retrofit2.awaitResponse
 
 object IMConversationManager {
 
@@ -99,45 +96,36 @@ object IMConversationManager {
     private fun integrationConversation() {
         ioScope.launch {
             try {
-                val async = async {
-                    val nonce_str = System.currentTimeMillis().toString().md5()
+                withContext(Dispatchers.Default) {
+                    val nonceStr = System.currentTimeMillis().toString().md5()
                     val map = HashMap<String, String>()
                     map["account"] = IMManager.account ?: ""
                     map["app_id"] = IMManager.app_id ?: ""
-                    map["nonce_str"] = nonce_str
-                    val sign = map.generateSignature(IMManager.app_secret ?: "")
+                    map["nonce_str"] = nonceStr
                     Retrofit.api?.chatList(
                             url = IMManager.chatListUrl ?: "",
-                            nonce_str = nonce_str,
+                            nonce_str = nonceStr,
                             app_id = IMManager.app_id ?: "",
                             account = IMManager.account ?: "",
-                            sign = sign
+                            sign = map.generateSignature(IMManager.app_secret ?: "")
                     )
-                }
-                val result = async.await()
-                result?.enqueue(object : Callback<BaseData<MutableList<HTTPConversation>>> {
-                    @Synchronized
-                    override fun onFailure(call: Call<BaseData<MutableList<HTTPConversation>>>, t: Throwable) {
-                        Log.e("!11", t.message ?: "")
-                    }
-
-                    @Synchronized
-                    override fun onResponse(call: Call<BaseData<MutableList<HTTPConversation>>>, response: Response<BaseData<MutableList<HTTPConversation>>>) {
-                        Log.e("!11", response.message().toString())
-                        response.body()?.let {
+                }?.awaitResponse()?.apply {
+                    if (isSuccessful) {
+                        body()?.let {
                             if (it.code == "20000") {
                                 sgConversations.clear()
                                 it.data.forEach { item ->
                                     sgConversations.add(item.toSGConversation())
                                 }
-                                sgConversationCallbacks.forEach { callback ->
-                                    callback.onConversationList(sgConversations)
+                                uiScope.launch {
+                                    sgConversationCallbacks.forEach { callback ->
+                                        callback.onConversationList(sgConversations)
+                                    }
                                 }
                             }
                         }
                     }
-
-                })
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

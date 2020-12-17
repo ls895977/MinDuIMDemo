@@ -135,13 +135,15 @@ class HTTPConversation : Serializable {
         val baseMessageBody :BaseMessageBody = when(message_type){
             DBMessageType.TEXT.value->{
                 messageType = MessageType.TEXT
-                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = content?:"")
+                val map = gson.fromJson(content,HashMap::class.java)
+                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = map["content"].toString())
             }
             DBMessageType.IMAGE.value->{
                 messageType = MessageType.IMAGE
-                ImageMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,imageUrl = content?:"")
+                val map = gson.fromJson(content,HashMap::class.java)
+                ImageMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,imageUrl =map["content"].toString())
             }
-            DBMessageType.CLIENTRECEIPT.value->{
+            DBMessageType.RICH.value->{
                 messageType = MessageType.COMMODITY
                 val commodity = gson.fromJson(content,CommodityMessage::class.java)
                 CommodityMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0"
