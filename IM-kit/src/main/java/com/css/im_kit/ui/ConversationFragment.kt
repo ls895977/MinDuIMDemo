@@ -54,7 +54,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     override fun initData() {
         messageList = arrayListOf()
         adapter = ConversationAdapter(requireActivity(), messageList)
-        (binding?.rvConversationList?.itemAnimator as DefaultItemAnimator?)?.supportsChangeAnimations = false
         binding?.rvConversationList?.adapter = adapter
         //设置事件
         setDataListener.onSetFragmentDataListener()
@@ -315,6 +314,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     @Synchronized
                     override fun onMessages(message: List<SGMessage>) {
                         //拉去数据库没聊天列表
+                        messageList.clear()
                         messageList.addAll(message)
                         adapter?.notifyDataSetChanged()
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
