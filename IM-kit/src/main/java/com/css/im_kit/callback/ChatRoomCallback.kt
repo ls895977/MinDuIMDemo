@@ -7,7 +7,7 @@ interface ChatRoomCallback {
     /**
      * 接收消息
      */
-    fun onReceiveMessage(message: SGMessage)
+    fun onReceiveMessage(message: List<SGMessage>)
 
     /**
      * 全部消息
@@ -17,5 +17,5 @@ interface ChatRoomCallback {
     /**
      * 发送消息进度
      */
-    fun onMessageInProgress(message: SGMessage)
+    suspend fun onMessageInProgress(message: SGMessage)
 }

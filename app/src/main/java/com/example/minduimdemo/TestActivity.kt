@@ -75,7 +75,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                             /**
                              * 新消息
                              */
-                            override fun onReceiveMessage(message: SGMessage) {
+                            override fun onReceiveMessage(message: List<SGMessage>) {
                                 Log.e("111", "1111")
                             }
 
@@ -86,12 +86,11 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                                 Log.e("111", "1111")
                             }
 
-                            /**
-                             * 消息发送成功回调
-                             */
-                            override fun onMessageInProgress(message: SGMessage) {
+                            @Synchronized
+                            override suspend fun onMessageInProgress(message: SGMessage) {
                                 Log.e("111", "1111")
                             }
+
 
                         })
                         .create()
@@ -128,7 +127,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 }
                 MessageType.IMAGE -> {
                     rewStaue = MessageType.COMMODITY
-                    IMChatRoomManager.sendImageMessage("http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                    IMChatRoomManager.sendImageMessages(arrayListOf("http://testimg.supersg.cn/user/773870855045251072.jpeg"))
                 }
                 MessageType.COMMODITY -> {
                     rewStaue = MessageType.TEXT
@@ -139,8 +138,8 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         binding?.initSocket?.setOnClickListener {
             val url = "ws://192.168.0.73:9502"
-            val token = "183ff3fd37"
-            val userId = "183ff3fd37"
+            val token = "8116f90a21"
+            val userId = "8116f90a21"
             IMManager.connect(url, token, userId, object : onLinkStatus {
                 override fun onLinkedSuccess() {
                     uiScope.launch {

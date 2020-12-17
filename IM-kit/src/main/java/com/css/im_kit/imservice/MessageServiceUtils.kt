@@ -66,6 +66,7 @@ object MessageServiceUtils {
      * event 事件名称
      * message 消息内容
      */
+    @Synchronized
     fun sendNewMsg(message: String) {
         myBindService?.sendNewMsg(message)
     }
@@ -85,6 +86,7 @@ object MessageServiceUtils {
                 }
             })
             myBindService?.setOnResultMessage(object : onResultMessage {
+                @Synchronized
                 override fun onMessage(context: String) {
                     onResultMessage?.onMessage(context)
                 }

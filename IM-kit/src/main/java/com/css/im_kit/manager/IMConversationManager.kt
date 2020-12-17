@@ -4,7 +4,6 @@ import android.util.Log
 import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
-import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.uiScope
@@ -69,29 +68,34 @@ object IMConversationManager {
      * socket新消息监听
      */
     private var myMessageCallback = object : MessageCallback {
-        override fun onReceiveMessage(message: SGMessage) {
+        @Synchronized
+        override fun onReceiveMessage(messages: MutableList<SGMessage>) {
             uiScope.launch {
                 sgConversations.forEach {
-                    if (message.shopId == it.shop_id) {
-                        val task = async {
-                            MessageRepository.getNoReadData(message.shopId)
+                    messages.forEachIndexed { index, message ->
+                        if (message.shopId == it.shop_id) {
+                            val task = async {
+                                MessageRepository.getNoReadData(message.shopId)
+                            }
+                            val result = task.await()
+                            it.unread_account = result
+                            it.newMessage = message
+                            sgConversationCallbacks.forEach { callback ->
+                                callback.onConversationList(sgConversations)
+                            }
+                            return@forEachIndexed
                         }
-                        val result = task.await()
-                        it.unread_account = result
-                        it.newMessage = message
-                        sgConversationCallbacks.forEach { callback ->
-                            callback.onConversationList(sgConversations)
-                        }
-                        return@launch
                     }
                 }
             }
         }
 
+        @Synchronized
         override fun onSendMessageReturn(shop_id: String, messageID: String) {
         }
     }
 
+    @Synchronized
     private fun integrationConversation() {
         ioScope.launch {
             try {
@@ -100,22 +104,24 @@ object IMConversationManager {
                     val map = HashMap<String, String>()
                     map["account"] = IMManager.account ?: ""
                     map["app_id"] = IMManager.app_id ?: ""
-                    map["nonce_str"] =  nonce_str
-                    val sign = map.generateSignature(IMManager.app_secret?:"")
+                    map["nonce_str"] = nonce_str
+                    val sign = map.generateSignature(IMManager.app_secret ?: "")
                     Retrofit.api?.chatList(
                             url = IMManager.chatListUrl ?: "",
                             nonce_str = nonce_str,
-                            app_id =  IMManager.app_id?:"",
+                            app_id = IMManager.app_id ?: "",
                             account = IMManager.account ?: "",
                             sign = sign
                     )
                 }
                 val result = async.await()
                 result?.enqueue(object : Callback<BaseData<MutableList<HTTPConversation>>> {
+                    @Synchronized
                     override fun onFailure(call: Call<BaseData<MutableList<HTTPConversation>>>, t: Throwable) {
                         Log.e("!11", t.message ?: "")
                     }
 
+                    @Synchronized
                     override fun onResponse(call: Call<BaseData<MutableList<HTTPConversation>>>, response: Response<BaseData<MutableList<HTTPConversation>>>) {
                         Log.e("!11", response.message().toString())
                         response.body()?.let {

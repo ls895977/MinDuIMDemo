@@ -7,7 +7,7 @@ interface MessageCallback {
     /**
      * 接收消息
      */
-    fun onReceiveMessage(message: SGMessage)
+    fun onReceiveMessage(message: MutableList<SGMessage>)
 
     /**
      * 接收到消息发送成功回执

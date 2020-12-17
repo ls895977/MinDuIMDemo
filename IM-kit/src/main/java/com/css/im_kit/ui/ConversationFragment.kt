@@ -4,6 +4,7 @@ import android.content.Intent
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.widget.Toast
@@ -20,7 +21,10 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
-import com.css.im_kit.model.message.*
+import com.css.im_kit.model.message.CommodityMessageBody
+import com.css.im_kit.model.message.ImageMessageBody
+import com.css.im_kit.model.message.MessageType
+import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.activity.BigPicActivity
 import com.css.im_kit.ui.adapter.ConversationAdapter
 import com.css.im_kit.ui.adapter.EmojiAdapter
@@ -124,13 +128,13 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                             async {
                                 when (it.type) {
                                     MessageType.TEXT -> {
-                                        (it.messageBody as TextMessageBody).text?.let { it1 -> IMChatRoomManager.sendTextMessage(it1) }
+                                        //  (it.messageBody as TextMessageBody).text?.let { it1 -> IMChatRoomManager.sendTextMessage(it1) }
                                     }
                                     MessageType.IMAGE -> {
-                                        (it.messageBody as ImageMessageBody).imageUrl?.let { it1 -> IMChatRoomManager.sendImageMessage(it1) }
+                                        // (it.messageBody as ImageMessageBody).imageUrl?.let { it1 -> IMChatRoomManager.sendImageMessage(it1) }
                                     }
                                     MessageType.COMMODITY -> {
-                                        (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
+                                        // (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
                                     }
                                     else -> return@async
                                 }
@@ -312,13 +316,15 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         IMChatRoomManager
                 .initConversation(conversation)
                 .addSGConversationListListener(object : ChatRoomCallback {
-                    override fun onReceiveMessage(message: SGMessage) {
+                    @Synchronized
+                    override fun onReceiveMessage(message: List<SGMessage>) {
                         //发送成功，接收到消息，插入当前返回的这一条Message
-                        messageList.add(message)
-                        adapter?.notifyItemChanged(messageList.size)
+                        messageList.addAll(message)
+                        adapter?.notifyItemRangeChanged(messageList.size - message.size, messageList.size)
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
                     }
 
+                    @Synchronized
                     override fun onMessages(message: List<SGMessage>) {
                         //拉去数据库没聊天列表
                         messageList.addAll(message)
@@ -326,7 +332,9 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
                     }
 
-                    override fun onMessageInProgress(message: SGMessage) {
+                    @Synchronized
+                    override suspend fun onMessageInProgress(message: SGMessage) {
+                        Log.e("消息发送进度", message.messageId)
                         //消息发送进度
                         messageList.forEachIndexed { index, sgMessage ->
                             if (sgMessage.messageId == message.messageId) {

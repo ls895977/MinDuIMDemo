@@ -17,6 +17,7 @@ object MessageRepository {
     /**
      * 获取消息列表
      */
+    @Synchronized
     suspend fun getMessage(shop_id: String): List<Message> {
         return dao?.getMessages(shop_id) ?: arrayListOf()
     }
@@ -25,6 +26,7 @@ object MessageRepository {
      * 获取消息
      * messageId 消息id
      */
+    @Synchronized
     suspend fun getMessage4messageId(messageId: String): Message? {
         return dao?.getMessage4messageId(messageId)
     }
@@ -36,14 +38,17 @@ object MessageRepository {
     SUCCESS(1),
     FAIL(2)
      */
+    @Synchronized
     suspend fun changeMessageSendType(sendType: SendType, messageId: String) {
         dao?.changeMessageSendType(sendType.text, arrayListOf(messageId))
     }
 
+    @Synchronized
     suspend fun insert(message: Message) {
         dao?.insert(message)
     }
 
+    @Synchronized
     suspend fun insertDatas(messages: List<Message>) {
         dao?.insertDatas(messages)
     }
@@ -52,6 +57,7 @@ object MessageRepository {
      * 获取最新消息新消息
      * conversationId ： 会话id
      */
+    @Synchronized
     suspend fun getLast(shop_id: String?): Message? {
         return if (shop_id.isNullOrEmpty()) {
             dao?.getLast()
@@ -60,15 +66,16 @@ object MessageRepository {
         }
     }
 
+    @Synchronized
     suspend fun getLast(): Message? {
         return getLast(null)
     }
 
-
+    @Synchronized
     suspend fun update(message: Message) {
         dao?.update(message)
     }
-
+    @Synchronized
     suspend fun update(messages: List<Message>) {
         dao?.update(messages)
     }
@@ -76,18 +83,22 @@ object MessageRepository {
     /**
      * 设置消息已读
      */
+    @Synchronized
     suspend fun read(messageIds: List<String>) {
         dao?.read(messageIds, true)
     }
 
+    @Synchronized
     suspend fun getNoReadData(shop_id: String): Int {
         return dao?.getNoReadData(shop_id, false)?.size ?: 0
     }
 
+    @Synchronized
     suspend fun delete(message: Message) {
         dao?.delete(message)
     }
 
+    @Synchronized
     suspend fun deleteAll() {
         dao?.deleteAll()
     }

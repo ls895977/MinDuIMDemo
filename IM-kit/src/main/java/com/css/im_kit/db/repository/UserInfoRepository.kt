@@ -12,26 +12,32 @@ object UserInfoRepository {
         dao = context.imDb().userDao
     }
 
+    @Synchronized
     suspend fun getAll(): List<UserInfo>? {
         return dao?.getAll()
     }
 
+    @Synchronized
     suspend fun loadById(userId: String): UserInfo? {
         return dao?.loadAllById(userId)
     }
 
+    @Synchronized
     suspend fun insert(user: UserInfo) {
         dao?.insert(user)
     }
 
+    @Synchronized
     suspend fun insertDatas(users: List<UserInfo>) {
         dao?.insertDatas(users)
     }
 
+    @Synchronized
     suspend fun update(user: UserInfo) {
         dao?.update(user)
     }
 
+    @Synchronized
     suspend fun deleteAll() {
         dao?.deleteAll()
     }
@@ -39,6 +45,7 @@ object UserInfoRepository {
     /**
      * 修改昵称
      */
+    @Synchronized
     suspend fun changeName(userId: String, username: String) {
         dao?.updateUserName(userId, username)
     }
@@ -46,6 +53,7 @@ object UserInfoRepository {
     /**
      * 修改头像
      */
+    @Synchronized
     suspend fun changeAvatar(userId: String, avatar: String) {
         dao?.updateAvatar(userId, avatar)
     }
@@ -53,6 +61,7 @@ object UserInfoRepository {
     /**
      * 添加或者修改用户资料
      */
+    @Synchronized
     suspend fun insertOrUpdateUser(user: UserInfo): Boolean {
         try {
             dao?.getAll()?.let { userInfos ->
