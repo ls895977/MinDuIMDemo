@@ -11,7 +11,7 @@ import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
 
-class ConversationListFragment(var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
+class ConversationListFragment(private var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
     private var conversationList = arrayListOf<SGConversation>()
     private var conversationListAdapter: ConversationListAdapter? = null
