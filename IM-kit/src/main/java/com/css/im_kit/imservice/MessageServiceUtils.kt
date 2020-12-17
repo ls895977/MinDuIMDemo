@@ -10,6 +10,7 @@ import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.service.IMService
 import com.css.im_kit.imservice.service.IMService.IMServiceBinder
 import java.lang.Exception
+
 object MessageServiceUtils {
     private var onResultMessage: onResultMessage? = null
     private var onLinkStatus: onLinkStatus? = null
@@ -28,6 +29,16 @@ object MessageServiceUtils {
         intent.putExtra("serViceUrl", CHAT_SERVER_URL)
         mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
+    /**
+     * 必需建立在已初始化聊天服务情况下
+     * CHAT_SERVER_URL 聊天服务地址
+     * onLinkStatus 链接状态反馈
+     */
+    fun initService(CHAT_SERVER_URL: String?) {
+        val intent = Intent(mApplication, IMService::class.java)
+        intent.putExtra("serViceUrl", CHAT_SERVER_URL)
+        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
+    }
 
     /**
      * 重新链接
@@ -42,8 +53,9 @@ object MessageServiceUtils {
      */
     fun closeConnect() {
         try {
-        mApplication?.unbindService(imServiceConn)
-        }catch ( e:Exception){}
+            mApplication?.unbindService(imServiceConn)
+        } catch (e: Exception) {
+        }
     }
 
     /**
