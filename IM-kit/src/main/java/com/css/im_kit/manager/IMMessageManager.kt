@@ -16,9 +16,7 @@ import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 object IMMessageManager {
 
@@ -198,7 +196,7 @@ object IMMessageManager {
     @Synchronized
     fun messageReplay(messageId: String) {
         uiScope.launch {
-            async {
+            withContext(Dispatchers.Default) {
                 val dbMessage = MessageRepository.getMessage4messageId(messageId)
 
                 dbMessage?.let { message ->

@@ -18,7 +18,7 @@ public class TestApplication extends Application {
         super.onCreate();
         mContext = this;
         IMManager.INSTANCE.build(this, "1607505722", "uN29TNVRilVmwqHw7aIMQfDZyw2ltVZO");
-        IMManager.INSTANCE.setIMURL("http://192.168.0.73:9501", "listC");
+        IMManager.INSTANCE.setIMURL("http://devchatapi.supersg.cn", "listC");
     }
 
     //static 代码段可以防止内存泄露

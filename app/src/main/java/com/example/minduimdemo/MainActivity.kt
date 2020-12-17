@@ -86,7 +86,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
 
     private var isConnected = false
     private fun connectionIMService() {
-        val url = "ws://192.168.0.73:9502"
+        val url = "ws://devchatws.supersg.cn"
         val token = "8116f90a21"
         val userId = "8116f90a21"
         IMManager.connect(url, token, userId, object : onLinkStatus {
