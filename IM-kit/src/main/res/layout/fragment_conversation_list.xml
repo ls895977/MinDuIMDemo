@@ -18,9 +18,11 @@
             android:visibility="gone">
 
             <ImageView
-                android:layout_width="@dimen/dp_18"
-                android:layout_height="@dimen/dp_18"
-                android:src="@drawable/im_loading_default" />
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20"
+                android:gravity="center"
+                android:padding="@dimen/dp_1"
+                android:src="@drawable/im_icon_no_connect" />
 
             <TextView
                 android:id="@+id/tv_connect_status"
