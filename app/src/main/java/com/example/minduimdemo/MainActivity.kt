@@ -1,12 +1,9 @@
 package com.example.minduimdemo
 
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.css.im_kit.IMManager
-import com.css.im_kit.http.Retrofit.api
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.ConversationListFragment
@@ -14,9 +11,6 @@ import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
 import com.example.minduimdemo.databinding.ActivityMainBinding
 import com.scwang.smart.refresh.layout.api.RefreshLayout
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,41 +34,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         transaction.commit()
     }
 
-    private fun requestByRxChatList() {
-        GlobalScope.launch(Dispatchers.Main) {
-            try {
-                val async = async {
-                    api?.chatList(
-                            url = IMManager.chatListUrl ?: "",
-                            account = IMManager.account ?: "",
-                            app_id = IMManager.app_id ?: "",
-                            app_secret = IMManager.app_secret ?: ""
-                    )
-                }
-                val result = async.await()
-                result?.enqueue(object :Callback<List<SGConversation>> {
-                    override fun onFailure(call: Call<List<SGConversation>>, t: Throwable) {
-                        Log.e("!11",t.message?:"")
-                    }
-
-                    override fun onResponse(call: Call<List<SGConversation>>, response: Response<List<SGConversation>>) {
-                        Log.e("!11",response.message().toString())
-                    }
-
-                })
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     override fun initListeners() {
         //刷新
         binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
             pageSize = 1
             IMConversationManager.getConversationList()//数据库room拿数据
             refreshLayout.finishRefresh()
-            requestByRxChatList()
 //            conversationListFragment?.refreshDataList(getData())
 //            //连接状态展示
 //            conversationListFragment?.updateContentShowView(true, "连接状态展示>连接失败（假的）")

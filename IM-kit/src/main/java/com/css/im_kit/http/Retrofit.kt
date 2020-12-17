@@ -1,5 +1,6 @@
 package com.css.im_kit.http
 
+import com.css.im_kit.IMManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -7,10 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 object Retrofit {
     var retrofit: Retrofit? = null
     var api: Api? = null
-    private fun initRetrofit() {
+    fun initRetrofit() {
         val okHttpClient = OkHttpClient.Builder()
         retrofit = Retrofit.Builder()
-                .baseUrl("https://api.github.com/")
+                .baseUrl(IMManager.baseUrl)
                 .client(okHttpClient.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()

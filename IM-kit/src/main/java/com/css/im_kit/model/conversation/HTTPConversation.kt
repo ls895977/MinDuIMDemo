@@ -1,5 +1,9 @@
 package com.css.im_kit.model.conversation
 
+import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.gson
+import com.css.im_kit.imservice.bean.DBMessageType
+import com.css.im_kit.model.message.*
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
 
@@ -33,6 +37,7 @@ chat_account_info	object
  *
  */
 class HTTPConversation : Serializable {
+
     /**
      * 会话列表id
      */
@@ -102,5 +107,70 @@ class HTTPConversation : Serializable {
         this.shop = shop
     }
 
+    /**
+    this.id = id
+    this.account = account
+    this.chat_account = chat_account
+    this.shop_id = shop_id
+    this.newMessage = newMessage
+    this.unread_account = unread_account
+    this.chat_account_info = chat_account_info
+    this.shop = shop
+
+    this.shopId = shopId
+    this.messageId = messageId
+    this.type = type
+    this.userInfo = userInfo
+    this.messageBody = messageBody
+
+    this.account = account
+    this.nickname = nickname
+    this.user_type = user_type
+    this.avatar = avatar
+    isRead: Boolean, receivedTime: String, sendTime: String, isSelf: Boolean, text: String
+     */
+
+    fun toSGConversation(): SGConversation {
+        val messageType:MessageType
+        val baseMessageBody :BaseMessageBody = when(message_type){
+            DBMessageType.TEXT.value->{
+                messageType = MessageType.TEXT
+                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = content?:"")
+            }
+            DBMessageType.IMAGE.value->{
+                messageType = MessageType.IMAGE
+                ImageMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,imageUrl = content?:"")
+            }
+            DBMessageType.CLIENTRECEIPT.value->{
+                messageType = MessageType.COMMODITY
+                val commodity = gson.fromJson(content,CommodityMessage::class.java)
+                CommodityMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0"
+                        ,isSelf = false,commodityId = commodity.commodityId,commodityImage = commodity.commodityImage
+                        ,commodityName = commodity.commodityName,commodityPrice = commodity.commodityPrice)
+            }
+            else -> {
+                messageType = MessageType.TEXT
+                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = "未知类型")
+            }
+        }
+        val message =SGMessage(
+                shopId = shop_id?:"",
+                messageId = "",
+                type = messageType,
+                userInfo = null,
+                messageBody = baseMessageBody
+        )
+
+        return SGConversation(
+                id = id,
+                account = account,
+                chat_account = chat_account,
+                shop_id = shop_id,
+                newMessage = message,
+                unread_account = unread_account,
+                chat_account_info = chat_account_info,
+                shop = shop
+        )
+    }
 
 }

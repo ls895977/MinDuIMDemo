@@ -3,6 +3,7 @@ package com.css.im_kit
 import android.app.Application
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
+import com.css.im_kit.http.Retrofit
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.`interface`.onLinkStatus
 import com.css.im_kit.manager.IMMessageManager
@@ -14,6 +15,7 @@ object IMManager {
         UserInfoRepository.build(context)
         NetworkMonitorManager.getInstance().init(context)
         MessageServiceUtils.init(context)
+
         this.app_id = app_id
         this.app_secret = app_secret
     }
@@ -26,6 +28,15 @@ object IMManager {
      * 聊天列表url地址
      */
     var chatListUrl: String? = null
+        private set
+    var baseUrl: String? = null
+        private set
+
+    fun setIMURL(baseUrl: String, chatListUrl: String) {
+        this.baseUrl = baseUrl
+        this.chatListUrl = chatListUrl
+        Retrofit.initRetrofit()
+    }
 
     /**
      * 连接聊天socket
