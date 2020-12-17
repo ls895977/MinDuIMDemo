@@ -7,7 +7,6 @@ import android.text.SpannableString
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
@@ -50,8 +49,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
 
     override fun layoutResource(): Int = R.layout.fragment_conversation
 
-    override fun initView() {
-    }
+    override fun initView() = Unit
 
     override fun initData() {
         messageList = arrayListOf()
@@ -225,6 +223,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //隐藏图片输入区(只有显示的时候才隐藏，你面重复)
                 if (picTag) {
                     picTag = false
+                    binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
                     binding?.llPicView?.visibility = View.GONE
                     //显示表情输入区
                     binding?.llEmojiView?.visibility = View.VISIBLE
@@ -265,6 +264,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 if (emojiTag) {
                     emojiTag = false
                     binding?.llEmojiView?.visibility = View.GONE
+                    binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send1)
                     //显示图片输入区
                     binding?.llPicView?.visibility = View.VISIBLE
                     //滚动到底部
@@ -312,7 +312,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * 更新当前界面数据
      */
     fun updateData() {
-        Toast.makeText(requireContext(), "进入会话", Toast.LENGTH_SHORT).show()
         IMChatRoomManager
                 .initConversation(conversation)
                 .addSGConversationListListener(object : ChatRoomCallback {

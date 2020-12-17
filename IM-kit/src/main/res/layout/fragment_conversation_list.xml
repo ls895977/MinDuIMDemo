@@ -9,14 +9,27 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_connect_status"
+        <LinearLayout
+            android:id="@+id/ll_connect"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_40"
             android:gravity="center_vertical"
-            android:paddingHorizontal="@dimen/dp_20"
-            android:text="连接状态展示"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/dp_20">
+
+            <ImageView
+                android:layout_width="@dimen/dp_20"
+                android:layout_height="@dimen/dp_20" />
+
+            <TextView
+                android:id="@+id/tv_connect_status"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_40"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/dp_20"
+                android:text="连接状态展示"
+                android:visibility="visible" />
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
