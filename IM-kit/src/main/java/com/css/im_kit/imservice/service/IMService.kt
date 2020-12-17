@@ -5,13 +5,20 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
+import android.util.Log
+import com.css.im_kit.db.ioScope
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.coom.ServiceType
+import com.css.im_kit.imservice.tool.CycleTimeUtils
 import com.google.gson.Gson
+import com.kongqw.network.monitor.NetworkMonitorManager
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.net.URI
 
 /**
@@ -23,24 +30,53 @@ class IMService : Service(), ServiceListener {
     private var client: JWebSClient? = null
     private var serViceUrl = ""
     private val myBinder = IMServiceBinder()
+    private var startStatus = false//判断是否是第一次启动好用于启动倒计时操作
 
     inner class IMServiceBinder : Binder() {
         val service: IMService
             get() = this@IMService
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        NetworkMonitorManager.getInstance().register(this)//网络监听
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         this.serViceUrl = intent.getStringExtra("serViceUrl").toString()
+        startStatus = true
         initSocket()
         return myBinder
     }
 
     override fun onUnbind(intent: Intent): Boolean {
+        CycleTimeUtils.canCelTimer()
+        try {
+            if (null != client) {
+                client?.close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            client = null
+        }
         return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        NetworkMonitorManager.getInstance().unregister(this)//取消网络监听
+    }
+
+    /**
+     * 倒计时重连socket确宝链接状态
+     */
+    private fun startTimeSocket() {
+        CycleTimeUtils.startTimer(6, object : CycleTimeUtils.onBackTimer {
+            override fun backRunTimer() {
+                socketRun()
+            }
+        })
     }
 
     /**
@@ -49,12 +85,20 @@ class IMService : Service(), ServiceListener {
     private fun initSocket() {
         Thread {
             kotlin.run {
-                val uri: URI = URI.create(serViceUrl)
-                client = JWebSClient(uri)
-                client?.setSocketListener(this)
-                client?.connectBlocking()
+                socketRun()
             }
         }.start()
+    }
+
+    /**
+     *链接socket
+     */
+    private fun socketRun() {
+        val uri: URI = URI.create(serViceUrl)
+        client = JWebSClient(uri)
+        client?.connectionLostTimeout = 6
+        client?.setSocketListener(this)
+        client?.connectBlocking()
     }
 
     /**
@@ -80,29 +124,23 @@ class IMService : Service(), ServiceListener {
     }
 
     /**
-     * 断开客户端联系
-     */
-    fun imServiceClose() {
-        try {
-            if (null != client) {
-                client?.close()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            client = null
-        }
-    }
-
-    /**
      * 消息反馈状态处理
      */
     override fun onBackSocketStatus(event: Int, msg: String) {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
+                uiScope.launch {
+                    async {
+                        if (startStatus) {//判断第一次链接成功执行倒计时刷新
+                            startTimeSocket()
+                            startStatus = false
+                        }
+                    }
+                }
 //                onLinkStatus?.onLinkedSuccess()//webSocket反馈链接成功
             }
             ServiceType.collectMessageStats -> {//链接收到消息
+                Log.e("aa", "---------------------msg==" + msg)
 //               retryIndex = 0//重置为零
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0") {//通过数据反馈链接成功
@@ -112,6 +150,7 @@ class IMService : Service(), ServiceListener {
                 }
             }
             ServiceType.closeMessageStats -> {//链接关闭
+                Log.e("aa", "---------------------链接关闭")
                 //网络链接判断处理
 //                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
 //                if (MessageServiceUtils.retryIndex < 5 && !MessageServiceUtils.closeConnectStatus && netStatus) {//链接重试五次后不在重连
@@ -122,6 +161,7 @@ class IMService : Service(), ServiceListener {
 //                }
             }
             ServiceType.errorMessageStats -> {//链接发生错误
+                Log.e("aa", "---------------------链接发生错误")
                 onLinkStatus?.onLinkedClose()
             }
         }

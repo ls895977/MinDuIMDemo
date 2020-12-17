@@ -1,5 +1,4 @@
 package com.css.im_kit.imservice
-
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -10,8 +9,7 @@ import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.service.IMService
 import com.css.im_kit.imservice.service.IMService.IMServiceBinder
-import com.kongqw.network.monitor.NetworkMonitorManager
-
+import java.lang.Exception
 object MessageServiceUtils {
     private var onResultMessage: onResultMessage? = null
     private var onLinkStatus: onLinkStatus? = null
@@ -25,7 +23,6 @@ object MessageServiceUtils {
      * onLinkStatus 链接状态反馈
      */
     fun initService(CHAT_SERVER_URL: String?, onLinkStatus: onLinkStatus?) {
-        NetworkMonitorManager.getInstance().register(this)//网络监听
         this.onLinkStatus = onLinkStatus
         val intent = Intent(mApplication, IMService::class.java)
         intent.putExtra("serViceUrl", CHAT_SERVER_URL)
@@ -37,15 +34,18 @@ object MessageServiceUtils {
      * 必须建立在已链接基础上否则无效
      */
     fun retryService() {
-
+        val intent = Intent(mApplication, IMService::class.java)
+        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
-
     /**
      * 断开客户端联系
      */
     fun closeConnect() {
-        myBindService?.imServiceClose()
+        try {
+        mApplication?.unbindService(imServiceConn)
+        }catch ( e:Exception){}
     }
+
     /**
      * 消息回馈监听
      */
@@ -69,6 +69,7 @@ object MessageServiceUtils {
     fun sendNewMsg(message: String) {
         myBindService?.sendNewMsg(message)
     }
+
     private var myBindService: IMService? = null
     private val imServiceConn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -94,22 +95,4 @@ object MessageServiceUtils {
 
         }
     }
-
-    /**
-     * 绑定服务
-     */
-    fun startBing() {
-
-    }
-
-    /**
-     * 解绑
-     */
-    fun stopBing() {
-        try {
-            mApplication?.unbindService(imServiceConn)
-        } catch (e: Exception) {
-        }
-    }
-
 }

@@ -96,6 +96,12 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
         binding?.tvReLink?.setOnClickListener {
             MessageServiceUtils.retryService()//重新链接
         }
+        binding?.tvContext1?.setOnClickListener {
+            MessageServiceUtils.retryService()
+        }
+        binding?.tvContext2?.setOnClickListener {
+            MessageServiceUtils.closeConnect()
+        }
     }
 }
 

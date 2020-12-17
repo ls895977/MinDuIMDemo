@@ -1,4 +1,4 @@
-package com.css.im_kit.imservice
+package com.css.im_kit.imservice.tool
 import android.os.Handler
 /**
  * 定时器
@@ -20,7 +20,7 @@ object CycleTimeUtils {
      * second 定时的时间
      */
     fun startTimer(second: Long, onBackTimers: onBackTimer?) {
-        this.onBackTimers = onBackTimers
+        CycleTimeUtils.onBackTimers = onBackTimers
         timerSecond = second * 1000
         autoSaveHandler.postDelayed(heartBeatRunnable, timerSecond)
     }
