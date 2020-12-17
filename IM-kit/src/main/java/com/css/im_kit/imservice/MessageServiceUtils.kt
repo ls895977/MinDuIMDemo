@@ -69,7 +69,6 @@ object MessageServiceUtils {
     fun sendNewMsg(message: String) {
         myBindService?.sendNewMsg(message)
     }
-
     private var myBindService: IMService? = null
     private val imServiceConn: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {

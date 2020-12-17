@@ -1,19 +1,23 @@
 package com.css.im_kit.imservice.service
+
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
 import com.css.im_kit.imservice.JWebSClient
+import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.coom.ServiceType
+import com.google.gson.Gson
 import java.net.URI
+
 /**
  * socket后台服务
  */
-class IMService : Service(),ServiceListener {
+class IMService : Service(), ServiceListener {
     private var onResultMessage: onResultMessage? = null
     private var onLinkStatus: onLinkStatus? = null
     private var client: JWebSClient? = null
@@ -32,7 +36,6 @@ class IMService : Service(),ServiceListener {
     }
 
     override fun onUnbind(intent: Intent): Boolean {
-
         return super.onUnbind(intent)
     }
 
@@ -97,11 +100,16 @@ class IMService : Service(),ServiceListener {
     override fun onBackSocketStatus(event: Int, msg: String) {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
-                onLinkStatus?.onLinkedSuccess()
+//                onLinkStatus?.onLinkedSuccess()//webSocket反馈链接成功
             }
             ServiceType.collectMessageStats -> {//链接收到消息
-//                MessageServiceUtils.retryIndex = 0//重置为零
-                onResultMessage?.onMessage(msg)
+//               retryIndex = 0//重置为零
+                val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
+                if (msgBean.m_id == "0") {//通过数据反馈链接成功
+                    onLinkStatus?.onLinkedSuccess()
+                } else {
+                    onResultMessage?.onMessage(msg)
+                }
             }
             ServiceType.closeMessageStats -> {//链接关闭
                 //网络链接判断处理
