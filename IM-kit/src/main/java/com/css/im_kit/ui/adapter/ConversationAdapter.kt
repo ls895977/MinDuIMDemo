@@ -92,7 +92,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         when (item.itemType) {
             //send
             1 -> {//txt
-                helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
+                helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text?.let { FaceTextUtil.toSpannableString(activity, it) })
             }
             2 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
@@ -110,7 +110,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
             //receiver
             4 -> {//txt
-                helper.setText(R.id.tv_content, FaceTextUtil.toSpannableString(activity, (item.messageBody as TextMessageBody).text))
+                helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text?.let { FaceTextUtil.toSpannableString(activity, it) })
             }
             5 -> {//img
                 (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }

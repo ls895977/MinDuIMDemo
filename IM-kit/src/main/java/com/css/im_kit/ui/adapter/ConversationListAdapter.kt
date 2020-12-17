@@ -15,12 +15,12 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
 
 
-        if (item.shop==null){
+        if (item.shop == null) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))
             //用户名
             helper.setText(R.id.user_name, item.chat_account_info?.nickname)
-        }else{
+        } else {
             //头像
             IMGlideUtil.loadAvatar(context, item.shop?.log, helper.getView(R.id.user_avatar))
             //用户名
@@ -42,7 +42,7 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         //最后一条消息（如果是txt,就展示消息内容，反之，类型）
         when (item.newMessage?.type) {
             MessageType.TEXT -> {
-                helper.setText(R.id.message_content, FaceTextUtil.toSpannableStringList(context, (item.newMessage?.messageBody as TextMessageBody).text))
+                helper.setText(R.id.message_content, (item.newMessage?.messageBody as TextMessageBody).text?.let { FaceTextUtil.toSpannableStringList(context, it) })
             }
             MessageType.IMAGE -> {
                 helper.setText(R.id.message_content, "[图片]")
