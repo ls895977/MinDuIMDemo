@@ -132,7 +132,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 MessageType.COMMODITY -> {
                     rewStaue = MessageType.TEXT
                     val commodityMessage = CommodityMessage("commodityId", "测试商品敖德萨大所大所大所大所多撒大大大", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "12.00")//2020-11-08 16:14:23
-                    IMChatRoomManager.sendCommodityMessage(commodityMessage)
+                    IMChatRoomManager.sendCommodityMessage(arrayListOf(commodityMessage))
                 }
             }
         }

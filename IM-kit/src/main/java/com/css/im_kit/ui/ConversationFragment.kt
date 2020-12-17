@@ -4,7 +4,6 @@ import android.content.Intent
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -16,6 +15,7 @@ import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
@@ -122,22 +122,9 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 }
                 R.id.loading_image -> {//消息发送失败》重发!!!!!(只有自己的消息可以重发)
                     (adapter.data[position] as SGMessage).let {
-                        ioScope.launch {
-                            async {
-                                when (it.type) {
-                                    MessageType.TEXT -> {
-                                        //  (it.messageBody as TextMessageBody).text?.let { it1 -> IMChatRoomManager.sendTextMessage(it1) }
-                                    }
-                                    MessageType.IMAGE -> {
-                                        // (it.messageBody as ImageMessageBody).imageUrl?.let { it1 -> IMChatRoomManager.sendImageMessage(it1) }
-                                    }
-                                    MessageType.COMMODITY -> {
-                                        // (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
-                                    }
-                                    else -> return@async
-                                }
-                            }
-                        }
+                        it.messageBody?.sendType = SendType.SENDING
+                        adapter.notifyItemChanged(position)
+                        IMChatRoomManager.messageReplay(it.messageId)
                     }
                 }
                 R.id.iv_close -> {//关闭发送商品消息（type=7）TODO
@@ -150,7 +137,9 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                             async {
                                 when (it.type) {
                                     MessageType.COMMODITY -> {
-                                        (it.messageBody as CommodityMessageBody).let { it1 -> IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice)) }
+                                        (it.messageBody as CommodityMessageBody).let { it1 ->
+//                                            IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice))
+                                        }
                                     }
                                     else -> return@async
                                 }
@@ -333,7 +322,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
 
                     @Synchronized
                     override suspend fun onMessageInProgress(message: SGMessage) {
-                        Log.e("消息发送进度", message.messageId)
                         //消息发送进度
                         messageList.forEachIndexed { index, sgMessage ->
                             if (sgMessage.messageId == message.messageId) {
@@ -383,13 +371,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * 选择商品后，发送商品消息
      */
     fun sendProductMessage(commodityMessageS: ArrayList<CommodityMessage>) {
-        ioScope.launch {
-            async {
-                commodityMessageS.forEach {
-                    IMChatRoomManager.sendCommodityMessage(it)
-                }
-            }
-        }
+        IMChatRoomManager.sendCommodityMessage(commodityMessageS)
     }
 
     /**
@@ -411,10 +393,6 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * （type=7）
      */
     fun sendProductMessage(commodityMessage: CommodityMessage) {
-        ioScope.launch {
-            async {
-                IMChatRoomManager.sendCommodityMessage(commodityMessage)
-            }
-        }
+        IMChatRoomManager.sendCommodityMessage(arrayListOf(commodityMessage))
     }
 }

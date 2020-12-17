@@ -44,7 +44,7 @@ object IMMessageManager {
                     else -> {
                         val message = receiveMessage.toDBMessage()
                         message.read_status = true
-                        uiScope.launch {
+                        ioScope.launch {
                             async {
                                 saveMessage(message, false)
                             }
@@ -67,7 +67,6 @@ object IMMessageManager {
             } else {
                 MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
             }
-            Log.e("修改消息状态", message.m_id)
             messageCallback.forEach {
                 it.onSendMessageReturn(message.extend?.get("shop_id") ?: "", message.m_id)
             }
@@ -185,6 +184,39 @@ object IMMessageManager {
                                         it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 消息重发
+     */
+    @Synchronized
+    fun messageReplay(messageId: String) {
+        uiScope.launch {
+            async {
+                val dbMessage = MessageRepository.getMessage4messageId(messageId)
+
+                dbMessage?.let { message ->
+                    message.send_time = System.currentTimeMillis()
+                    message.receive_time = System.currentTimeMillis()
+                    message.send_status = SendType.SENDING.text
+                    MessageRepository.update(dbMessage)
+                    Log.e("发送消息", message.toSendMessageBean().toJsonString())
+                    MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+
+                    delay(10000)
+                    val dbMessage1 = MessageRepository.getMessage4messageId(message.m_id)
+                    dbMessage1?.let {
+                        if (dbMessage1.send_status == SendType.SENDING.text) {
+                            MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
+                            val extend = gson.fromJson(message.extend, HashMap::class.java)
+                            messageCallback.forEach {
+                                it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
                             }
                         }
                     }

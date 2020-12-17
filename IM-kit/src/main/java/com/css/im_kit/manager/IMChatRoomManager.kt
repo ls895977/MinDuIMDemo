@@ -45,6 +45,14 @@ object IMChatRoomManager {
     }
 
     /**
+     * 消息重发
+     */
+    @Synchronized
+    fun messageReplay(messageId: String) {
+        IMMessageManager.messageReplay(messageId)
+    }
+
+    /**
      * 移除会话列表监听
      */
     fun dismissSgMessageCallback() {
@@ -75,9 +83,7 @@ object IMChatRoomManager {
             uiScope.launch {
                 if (shop_id == conversation?.shop_id) {
                     val task = async {
-                        Log.e("发送消息回执1", messageID)
                         val message = MessageRepository.getMessage4messageId(messageID)
-                        Log.e("发送消息回执2", message?.m_id ?: "")
                         message?.let {
                             val sgMessage = SGMessage.format(message)
                             if (message.send_account == IMManager.account) {
@@ -223,29 +229,30 @@ object IMChatRoomManager {
      * 发送商品消息
      */
     @Synchronized
-    fun sendCommodityMessage(commodityMessage: CommodityMessage) {
+    fun sendCommodityMessage(commodityMessages: List<CommodityMessage>) {
         conversation?.let { conversation ->
-            val time = System.currentTimeMillis()
+            var time = System.currentTimeMillis()
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
-            ioScope.launch {
-                async {
-                    IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.account + time).md5(),
-                            send_account = IMManager.account!!,
-                            receive_account = conversation.chat_account ?: "",
-                            shop_id = conversation.shop_id ?: "",
-                            message_type = DBMessageType.RICH.value,
-                            read_status = false,
-                            send_status = SendType.SENDING.text,
-                            send_time = time,
-                            receive_time = time,
-                            message = commodityMessage.toJsonString(),
-                            source = source!!.value,
-                            extend = gson.toJson(extend)
-                    ), true)
-                }
+            val imgMessages = arrayListOf<Message>()
+            commodityMessages.forEachIndexed { index, commodityMessage ->
+                time += index
+                imgMessages.add(Message(
+                        m_id = (IMManager.account + time).md5().substring(16, 32),
+                        send_account = IMManager.account!!,
+                        receive_account = conversation.chat_account ?: "",
+                        shop_id = conversation.shop_id ?: "",
+                        message_type = DBMessageType.RICH.value,
+                        read_status = false,
+                        send_status = SendType.SENDING.text,
+                        send_time = time,
+                        receive_time = time,
+                        message = commodityMessage.toJsonString(),
+                        source = source?.value ?: 1,
+                        extend = gson.toJson(extend)
+                ))
             }
+            IMMessageManager.saveMessages(imgMessages, true)
         }
 
     }
