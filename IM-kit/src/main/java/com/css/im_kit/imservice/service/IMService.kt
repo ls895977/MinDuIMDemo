@@ -5,7 +5,6 @@ import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
 import android.util.Log
-import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
@@ -17,9 +16,6 @@ import com.google.gson.Gson
 import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
-import com.kongqw.network.monitor.util.NetworkStateUtils
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import java.net.URI
 /**
  * socket后台服务
@@ -32,7 +28,7 @@ class IMService : Service(), ServiceListener {
     private val myBinder = IMServiceBinder()
     private var startStatus = false//判断是否是第一次启动好用于启动倒计时操作
     private var retryIndex = 0//重连次数控制
-    private var socketStatus = false//当前socket状态变化
+    private var socketStatus = 0//当前socket状态变化0无状态1,2已链接3,4未链接
 
     inner class IMServiceBinder : Binder() {
         val service: IMService
@@ -48,12 +44,25 @@ class IMService : Service(), ServiceListener {
         this.serViceUrl = intent.getStringExtra("serViceUrl").toString()
         startStatus = true
         initSocket()
-//        startTimeSocket()
+        startTimeSocket()
         return myBinder
     }
 
     override fun onUnbind(intent: Intent): Boolean {
         CycleTimeUtils.canCelTimer()
+        closeSocket()
+        return super.onUnbind(intent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        NetworkMonitorManager.getInstance().unregister(this)//取消网络监听
+    }
+
+    /**
+     * 断开链接
+     */
+    private fun closeSocket() {
         try {
             if (null != client) {
                 client?.close()
@@ -63,12 +72,6 @@ class IMService : Service(), ServiceListener {
         } finally {
             client = null
         }
-        return super.onUnbind(intent)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        NetworkMonitorManager.getInstance().unregister(this)//取消网络监听
     }
 
     /**
@@ -96,13 +99,20 @@ class IMService : Service(), ServiceListener {
     //TODO 网络断开时回调
     @NetworkMonitor(monitorFilter = [NetworkState.NONE])
     fun onNetWorkStateChangeNONE(networkState: NetworkState) {
-
+        CycleTimeUtils.canCelTimer()
+        onLinkStatus?.onLinkedClose()
+//        if (socketStatus != 1 && socketStatus != 2) {
+//            onLinkStatus?.onLinkedSuccess()
+//            socketStatus = 3
+//        }
     }
 
     // TODO 连接上WIFI或蜂窝网络的时候回调
     @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
     fun onNetWorkStateChange2(networkState: NetworkState) {
-
+        Log.e("aa","------------连接上WIFI或蜂窝网络的时候回调")
+        initSocket()
+        startTimeSocket()
     }
 
     /**
@@ -136,6 +146,7 @@ class IMService : Service(), ServiceListener {
             return
         }
         initSocket()
+        startTimeSocket()
     }
 
     /**
@@ -145,44 +156,31 @@ class IMService : Service(), ServiceListener {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
                 retryIndex = 0//重置链接次数为零
-//                uiScope.launch {
-//                    async {
-//                        if (startStatus) {//判断第一次链接成功执行倒计时刷新
-//
-//                            startStatus = false
-//                        }
-//                    }
-//                }
-//                onLinkStatus?.onLinkedSuccess()//webSocket反馈链接成功
             }
             ServiceType.collectMessageStats -> {//链接收到消息
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0") {//通过数据反馈链接成功
-                    onLinkStatus?.onLinkedSuccess()
+                    if (socketStatus != 1 && socketStatus != 2) {
+                        onLinkStatus?.onLinkedSuccess()
+                        socketStatus = event
+                    }
                 } else {
                     onResultMessage?.onMessage(msg)
                 }
             }
-            ServiceType.closeMessageStats -> {//链接关闭
-                if (socketStatus) {
-                    socketStatus = false
-                }
-                Log.e("aa", "---------------------链接关闭")
+            ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
                 //网络链接判断处理
-                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
-                if (retryIndex < 5 && netStatus) {//链接重试五次后不在重连
-                    retryIMService()
-                    retryIndex++
+//                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
+                if (retryIndex >= 5) {//链接重试五次后不在重连
+                    CycleTimeUtils.canCelTimer()
+                    closeSocket()
                 } else {//反馈最终链接还是断开问题
-                    onLinkStatus?.onLinkedClose()
+                    if (socketStatus != 3 && socketStatus != 4) {
+                        onLinkStatus?.onLinkedClose()
+                        socketStatus = event
+                    }
                 }
-            }
-            ServiceType.errorMessageStats -> {//链接发生错误
-                if (socketStatus) {
-                    socketStatus = false
-                }
-                Log.e("aa", "---------------------链接发生错误")
-                onLinkStatus?.onLinkedClose()
+                retryIndex++
             }
         }
     }

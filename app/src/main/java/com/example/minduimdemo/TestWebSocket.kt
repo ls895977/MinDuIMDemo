@@ -21,7 +21,7 @@ import java.util.*
 class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
     //        private var userToken=2////客服1
     private var userToken = "b32b51adb2"////客服2
-    private val url = "ws://192.168.0.73:9502?account=$userToken"//客服2
+    private val url = "ws://devchatws.supersg.cn?account=$userToken"//客服2
     private var myAdapter: TestWebAdapter? = null
     override fun layoutResource(): Int {
         return R.layout.testwebsocket
