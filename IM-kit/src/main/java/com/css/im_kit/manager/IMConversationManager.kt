@@ -4,6 +4,7 @@ import android.util.Log
 import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
+import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.uiScope
@@ -12,6 +13,8 @@ import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.HTTPConversation
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
+import com.css.im_kit.utils.generateSignature
+import com.css.im_kit.utils.md5
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -93,11 +96,18 @@ object IMConversationManager {
         ioScope.launch {
             try {
                 val async = async {
+                    val nonce_str = System.currentTimeMillis().toString().md5()
+                    val map = HashMap<String, String>()
+                    map["account"] = IMManager.account ?: ""
+                    map["app_id"] = IMManager.app_id ?: ""
+                    map["nonce_str"] =  nonce_str
+                    val sign = map.generateSignature(IMManager.app_secret?:"")
                     Retrofit.api?.chatList(
                             url = IMManager.chatListUrl ?: "",
+                            nonce_str = nonce_str,
+                            app_id =  IMManager.app_id?:"",
                             account = IMManager.account ?: "",
-                            app_id = IMManager.app_id ?: "",
-                            app_secret = IMManager.app_secret ?: ""
+                            sign = sign
                     )
                 }
                 val result = async.await()

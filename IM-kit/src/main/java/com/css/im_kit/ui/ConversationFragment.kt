@@ -396,13 +396,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * 选择图片后，发送图片消息
      */
     fun sendImageMessage(images: ArrayList<String>) {
-        ioScope.launch {
-            async {
-                images.forEach {
-                    IMChatRoomManager.sendImageMessage(it)
-                }
-            }
-        }
+        IMChatRoomManager.sendImageMessages(images)
     }
 
     /**

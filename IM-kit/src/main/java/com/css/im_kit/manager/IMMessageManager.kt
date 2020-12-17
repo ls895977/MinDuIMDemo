@@ -117,7 +117,7 @@ object IMMessageManager {
                         dbMessage?.let {
                             if (dbMessage.send_status == 0) {
                                 MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
-                                val extend = gson.fromJson(message.extend,HashMap::class.java)
+                                val extend = gson.fromJson(message.extend, HashMap::class.java)
                                 messageCallback.forEach {
                                     it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
                                 }

@@ -81,7 +81,8 @@ dependencies {
     implementation 'com.scwang.smart:refresh-header-classics:2.0.1'    //经典刷新头
     //图片加载
     api 'com.github.bumptech.glide:glide:4.11.0'
-
+    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    implementation "com.squareup.okhttp3:logging-interceptor:3.14.1"
     api 'com.squareup.retrofit2:retrofit:2.6.1'
     api 'com.squareup.retrofit2:converter-gson:2.6.1'
     api 'com.google.code.gson:gson:2.8.6'

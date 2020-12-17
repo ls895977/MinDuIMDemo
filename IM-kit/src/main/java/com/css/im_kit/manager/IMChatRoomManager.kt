@@ -66,10 +66,12 @@ object IMChatRoomManager {
         }
 
         override fun onSendMessageReturn(shop_id: String, messageID: String) {
-            if (shop_id == conversation?.shop_id) {
-                uiScope.launch {
+            uiScope.launch {
+                if (shop_id == conversation?.shop_id) {
                     val task = async {
+                        Log.e("发送消息回执1", messageID)
                         val message = MessageRepository.getMessage4messageId(messageID)
+                        Log.e("发送消息回执2", message?.m_id ?: "")
                         message?.let {
                             val sgMessage = SGMessage.format(message)
                             if (message.send_account == IMManager.account) {
@@ -118,7 +120,7 @@ object IMChatRoomManager {
             ioScope.launch {
                 async {
                     IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.account + time).md5(),
+                            m_id = (IMManager.account + time).md5().substring(16,32),
                             send_account = IMManager.account!!,
                             receive_account = conversation.chat_account ?: "",
                             shop_id = conversation.shop_id ?: "",
@@ -175,31 +177,47 @@ object IMChatRoomManager {
     /**
      * 发送图片消息
      */
-    fun sendImageMessage(img: String) {
-        conversation?.let { conversation ->
-            val time = System.currentTimeMillis()
-            val extend = hashMapOf<Any, Any>()
-            extend["shop_id"] = conversation.shop_id.toString()
-            ioScope.launch {
-                async {
-                    IMMessageManager.saveMessage(Message(
-                            m_id = (IMManager.account + time).md5(),
-                            send_account = IMManager.account!!,
-                            receive_account = conversation.chat_account ?: "",
-                            shop_id = conversation.shop_id ?: "",
-                            message_type = DBMessageType.IMAGE.value,
-                            read_status = false,
-                            send_status = SendType.SENDING.text,
-                            send_time = time,
-                            receive_time = time,
-                            message = img,
-                            source = source!!.value,
-                            extend = gson.toJson(extend)
-                    ), true)
-                }
+    private fun sendImageMessage(img: String, time: Long) = ioScope.launch {
+        async {
+            conversation?.let { conversation ->
+                val extend = hashMapOf<Any, Any>()
+                extend["shop_id"] = conversation.shop_id.toString()
+
+                IMMessageManager.saveMessage(Message(
+                        m_id = (IMManager.account + time).md5().substring(16,32),
+                        send_account = IMManager.account!!,
+                        receive_account = conversation.chat_account ?: "",
+                        shop_id = conversation.shop_id ?: "",
+                        message_type = DBMessageType.IMAGE.value,
+                        read_status = false,
+                        send_status = SendType.SENDING.text,
+                        send_time = time,
+                        receive_time = time,
+                        message = img,
+                        source = source!!.value,
+                        extend = gson.toJson(extend)
+                ), true)
             }
         }
     }
+
+    /**
+     * 发送图片消息
+     */
+    fun sendImageMessage(img: String) {
+        sendImageMessage(img, System.currentTimeMillis())
+    }
+
+    /**
+     * 发送多条图片消息
+     */
+    fun sendImageMessages(imgs: List<String>) {
+        val time = System.currentTimeMillis()
+        imgs.forEachIndexed { index, s ->
+            sendImageMessage(s, System.currentTimeMillis() + index)
+        }
+    }
+
 
     /**
      * 发送商品消息
