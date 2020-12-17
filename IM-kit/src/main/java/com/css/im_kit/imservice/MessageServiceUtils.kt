@@ -1,25 +1,18 @@
 package com.css.im_kit.imservice
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
-import android.text.TextUtils
-import android.util.Log
-import com.css.im_kit.imservice.`interface`.ServiceListener
-import com.css.im_kit.imservice.`interface`.onLinkStatus
-import com.css.im_kit.imservice.`interface`.onResultMessage
-import com.css.im_kit.imservice.coom.ServiceType
+import android.content.ServiceConnection
+import android.os.IBinder
+import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
+import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.service.IMService
+import com.css.im_kit.imservice.service.IMService.IMServiceBinder
 import com.kongqw.network.monitor.NetworkMonitorManager
-import com.kongqw.network.monitor.enums.NetworkState
-import com.kongqw.network.monitor.interfaces.NetworkMonitor
-import com.kongqw.network.monitor.util.NetworkStateUtils
-import java.net.URI
 
 object MessageServiceUtils {
-    private var client: JWebSClient? = null
-    private var SerViceUrl = ""
-    private var retryIndex = 0//关闭重连控制
-    private var closeConnectStatus = false//是否是手动关闭
     private var onResultMessage: onResultMessage? = null
     private var onLinkStatus: onLinkStatus? = null
     private var mApplication: Application? = null
@@ -34,30 +27,9 @@ object MessageServiceUtils {
     fun initService(CHAT_SERVER_URL: String?, onLinkStatus: onLinkStatus?) {
         NetworkMonitorManager.getInstance().register(this)//网络监听
         this.onLinkStatus = onLinkStatus
-        this.SerViceUrl = CHAT_SERVER_URL.toString()
-        try {
-            val uri: URI = URI.create(CHAT_SERVER_URL)
-            client = JWebSClient(uri)
-            listeners()
-            client?.connectBlocking()
-        } catch (e: Exception) {
-            Log.e("aa", "-----------" + e.toString())
-        }
         val intent = Intent(mApplication, IMService::class.java)
-        mApplication?.startService(intent)
-    }
-
-    /**
-     * CHAT_SERVER_URL 聊天服务地址
-     */
-    fun initService(CHAT_SERVER_URL: String?) {
-        NetworkMonitorManager.getInstance().register(this)//网络监听
-        this.SerViceUrl = CHAT_SERVER_URL.toString()
-        val uri: URI = URI.create(CHAT_SERVER_URL)
-        client = JWebSClient(uri)
-        listeners()
-        client?.connectBlocking()
-
+        intent.putExtra("serViceUrl", CHAT_SERVER_URL)
+        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
 
     /**
@@ -65,16 +37,15 @@ object MessageServiceUtils {
      * 必须建立在已链接基础上否则无效
      */
     fun retryService() {
-        if (TextUtils.isEmpty(SerViceUrl)) {
-            return
-        }
-        closeConnectStatus = false
-        val uri: URI = URI.create(SerViceUrl)
-        client = JWebSClient(uri)
-        listeners()
-        client?.connectBlocking()
+
     }
 
+    /**
+     * 断开客户端联系
+     */
+    fun closeConnect() {
+        myBindService?.imServiceClose()
+    }
     /**
      * 消息回馈监听
      */
@@ -96,83 +67,50 @@ object MessageServiceUtils {
      * message 消息内容
      */
     fun sendNewMsg(message: String) {
-        if (client != null && client?.isOpen!!) {
-            client?.send(message)
-        }
+        myBindService?.sendNewMsg(message)
     }
 
-    /**
-     * 断开客户端联系
-     */
-    fun closeConnect() {
-        try {
-            if (null != client) {
-                closeConnectStatus = true
-                client?.close()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            client = null
-        }
-    }
-
-    /**
-     * 消息反馈状态处理
-     */
-    private fun listeners() {
-        client?.setSocketListener(object : ServiceListener {
-            override fun onBackSocketStatus(event: Int, msg: String) {
-                when (event) {
-                    ServiceType.openMessageStats -> {//已链接
-                        retryIndex = 0//重置为零
-                        onLinkStatus?.onLinkedSuccess()
-                    }
-                    ServiceType.collectMessageStats -> {//链接收到消息
-                        retryIndex = 0//重置为零
-                        onResultMessage?.onMessage(msg)
-                    }
-                    ServiceType.closeMessageStats -> {//链接关闭
-                        //网络链接判断处理
-                        val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(mApplication!!)
-                        if (retryIndex < 5 && !closeConnectStatus && netStatus) {//链接重试五次后不在重连
-                            retryService()
-                            retryIndex++
-                        } else {//反馈最终链接还是断开问题
-                            onLinkStatus?.onLinkedClose()
-                        }
-                    }
-                    ServiceType.errorMessageStats -> {//链接发生错误
-                        retryIndex = 0//重置为零
-                        onLinkStatus?.onLinkedClose()
-                    }
+    private var myBindService: IMService? = null
+    private val imServiceConn: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as IMServiceBinder
+            myBindService = binder.service
+            myBindService?.setOnLinkStatus(object : onLinkStatus {
+                override fun onLinkedSuccess() {
+                    onLinkStatus?.onLinkedSuccess()
                 }
 
-            }
-        })
+                override fun onLinkedClose() {
+                    onLinkStatus?.onLinkedClose()
+                }
+            })
+            myBindService?.setOnResultMessage(object : onResultMessage {
+                override fun onMessage(context: String) {
+                    onResultMessage?.onMessage(context)
+                }
+            })
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+
+        }
     }
 
     /**
-     * 网络断开时回调
+     * 绑定服务
      */
-    @NetworkMonitor(monitorFilter = [NetworkState.NONE])
-    fun onNetWorkStateChangeNONE(networkState: NetworkState) {
-        onLinkStatus?.onLinkedClose()
-    }
-
-    /**
-     * WIFI连接上的时候回调
-     */
-    @NetworkMonitor(monitorFilter = [NetworkState.WIFI])
-    fun onNetWorkStateChange1(networkState: NetworkState) {
+    fun startBing() {
 
     }
 
     /**
-     * 连接上WIFI或蜂窝网络的时候回调
+     * 解绑
      */
-    @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
-    fun onNetWorkStateChange2(networkState: NetworkState) {
-        retryService()
+    fun stopBing() {
+        try {
+            mApplication?.unbindService(imServiceConn)
+        } catch (e: Exception) {
+        }
     }
+
 }

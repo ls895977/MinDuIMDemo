@@ -10,7 +10,7 @@ import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
-import com.css.im_kit.imservice.`interface`.onLinkStatus
+import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation

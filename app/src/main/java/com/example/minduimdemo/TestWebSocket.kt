@@ -7,22 +7,21 @@ import android.widget.Toast
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.MessageServiceUtils.initService
-import com.css.im_kit.imservice.`interface`.onLinkStatus
-import com.css.im_kit.imservice.`interface`.onResultMessage
+import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
+import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.utils.IMDateUtil
 import com.example.minduimdemo.adapter.TestWebAdapter
 import com.example.minduimdemo.bean.ContextBean
 import com.example.minduimdemo.bean.TestBean
 import com.example.minduimdemo.databinding.TestwebsocketBinding
-import com.google.gson.Gson
 import java.util.*
 
 
 class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
-//        private var userToken=2////客服1
-    private var userToken = 3////客服2
-    private val url = "ws://192.168.0.73:9502?token=$userToken"//客服2
+    //        private var userToken=2////客服1
+    private var userToken = "b32b51adb2"////客服2
+    private val url = "ws://192.168.0.73:9502?account=$userToken"//客服2
     private var myAdapter: TestWebAdapter? = null
     override fun layoutResource(): Int {
         return R.layout.testwebsocket
@@ -46,6 +45,7 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
     override fun initData() {
 
     }
+
     override fun initListeners() {
         binding?.tvContext?.setOnClickListener {
             val context: String
@@ -83,6 +83,14 @@ class TestWebSocket : BaseActivity<TestwebsocketBinding?>() {
                     myAdapter?.notifyDataSetChanged()
                     binding?.myData?.scrollToPosition(0)
                 }, 10)
+            }
+        })
+        MessageServiceUtils.setOnLinkStatus(object : onLinkStatus {
+            override fun onLinkedSuccess() {
+                Log.e("aa", "--------------链接成功")
+            }
+            override fun onLinkedClose() {
+                Log.e("aa", "--------------链接失败")
             }
         })
         binding?.tvReLink?.setOnClickListener {

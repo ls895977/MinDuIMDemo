@@ -1,7 +1,6 @@
 package com.css.im_kit.manager
 
 import android.util.Log
-import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
@@ -11,7 +10,7 @@ import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.MessageServiceUtils
-import com.css.im_kit.imservice.`interface`.onResultMessage
+import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.model.message.BaseMessageBody

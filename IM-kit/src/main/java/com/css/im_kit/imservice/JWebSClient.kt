@@ -1,5 +1,5 @@
 package com.css.im_kit.imservice
-import com.css.im_kit.imservice.`interface`.ServiceListener
+import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
 import com.css.im_kit.imservice.coom.ServiceType
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.drafts.Draft_6455
