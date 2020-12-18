@@ -1,4 +1,5 @@
 package com.css.im_kit.imservice.service
+
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
@@ -17,6 +18,7 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
 import java.net.URI
+
 /**
  * socket后台服务
  */
@@ -43,7 +45,6 @@ class IMService : Service(), ServiceListener {
     override fun onBind(intent: Intent): IBinder? {
         this.serViceUrl = intent.getStringExtra("serViceUrl").toString()
         startStatus = true
-        initSocket()
         startTimeSocket()
         return myBinder
     }
@@ -99,20 +100,19 @@ class IMService : Service(), ServiceListener {
     //TODO 网络断开时回调
     @NetworkMonitor(monitorFilter = [NetworkState.NONE])
     fun onNetWorkStateChangeNONE(networkState: NetworkState) {
-        CycleTimeUtils.canCelTimer()
-        onLinkStatus?.onLinkedClose()
-//        if (socketStatus != 1 && socketStatus != 2) {
-//            onLinkStatus?.onLinkedSuccess()
-//            socketStatus = 3
-//        }
+        if (client != null && serViceUrl.isEmpty() && socketStatus != 3 && socketStatus != 4) {
+            CycleTimeUtils.canCelTimer()
+            onLinkStatus?.onLinkedClose()
+            socketStatus = 3
+        }
     }
 
     // TODO 连接上WIFI或蜂窝网络的时候回调
     @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
     fun onNetWorkStateChange2(networkState: NetworkState) {
-        Log.e("aa","------------连接上WIFI或蜂窝网络的时候回调")
-        initSocket()
-        startTimeSocket()
+        if (client != null && serViceUrl.isEmpty() && socketStatus != 1 && socketStatus != 2) {
+            startTimeSocket()
+        }
     }
 
     /**
@@ -181,6 +181,7 @@ class IMService : Service(), ServiceListener {
                     }
                 }
                 retryIndex++
+
             }
         }
     }
