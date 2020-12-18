@@ -79,6 +79,7 @@ class IMService : Service(), ServiceListener {
      * 倒计时重连socket确宝链接状态
      */
     private fun startTimeSocket() {
+
         CycleTimeUtils.startTimer(6, object : CycleTimeUtils.onBackTimer {
             override fun backRunTimer() {
                 socketRun()
@@ -157,6 +158,8 @@ class IMService : Service(), ServiceListener {
     override fun onBackSocketStatus(event: Int, msg: String) {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
+                //TODO 解决重复消息问题
+                CycleTimeUtils.canCelTimer()
                 retryIndex = 0//重置链接次数为零
             }
             ServiceType.collectMessageStats -> {//链接收到消息
