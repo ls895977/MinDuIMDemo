@@ -43,5 +43,11 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
             android:text="连接socket" />
+
+        <Button
+            android:id="@+id/assignCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:text="分配客服" />
     </LinearLayout>
 </layout>

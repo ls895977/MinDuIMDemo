@@ -164,6 +164,9 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 }
             })
         }
+        binding?.assignCustomer?.setOnClickListener {
+            ConversationActivity.toConversationActivity(this,"32131231")
+        }
     }
 
     override fun onConversationList(sgConversation: List<SGConversation>) {

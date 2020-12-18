@@ -1,13 +1,21 @@
 package com.example.minduimdemo
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.Toast
+import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.uiScope
+import com.css.im_kit.manager.HttpCallBack
+import com.css.im_kit.manager.HttpManager
 import com.css.im_kit.manager.IMChatRoomManager
+import com.css.im_kit.manager.IMUserInfoManager
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.conversation.Shop
 import com.css.im_kit.model.message.CommodityMessageBody
+import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.ui.ConversationFragment
 import com.css.im_kit.ui.base.BaseActivity
 import com.css.im_kit.ui.listener.IMListener
@@ -15,8 +23,37 @@ import com.example.minduimdemo.databinding.ActivityConversationBinding
 import com.example.minduimdemo.utils.ChooseCameraPicUtil
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
+import kotlinx.coroutines.launch
 
 class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMListener.SetDataListener, IMListener.SetClickProductListener {
+
+    companion object {
+        /**
+         * 用户端分配客服跳转
+         */
+        fun toConversationActivity(context: Context, shopId: String) {
+            HttpManager.assignCustomer(shopId, object : HttpCallBack {
+                override fun success(shop: Shop, sgUserInfo: SGUserInfo) {
+                    val sgConversation = SGConversation()
+                    sgConversation.shop = shop
+                    sgConversation.account = IMManager.account
+                    sgConversation.chat_account = sgUserInfo.account
+                    sgConversation.shop_id = shop.shop_id
+                    IMUserInfoManager.insertOrUpdateUser(SGUserInfo.toDBUserInfo(sgUserInfo))
+                    val intent = Intent(context, ConversationActivity::class.java)
+                    context.startActivity(intent)
+                }
+
+                override fun fail() {
+                    uiScope.launch {
+                        Toast.makeText(context, "分配客服失败", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+
+        }
+    }
+
     private var conversation: SGConversation? = null
     private var conversationFragment: ConversationFragment? = null
 

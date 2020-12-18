@@ -22,5 +22,14 @@ class SGUserInfo : Serializable {
         fun format(userInfo: UserInfo?): SGUserInfo {
             return SGUserInfo(userInfo?.account, userInfo?.nickname, userInfo?.user_type, userInfo?.avatar)
         }
+
+        fun toDBUserInfo(sgUserInfo: SGUserInfo): UserInfo {
+            return UserInfo(
+                    account = sgUserInfo.account ?: "",
+                    nickname = sgUserInfo.nickname ?: "",
+                    avatar = sgUserInfo.avatar ?: "",
+                    user_type = sgUserInfo.user_type ?: ""
+            )
+        }
     }
 }
