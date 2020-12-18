@@ -142,10 +142,12 @@ class IMService : Service(), ServiceListener {
      * 必须建立在已链接基础上否则无效
      */
     fun retryIMService() {
+        if (client == null) {
+            return
+        }
         if (TextUtils.isEmpty(serViceUrl)) {
             return
         }
-        initSocket()
         startTimeSocket()
     }
 

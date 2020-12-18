@@ -1,4 +1,5 @@
 package com.css.im_kit.imservice
+
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -29,6 +30,7 @@ object MessageServiceUtils {
         intent.putExtra("serViceUrl", CHAT_SERVER_URL)
         mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
+
     /**
      * 必需建立在已初始化聊天服务情况下
      * CHAT_SERVER_URL 聊天服务地址
@@ -42,12 +44,12 @@ object MessageServiceUtils {
 
     /**
      * 重新链接
-     * 必须建立在已链接基础上否则无效
+     * 必须建立在服务开启的状态下
      */
     fun retryService() {
-        val intent = Intent(mApplication, IMService::class.java)
-        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
+        myBindService?.retryIMService()
     }
+
     /**
      * 断开客户端联系
      */
@@ -57,6 +59,7 @@ object MessageServiceUtils {
         } catch (e: Exception) {
         }
     }
+
     /**
      * 消息回馈监听
      */
