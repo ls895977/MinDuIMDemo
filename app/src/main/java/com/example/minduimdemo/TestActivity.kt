@@ -3,6 +3,7 @@ package com.example.minduimdemo
 import android.util.Log
 import android.widget.Toast
 import com.css.im_kit.IMManager
+import com.css.im_kit.TokenCallBack
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.bean.CommodityMessage
@@ -140,7 +141,16 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             val url = "ws://devchatws.supersg.cn"
             val token = "8116f90a21"
             val userId = "8116f90a21"
-            IMManager.connect(url, token, userId, object : onLinkStatus {
+            IMManager.connect(url, token, userId, object : TokenCallBack {
+                override fun getToken(): String {
+                    return ""
+                }
+
+                override fun getImageBaseUrl(): String {
+                    return ""
+                }
+
+            }, object : onLinkStatus {
                 override fun onLinkedSuccess() {
                     uiScope.launch {
                         Toast.makeText(this@TestActivity, "连接socket成功", Toast.LENGTH_SHORT).show()

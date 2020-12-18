@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Toast
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.IMManager
+import com.css.im_kit.TokenCallBack
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.manager.IMConversationManager
@@ -87,9 +88,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     private var isConnected = false
     private fun connectionIMService() {
         val url = "ws://devchatws.supersg.cn"
-        val token = "183ff3fd37"
-        val userId = "183ff3fd37"
-        IMManager.connect(url, token, userId, object : onLinkStatus {
+        val token = "8116f90a21"
+        val userId = "8116f90a21"
+        IMManager.connect(url, token, userId, object : TokenCallBack {
+            override fun getToken(): String {
+                return "27984D5CA668920EC38A4AF2EE2F5404"
+            }
+
+            override fun getImageBaseUrl(): String {
+                return "http://testimg.supersg.cn/"
+            }
+
+        }, object : onLinkStatus {
             override fun onLinkedSuccess() {
                 uiScope.launch {
                     isConnected = true

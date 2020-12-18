@@ -32,6 +32,16 @@ object MessageRepository {
     }
 
     /**
+     * 修改消息内容
+     * content = 消息内容
+     * messageId 消息id
+     */
+    @Synchronized
+    suspend fun changeMessageContent(messageId: String,content:String) {
+        dao?.changeMessageContent(content,messageId)
+    }
+
+    /**
      * 修改单条消息的发送状态
      *
     SENDING(0),
@@ -75,6 +85,7 @@ object MessageRepository {
     suspend fun update(message: Message) {
         dao?.update(message)
     }
+
     @Synchronized
     suspend fun update(messages: List<Message>) {
         dao?.update(messages)

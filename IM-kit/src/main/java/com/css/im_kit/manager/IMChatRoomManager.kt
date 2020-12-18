@@ -2,6 +2,7 @@ package com.css.im_kit.manager
 
 import android.util.Log
 import com.css.im_kit.IMManager
+import com.css.im_kit.IMManager.getImageBaseUrl
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
@@ -12,14 +13,22 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
+import com.css.im_kit.http.Retrofit
+import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
+import com.css.im_kit.utils.getExtendS
+import com.css.im_kit.utils.log
 import com.css.im_kit.utils.md5
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import com.qiniu.android.storage.Configuration
+import com.qiniu.android.storage.UploadManager
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import retrofit2.awaitResponse
 
 object IMChatRoomManager {
     var conversation: SGConversation? = null
@@ -211,9 +220,11 @@ object IMChatRoomManager {
                         extend = gson.toJson(extend)
                 ))
             }
-            IMMessageManager.saveMessages(imgMessages, true)
+            IMMessageManager.sendImages(imgMessages)
         }
     }
+
+
 
 
     /**
@@ -256,7 +267,6 @@ object IMChatRoomManager {
         }
 
     }
-
 
     /**
      * 构建
@@ -313,4 +323,9 @@ object IMChatRoomManager {
             }
         }
     }
+}
+
+class QNTokenBean {
+    var token: String? = null
+    var fileName: String? = null
 }

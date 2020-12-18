@@ -24,6 +24,17 @@ object Retrofit {
 
     }
 
+    private fun getHeaderInterceptor(): Interceptor {
+        return Interceptor { chain: Interceptor.Chain ->
+            val original = chain.request()
+            val requestBuilder = original.newBuilder()
+            //添加Token
+            requestBuilder.header("token", IMManager.getAPPToken())
+            val request = requestBuilder.build()
+            chain.proceed(request)
+        }
+    }
+
     private fun getOkHttpClient(): OkHttpClient {
         return if (BuildConfig.DEBUG) {
             OkHttpClient().newBuilder()
@@ -33,6 +44,7 @@ object Retrofit {
                     .retryOnConnectionFailure(true)
                     //设置Header
                     .addInterceptor(getInterceptor())
+                    .addInterceptor(getHeaderInterceptor())
                     .build()
         } else {
             OkHttpClient().newBuilder()

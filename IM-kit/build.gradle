@@ -97,4 +97,7 @@ dependencies {
     //图片查看器
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
+    //上传图片七牛
+    implementation 'com.qiniu:qiniu-android-sdk:7.5.2'
+    implementation 'com.qiniu:happy-dns:0.2.10'
 }

@@ -23,6 +23,9 @@ interface MessageDao {
     @Query("SELECT  * FROM message WHERE m_id = (:messageIds)  ORDER BY id DESC LIMIT 1")
     suspend fun getMessage4messageId(messageIds: String): Message
 
+    @Query("UPDATE message SET message = :message WHERE m_id  = :messageId ")
+    suspend fun changeMessageContent(message: String, messageId: String)
+
     @Insert
     suspend fun insert(users: Message)
 

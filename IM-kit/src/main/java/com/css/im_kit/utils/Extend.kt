@@ -1,5 +1,6 @@
 package com.css.im_kit.utils
 
+import android.util.Log
 import java.security.MessageDigest
 import java.util.*
 
@@ -10,6 +11,10 @@ fun String.md5(): String {
 
 fun ByteArray.hex(): String {
     return joinToString("") { "%02X".format(it) }
+}
+
+fun String.log() {
+    Log.e("SGIM", this)
 }
 
 /**
@@ -32,4 +37,21 @@ fun Map<String, String>.generateSignature(key: String): String {
     }
     sb.append("key=").append(key)
     return sb.toString().md5().toUpperCase()
+}
+
+/**
+ * 获取文件扩展名
+ *
+ * @param filePath
+ * @return
+ */
+fun getExtendS(filePath: String): String? {
+    var endexFix = ".jpg"
+    val strSS = filePath.split("\\.").toTypedArray()
+    endexFix = if (strSS.size > 1) {
+        "." + strSS[strSS.size - 1]
+    } else {
+        ".jpg"
+    }
+    return endexFix
 }

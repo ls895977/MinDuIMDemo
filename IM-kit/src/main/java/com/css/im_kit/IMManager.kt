@@ -29,8 +29,24 @@ object IMManager {
      */
     var chatListUrl: String? = null
         private set
+
+    /**
+     * 接口域名
+     */
     var baseUrl: String? = null
         private set
+
+    /**
+     * 七牛token地址
+     *
+     */
+    var qiuNiuTokenUrl = ""
+
+    /**
+     * 图片上传地址
+     */
+    var IMG_BASEURL: String? = "" //图片地址
+
 
     fun setIMURL(baseUrl: String, chatListUrl: String) {
         this.baseUrl = baseUrl
@@ -38,19 +54,29 @@ object IMManager {
         Retrofit.initRetrofit()
     }
 
+    private var tokenCallBack: TokenCallBack? = null
+
     /**
      * 连接聊天socket
      * socketUrl 聊天服务地址
      * token 登录凭证
      * onLinkStatus 链接状态反馈
      */
-    fun connect(socketUrl: String, token: String, userID: String, onLinkStatus: onLinkStatus) {
+    fun connect(socketUrl: String, token: String, userID: String, tokenCallBack: TokenCallBack, onLinkStatus: onLinkStatus) {
         this.account = userID
+        this.tokenCallBack = tokenCallBack
         MessageServiceUtils.initService("$socketUrl?account=$token", onLinkStatus)
         //开启socket监听
         IMMessageManager.openSocketListener()
     }
 
+    fun getAPPToken(): String {
+        return tokenCallBack?.getToken() ?: ""
+    }
+
+    fun getImageBaseUrl(): String {
+        return tokenCallBack?.getImageBaseUrl() ?: ""
+    }
 
     /**
      * 重新链接
@@ -67,4 +93,9 @@ object IMManager {
     fun closeConnect() {
         MessageServiceUtils.closeConnect()
     }
+}
+
+interface TokenCallBack {
+    fun getToken(): String
+    fun getImageBaseUrl(): String
 }
