@@ -70,6 +70,12 @@ object IMManager {
         IMMessageManager.openSocketListener()
     }
 
+    /**
+     * 反馈当前链接状态
+     */
+    fun isServiceStatus(): Boolean {
+        return MessageServiceUtils.isServiceStatus()
+    }
     fun getAPPToken(): String {
         return tokenCallBack?.getToken() ?: ""
     }

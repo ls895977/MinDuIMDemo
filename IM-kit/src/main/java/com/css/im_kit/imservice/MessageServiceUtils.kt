@@ -19,7 +19,12 @@ object MessageServiceUtils {
     fun init(application: Application) {
         mApplication = application
     }
-
+    /**
+     * 反馈当前链接状态
+     */
+    fun isServiceStatus():Boolean{
+        return myBindService?.imServiceStatus!!
+    }
     /**
      * CHAT_SERVER_URL 聊天服务地址
      * onLinkStatus 链接状态反馈

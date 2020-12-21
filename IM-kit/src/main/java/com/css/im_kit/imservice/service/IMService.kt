@@ -31,6 +31,7 @@ class IMService : Service(), ServiceListener {
     private var startStatus = false//判断是否是第一次启动好用于启动倒计时操作
     private var retryIndex = 0//重连次数控制
     private var socketStatus = 0//当前socket状态变化0无状态1,2已链接3,4未链接
+     var imServiceStatus=false//当前链接状态
 
     inner class IMServiceBinder : Binder() {
         val service: IMService
@@ -66,6 +67,7 @@ class IMService : Service(), ServiceListener {
     private fun closeSocket() {
         try {
             if (null != client) {
+                client?.closeBlocking()
                 client?.close()
             }
         } catch (e: Exception) {
@@ -80,7 +82,7 @@ class IMService : Service(), ServiceListener {
      */
     private fun startTimeSocket() {
 
-        CycleTimeUtils.startTimer(6, object : CycleTimeUtils.onBackTimer {
+        CycleTimeUtils.startTimer(20, object : CycleTimeUtils.onBackTimer {
             override fun backRunTimer() {
                 socketRun()
             }
@@ -120,11 +122,15 @@ class IMService : Service(), ServiceListener {
      *链接socket
      */
     private fun socketRun() {
-        val uri: URI = URI.create(serViceUrl)
-        client = JWebSClient(uri)
-        client?.connectionLostTimeout = 6
-        client?.setSocketListener(this)
-        client?.connectBlocking()
+        if (client == null) {
+            val uri: URI = URI.create(serViceUrl)
+            client = JWebSClient(uri)
+            client?.connectionLostTimeout = 6
+            client?.setSocketListener(this)
+            client?.connectBlocking()
+        } else {
+            client?.reconnect()
+        }
     }
 
     /**
@@ -159,10 +165,11 @@ class IMService : Service(), ServiceListener {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
                 //TODO 解决重复消息问题
-                CycleTimeUtils.canCelTimer()
+//                CycleTimeUtils.canCelTimer()
                 retryIndex = 0//重置链接次数为零
             }
             ServiceType.collectMessageStats -> {//链接收到消息
+                imServiceStatus=true
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0") {//通过数据反馈链接成功
                     if (socketStatus != 1 && socketStatus != 2) {
@@ -174,6 +181,7 @@ class IMService : Service(), ServiceListener {
                 }
             }
             ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
+                imServiceStatus=false
                 //网络链接判断处理
 //                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
                 if (retryIndex >= 5) {//链接重试五次后不在重连
