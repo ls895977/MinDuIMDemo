@@ -344,18 +344,22 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         hideSoftKeyboard(binding?.etContent)
         //隐藏表情区域
         emojiTag = false
+        binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send1)
         binding?.llEmojiView?.visibility = View.GONE
         //图片区域
         picTag = false
+        binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
         binding?.llPicView?.visibility = View.GONE
         //隐藏发送按钮
         binding?.tvSend?.visibility = View.GONE
     }
 
     /**
+     * 退出回话
      * 摧毁时关闭软件盘
      */
     override fun onDestroy() {
+        IMChatRoomManager.dismissSgMessageCallback()
         hideSoftKeyboard(binding?.etContent)
         super.onDestroy()
     }

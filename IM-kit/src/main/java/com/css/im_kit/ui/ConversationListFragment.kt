@@ -75,18 +75,16 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     }
 
     /**
-     * 添加点击事件
+     * 添加点击事件item
      */
     fun addOnClickListener(clickListener: BaseQuickAdapter.OnItemChildClickListener) {
-        //点击item
         conversationListAdapter?.onItemChildClickListener = clickListener
     }
 
     /**
-     * 添加长按事件
+     * 添加长按事件item
      */
     fun addOnLongClickListener(clickLongListener: BaseQuickAdapter.OnItemChildLongClickListener) {
-        //长按item
         conversationListAdapter?.onItemChildLongClickListener = clickLongListener
     }
 

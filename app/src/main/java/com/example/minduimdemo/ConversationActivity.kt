@@ -143,11 +143,4 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         Toast.makeText(this, "跳转商品详情", Toast.LENGTH_SHORT).show()
     }
 
-    /**
-     * 退出回话
-     */
-    override fun onDestroy() {
-        IMChatRoomManager.dismissSgMessageCallback()
-        super.onDestroy()
-    }
 }

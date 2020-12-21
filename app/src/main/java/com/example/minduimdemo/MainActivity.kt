@@ -18,12 +18,12 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.launch
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
-    private var conversationList = arrayListOf<SGConversation>()
+//    private var conversationList = arrayListOf<SGConversation>()
     private var conversationListFragment: ConversationListFragment? = null
 
     override fun layoutResource(): Int = R.layout.activity_main
     override fun initView() {
-        conversationList = arrayListOf()
+//        conversationList = arrayListOf()
         binding.title = resources.getString(R.string.app_name)
         conversationListFragment = ConversationListFragment(this)
         val transaction = this@MainActivity.supportFragmentManager.beginTransaction()
@@ -88,8 +88,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     private var isConnected = false
     private fun connectionIMService() {
         val url = "ws://devchatws.supersg.cn"
-        val token = "8116f90a21"
-        val userId = "8116f90a21"
+        val token = "183ff3fd37"
+        val userId = "183ff3fd37"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
                 return "27984D5CA668920EC38A4AF2EE2F5404"
