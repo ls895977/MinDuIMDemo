@@ -14,6 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:overScrollMode="never"
             android:background="@color/color_efefef"
             app:srlEnableLoadMore="false">
 
@@ -21,6 +22,7 @@
                 android:id="@+id/rv_conversation_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/adapter_message_send_img" />
