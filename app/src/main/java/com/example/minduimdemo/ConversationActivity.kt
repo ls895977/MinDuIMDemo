@@ -34,12 +34,14 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         fun toConversationActivity(context: Context, shopId: String) {
             HttpManager.assignCustomer(shopId, object : HttpCallBack {
                 override fun success(shop: Shop, sgUserInfo: SGUserInfo) {
+                    val userInfo = sgUserInfo.toDBUserInfo()
+                    IMUserInfoManager.insertOrUpdateUser(userInfo)
                     val sgConversation = SGConversation()
                     sgConversation.shop = shop
                     sgConversation.account = IMManager.account
                     sgConversation.chat_account = sgUserInfo.account
                     sgConversation.shop_id = shop.shop_id
-                    IMUserInfoManager.insertOrUpdateUser(SGUserInfo.toDBUserInfo(sgUserInfo))
+                    IMUserInfoManager.insertOrUpdateUser(userInfo)
                     val intent = Intent(context, ConversationActivity::class.java)
                     intent.putExtra("conversation", sgConversation)
                     context.startActivity(intent)

@@ -37,4 +37,16 @@ interface Api {
                        @Field("sign") sign: String,
                        @Field("nonce_str") nonce_str: String): Call<BaseData<AssignCustomerBack>>
 
+    /**
+     * 用户修改信息
+     */
+    @FormUrlEncoded
+    @POST("/user/modify")
+    fun userModify(@Field("app_id") app_id: String,
+                   @Field("account") account: String,
+                   @Field("nickname") nickname: String,
+                   @Field("avatar") avatar: String,
+                   @Field("sign") sign: String,
+                   @Field("nonce_str") nonce_str: String): Call<BaseData<Any>>
+
 }

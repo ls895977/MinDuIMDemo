@@ -62,8 +62,8 @@ object IMManager {
      * token 登录凭证
      * onLinkStatus 链接状态反馈
      */
-    fun connect(socketUrl: String, token: String, userID: String, tokenCallBack: TokenCallBack, onLinkStatus: onLinkStatus) {
-        this.account = userID
+    fun connect(socketUrl: String, token: String, account: String, tokenCallBack: TokenCallBack, onLinkStatus: onLinkStatus) {
+        this.account = account
         this.tokenCallBack = tokenCallBack
         MessageServiceUtils.initService("$socketUrl?account=$token", onLinkStatus)
         //开启socket监听

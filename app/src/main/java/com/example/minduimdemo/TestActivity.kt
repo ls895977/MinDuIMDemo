@@ -165,7 +165,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             })
         }
         binding?.assignCustomer?.setOnClickListener {
-            ConversationActivity.toConversationActivity(this,"123")
+            ConversationActivity.toConversationActivity(this,"1")
         }
     }
 

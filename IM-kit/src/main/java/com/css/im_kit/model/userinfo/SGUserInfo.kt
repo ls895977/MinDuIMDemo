@@ -17,19 +17,19 @@ class SGUserInfo : Serializable {
         this.user_type = user_type
         this.avatar = avatar
     }
-
+    fun toDBUserInfo(): UserInfo {
+        return UserInfo(
+                account = account ?: "",
+                nickname = nickname ?: "",
+                avatar = avatar ?: "",
+                user_type = user_type ?: ""
+        )
+    }
     companion object {
         fun format(userInfo: UserInfo?): SGUserInfo {
             return SGUserInfo(userInfo?.account, userInfo?.nickname, userInfo?.user_type, userInfo?.avatar)
         }
 
-        fun toDBUserInfo(sgUserInfo: SGUserInfo): UserInfo {
-            return UserInfo(
-                    account = sgUserInfo.account ?: "",
-                    nickname = sgUserInfo.nickname ?: "",
-                    avatar = sgUserInfo.avatar ?: "",
-                    user_type = sgUserInfo.user_type ?: ""
-            )
-        }
+
     }
 }

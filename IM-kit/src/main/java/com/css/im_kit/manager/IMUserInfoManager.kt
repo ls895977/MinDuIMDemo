@@ -1,5 +1,6 @@
 package com.css.im_kit.manager
 
+import com.css.im_kit.IMManager
 import com.css.im_kit.callback.SGUserInfoCallback
 import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.ioScope
@@ -8,18 +9,15 @@ import com.css.im_kit.model.userinfo.SGUserInfo
 import kotlinx.coroutines.launch
 
 object IMUserInfoManager {
-    var userId: String? = null//会话id
 
 
     //回调列表
     private var sgUserInfoCallbacks = arrayListOf<SGUserInfoCallback>()
 
-    @Synchronized
     fun addUserInfoChangeListener(sgUserInfoCallback: SGUserInfoCallback) {
         sgUserInfoCallbacks.add(sgUserInfoCallback)
     }
 
-    @Synchronized
     fun removeUserInfoChangeListener(sgUserInfoCallback: SGUserInfoCallback) {
         sgUserInfoCallbacks.remove(sgUserInfoCallback)
     }
@@ -29,7 +27,23 @@ object IMUserInfoManager {
      */
     @Synchronized
     fun changeName(userName: String) {
-        userId?.let { changeName(userName, it) }
+        ioScope.launch {
+            IMManager.account?.let {
+                val userInfo = UserInfoRepository.loadById(it)
+                userInfo?.let { user ->
+                    user.nickname = userName
+                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
+                        override fun success(sgUserInfo: SGUserInfo) {
+                            changeName(sgUserInfo.nickname ?: "", it)
+                        }
+
+                        override fun fail() {
+
+                        }
+                    })
+                }
+            }
+        }
     }
 
     /**
@@ -48,7 +62,23 @@ object IMUserInfoManager {
      */
     @Synchronized
     fun changeAvatar(avatar: String) {
-        userId?.let { changeAvatar(avatar, it) }
+        ioScope.launch {
+            IMManager.account?.let {
+                val userInfo = UserInfoRepository.loadById(it)
+                userInfo?.let { user ->
+                    user.avatar = avatar
+                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
+                        override fun success(sgUserInfo: SGUserInfo) {
+                            changeAvatar(sgUserInfo.avatar ?: "", it)
+                        }
+
+                        override fun fail() {
+
+                        }
+                    })
+                }
+            }
+        }
     }
 
     /**
