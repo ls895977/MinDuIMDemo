@@ -41,6 +41,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
                     sgConversation.shop_id = shop.shop_id
                     IMUserInfoManager.insertOrUpdateUser(SGUserInfo.toDBUserInfo(sgUserInfo))
                     val intent = Intent(context, ConversationActivity::class.java)
+                    intent.putExtra("conversation", sgConversation)
                     context.startActivity(intent)
                 }
 
