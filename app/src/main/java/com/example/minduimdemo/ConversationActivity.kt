@@ -88,6 +88,8 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
     override fun onSetFragmentDataListener() {
         //拉去回话数据
         conversationFragment?.updateData()
+        //设置商品输入展示
+        conversationFragment?.setProductMessageVisibility(true)
         //发送商品消息点击事件
         conversationFragment?.addProductOnClickListener(View.OnClickListener {
             val commodityMessageLists = arrayListOf<CommodityMessage>()
