@@ -365,6 +365,13 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     }
 
     /**
+     * 设置添加输入区（商品按钮）显示与隐藏
+     */
+    fun setProductMessageVisibility(tag: Boolean) {
+        binding!!.llSendProduct.visibility = if (tag) View.VISIBLE else View.GONE
+    }
+
+    /**
      * 添加输入区（商品按钮）点击事件
      */
     fun addProductOnClickListener(clickListener: View.OnClickListener) {
