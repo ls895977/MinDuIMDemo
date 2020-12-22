@@ -116,4 +116,28 @@ object IMUserInfoManager {
             UserInfoRepository.insertOrUpdateUser(userInfo)
         }
     }
+
+    /**
+     * 网络更新用户
+     */
+    @Synchronized
+    fun refreshUserInfoCache(userInfo: UserInfo) {
+        ioScope.launch {
+            IMManager.account?.let {
+                UserInfoRepository.loadById(it)?.let { user ->
+                    user.avatar = userInfo.avatar
+                    user.nickname = userInfo.nickname
+                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
+                        override fun success(sgUserInfo: SGUserInfo) {
+                            insertOrUpdateUser(sgUserInfo.toDBUserInfo())
+                        }
+
+                        override fun fail() {
+
+                        }
+                    })
+                }
+            }
+        }
+    }
 }
