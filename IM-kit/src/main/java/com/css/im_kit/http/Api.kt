@@ -53,6 +53,6 @@ interface Api {
      * 历史记录
      */
     @POST("/chat/messageHistory")
-    fun messageHistory(@Body  requestBody: RequestBody): Call<BaseData<MessageHistoryBack>>
+    fun messageHistory(@Body  requestBody: HashMap<String, Any>): Call<BaseData<MessageHistoryBack>>
 
 }

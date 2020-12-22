@@ -121,7 +121,7 @@ object HttpManager {
         map["shop_id"] = shopId
         map["page"] = page
         map["size"] = pageSize.toString()
-        map["time"] = time.long10().toString()
+        map["time"] = time.long10().and(1).toString()
         map["flag"] = flag
         map["nonce_str"] = nonceStr
         val body = HashMap<String, Any>()
@@ -130,12 +130,12 @@ object HttpManager {
         body["shop_id"] = shopId
         body["page"] = page
         body["size"] = pageSize.toString()
-        body["time"] = time.long10().toString()
+        body["time"] = time.long10().and(1).toString()
         body["flag"] = flag
         body["account"] = IMManager.account ?: ""
         body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
         return@withContext Retrofit.api?.messageHistory(
-                requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                requestBody = body
         )?.awaitResponse()?.let {
             if (it.isSuccessful) {
                 if (it.body()?.code == "20000") {
