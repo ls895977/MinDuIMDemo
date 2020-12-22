@@ -135,7 +135,7 @@ object HttpManager {
         body["account"] = IMManager.account ?: ""
         body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
         return@withContext Retrofit.api?.messageHistory(
-                requestBody = body
+                requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
         )?.awaitResponse()?.let {
             if (it.isSuccessful) {
                 if (it.body()?.code == "20000") {
