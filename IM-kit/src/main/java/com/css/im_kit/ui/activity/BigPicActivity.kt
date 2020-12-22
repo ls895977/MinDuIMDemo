@@ -9,7 +9,7 @@ class BigPicActivity : BaseActivity<ActivityBigPicBinding>() {
     override fun layoutResource(): Int = R.layout.activity_big_pic
     override fun initView() {
         val imageUrl = intent.getStringExtra("imageUrl") ?: ""
-        Glide.with(this).load(imageUrl).error(R.color.color_f3f3f3).into(binding.photoView)
+        Glide.with(this).load(imageUrl).into(binding.photoView)
     }
 
     override fun initData() = Unit
