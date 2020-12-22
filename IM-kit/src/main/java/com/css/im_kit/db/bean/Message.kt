@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.SendMessageBean
+import com.css.im_kit.utils.long10
 
 /**
  * 消息
@@ -47,7 +48,7 @@ data class Message(
                 receive_account,
                 send_account,
                 message,
-                send_time,
+                send_time.long10(),
                 extend as HashMap<String, String>)
     }
 }

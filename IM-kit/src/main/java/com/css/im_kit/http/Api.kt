@@ -1,13 +1,13 @@
 package com.css.im_kit.http
 
 import com.css.im_kit.http.bean.AssignCustomerBack
+import com.css.im_kit.http.bean.MessageHistoryBack
+import com.css.im_kit.http.bean.MessageHistoryItem
 import com.css.im_kit.manager.QNTokenBean
 import com.css.im_kit.model.conversation.HTTPConversation
+import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
-import retrofit2.http.Url
+import retrofit2.http.*
 
 interface Api {
     /**
@@ -48,5 +48,11 @@ interface Api {
                    @Field("avatar") avatar: String,
                    @Field("sign") sign: String,
                    @Field("nonce_str") nonce_str: String): Call<BaseData<Any>>
+
+    /**
+     * 历史记录
+     */
+    @POST("/chat/messageHistory")
+    fun messageHistory(@Body  requestBody: RequestBody): Call<BaseData<MessageHistoryBack>>
 
 }

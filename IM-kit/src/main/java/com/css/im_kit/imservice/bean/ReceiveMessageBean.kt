@@ -3,6 +3,7 @@ package com.css.im_kit.imservice.bean
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
+import com.css.im_kit.utils.long13
 
 data class ReceiveMessageBean(
         /**
@@ -52,7 +53,7 @@ data class ReceiveMessageBean(
                 message_type = type,
                 read_status = false,
                 send_status = SendType.SUCCESS.text,
-                send_time = time,
+                send_time = time.long13(),
                 receive_time = System.currentTimeMillis(),
                 message = content,
                 extend = gson.toJson(extend)

@@ -108,11 +108,11 @@ object IMMessageManager {
             sgMessage.messageBody = BaseMessageBody.format(it)
             sgMessage.shopId = message.shop_id
             val userInfo = UserInfoRepository.loadById(message.send_account)
-            userInfo?.let { info ->
-                sgMessage.userInfo = SGUserInfo.format(info)
-                sgMessage.messageBody?.isSelf = isSelf
-                return sgMessage
-            }
+
+            sgMessage.userInfo = SGUserInfo.format(userInfo)
+            sgMessage.messageBody?.isSelf = isSelf
+            return sgMessage
+
         }
         return null
     }
@@ -265,6 +265,38 @@ object IMMessageManager {
         }
 
     }
+
+    /**
+     * 拉取历史记录
+     * sgMessage 最后一条消息
+     */
+
+    suspend fun getMessageHistory(time: Long, shopId: String, page: String): List<Message>? {
+        return HttpManager.messageHistory(
+                shopId = shopId,
+                time = time,
+                page = page,
+                flag = "1",
+                pageSize = 30
+        )
+    }
+
+    /**
+     * 更新消息数据到最新
+     */
+    suspend fun getMessage2New(time: Long, shopId: String): List<Message>? {
+        return HttpManager.messageHistory(
+                shopId = shopId,
+                time = time,
+                page = "1",
+                flag = "2",
+                pageSize = 10000
+        )
+    }
+
+
+
+
     /**
      * 上传图片
      */

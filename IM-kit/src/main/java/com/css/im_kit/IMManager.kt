@@ -1,6 +1,7 @@
 package com.css.im_kit
 
 import android.app.Application
+import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.http.Retrofit
@@ -8,6 +9,7 @@ import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.manager.IMMessageManager
 import com.kongqw.network.monitor.NetworkMonitorManager
+import kotlinx.coroutines.launch
 
 object IMManager {
     fun build(context: Application, app_id: String, app_secret: String) {
@@ -76,6 +78,7 @@ object IMManager {
     fun isServiceStatus(): Boolean {
         return MessageServiceUtils.isServiceStatus()
     }
+
     fun getAPPToken(): String {
         return tokenCallBack?.getToken() ?: ""
     }
@@ -98,6 +101,13 @@ object IMManager {
      */
     fun closeConnect() {
         MessageServiceUtils.closeConnect()
+    }
+
+    fun clearDB() {
+        ioScope.launch {
+            MessageRepository.deleteAll()
+            UserInfoRepository.deleteAll()
+        }
     }
 }
 

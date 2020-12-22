@@ -17,6 +17,7 @@ import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
+import com.css.im_kit.utils.long10
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -24,6 +25,8 @@ import kotlinx.coroutines.launch
 object IMChatRoomManager {
     var conversation: SGConversation? = null
     var source: DBMessageSource? = null
+    var httpPage = 1
+    var time = 0L
 
     //回调列表
     private var chatRoomCallback: ChatRoomCallback? = null
@@ -33,6 +36,7 @@ object IMChatRoomManager {
      */
     fun initConversation(conversation: SGConversation): IMChatRoomManager {
         this.conversation = conversation
+        httpPage = 1
         return this
     }
 
@@ -261,15 +265,30 @@ object IMChatRoomManager {
      * 构建
      */
     fun create() {
-        getMessages()
+        getMessages(System.currentTimeMillis(), 30)
         getMessageSource()
         IMMessageManager.addMessageListener(myMessageCallback)
     }
 
     /**
+     * 消息记录
+     */
+    fun getMessages(sgMessage: SGMessage?) {
+        if (sgMessage == null) return
+        if (conversation == null) {
+            Log.e("SGIM", "聊天室为空")
+            return
+        } else {
+            sgMessage.messageBody?.receivedTime?.toLong()?.let {
+                getMessages(it, 30)
+            }
+        }
+    }
+
+    /**
      * 获取消息列表
      */
-    private fun getMessages() {
+    private fun getMessages(lastItemTime: Long, pageSize: Int) {
         if (conversation == null) {
             Log.e("SGIM", "聊天室为空")
             return
@@ -278,8 +297,24 @@ object IMChatRoomManager {
                 val task = async {
                     val sgMessages = arrayListOf<SGMessage>()
                     conversation?.let { conversation ->
-                        val resultMessage = MessageRepository.getMessage(conversation.shop_id ?: "")
-                        resultMessage.forEach { message ->
+                        val resultMessage = MessageRepository.getMessage(conversation.shop_id
+                                ?: "", lastItemTime = lastItemTime, pageSize = pageSize)
+                        resultMessage.let {
+                            //获取历史记录
+                            if (resultMessage.isNullOrEmpty()) {
+                                if (httpPage == 1) {
+                                    time = lastItemTime
+                                }
+                                val messages = IMMessageManager.getMessageHistory(
+                                        time = time,
+                                        shopId = conversation.shop_id ?: "",
+                                        page = httpPage.toString())
+                                if (!resultMessage.isNullOrEmpty()) httpPage++
+                                return@let messages
+                            } else {
+                                return@let it
+                            }
+                        }?.forEach { message ->
                             val sgMessage = SGMessage.format(message)
                             sgMessage.messageBody?.isSelf = message.send_account == IMManager.account
                             val user = UserInfoRepository.loadById(message.send_account)
@@ -307,11 +342,13 @@ object IMChatRoomManager {
                 }
                 val result = task.await()
                 uiScope.launch {
-                    chatRoomCallback?.onMessages(result)
+                    chatRoomCallback?.onMessages(lastItemTime, result)
                 }
             }
         }
     }
+
+
 }
 
 class QNTokenBean {

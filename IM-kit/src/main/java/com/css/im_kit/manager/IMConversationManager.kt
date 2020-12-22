@@ -10,7 +10,6 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
-import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.Dispatchers
@@ -111,26 +110,26 @@ object IMConversationManager {
                             account = IMManager.account ?: "",
                             sign = map.generateSignature(IMManager.app_secret ?: "")
                     )
-                }?.awaitResponse()?.apply {
-                    if (isSuccessful) {
-                        body()?.let {
-                            if (it.code == "20000") {
-                                sgConversations.clear()
-                                it.data.forEach { item ->
-                                    val sgConversation= item.toSGConversation()
-                                    sgConversation.chat_account_info?.let {its->
-                                        UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
-                                    }
-                                    sgConversations.add(sgConversation)
-                                }
-                                uiScope.launch {
-                                    sgConversationCallbacks.forEach { callback ->
-                                        callback.onConversationList(sgConversations)
-                                    }
-                                }
-                            }
+                }?.awaitResponse()?.let {
+                    if (it.isSuccessful && it.body()?.code == "20000") {
+                        return@let it.body()?.data
+                    }
+                    return@let null
+                }?.let {
+                    sgConversations.clear()
+                    it.forEach { item ->
+                        val sgConversation= item.toSGConversation()
+                        sgConversation.chat_account_info?.let {its->
+                            UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
+                        }
+                        sgConversations.add(sgConversation)
+                    }
+                    uiScope.launch {
+                        sgConversationCallbacks.forEach { callback ->
+                            callback.onConversationList(sgConversations)
                         }
                     }
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

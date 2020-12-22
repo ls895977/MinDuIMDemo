@@ -83,7 +83,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                             /**
                              * 会话所有消息
                              */
-                            override fun onMessages(message: List<SGMessage>) {
+                            override fun onMessages(lastItemTime: Long, message: List<SGMessage>) {
                                 Log.e("111", "1111")
                             }
 
@@ -165,7 +165,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
             })
         }
         binding?.assignCustomer?.setOnClickListener {
-            ConversationActivity.toConversationActivity(this,"1")
+            ConversationActivity.toConversationActivity(this, "1")
         }
     }
 

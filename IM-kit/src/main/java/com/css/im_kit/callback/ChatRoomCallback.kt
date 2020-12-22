@@ -12,7 +12,7 @@ interface ChatRoomCallback {
     /**
      * 全部消息
      */
-    fun onMessages(message: List<SGMessage>)
+    fun onMessages(lastItemTime:Long,message: List<SGMessage>)
 
     /**
      * 发送消息进度

@@ -1,15 +1,22 @@
 package com.css.im_kit.manager
 
 import com.css.im_kit.IMManager
+import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.gson
+import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.Shop
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.generateSignature
+import com.css.im_kit.utils.long10
 import com.css.im_kit.utils.md5
+import com.css.im_kit.utils.toMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.awaitResponse
 
 object HttpManager {
@@ -95,6 +102,57 @@ object HttpManager {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 历史消息
+     */
+    suspend fun messageHistory(shopId: String,
+                               time: Long,
+                               page: String,
+                               flag: String,
+                               pageSize: Int)
+            : MutableList<Message>? = withContext(Dispatchers.Default) {
+        val nonceStr = System.currentTimeMillis().toString().md5()
+        val map = HashMap<String, String>()
+        map["app_id"] = IMManager.app_id ?: ""
+        map["account"] = IMManager.account ?: ""
+        map["shop_id"] = shopId
+        map["page"] = page
+        map["size"] = pageSize.toString()
+        map["time"] = time.long10().toString()
+        map["flag"] = flag
+        map["nonce_str"] = nonceStr
+        val body = HashMap<String, Any>()
+        body["nonce_str"] = nonceStr
+        body["app_id"] = IMManager.app_id ?: ""
+        body["shop_id"] = shopId
+        body["page"] = page
+        body["size"] = pageSize.toString()
+        body["time"] = time.long10().toString()
+        body["flag"] = flag
+        body["account"] = IMManager.account ?: ""
+        body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+        return@withContext Retrofit.api?.messageHistory(
+                requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+        )?.awaitResponse()?.let {
+            if (it.isSuccessful) {
+                if (it.body()?.code == "20000") {
+                    return@let it.body()?.data?.data
+                }
+            }
+            return@let null
+        }?.let {
+            val messages = arrayListOf<Message>()
+            it.forEach {
+                messages.add(it.toMessage())
+            }
+            return@let messages
+        }?.let {
+            if (it.isNullOrEmpty()) return@withContext arrayListOf<Message>()
+            MessageRepository.insertDatas(it)
+            return@withContext MessageRepository.getMessage(shop_id = shopId, pageSize = pageSize, lastItemTime = time)
         }
     }
 }

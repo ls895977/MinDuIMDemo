@@ -9,8 +9,8 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
@@ -55,6 +55,10 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         messageList = arrayListOf()
         adapter = ConversationAdapter(requireActivity(), messageList)
         binding?.rvConversationList?.adapter = adapter
+        val layout = LinearLayoutManager(requireContext())
+        layout.stackFromEnd = false //列表再底部开始展示，反转后由上面开始展示
+        layout.reverseLayout = true //列表翻转
+        binding?.rvConversationList?.layoutManager = layout
         //设置事件
         setDataListener.onSetFragmentDataListener()
 
@@ -67,8 +71,11 @@ class ConversationFragment(private var conversation: SGConversation, var setData
 
     override fun initListeners() {
         //刷新
-        binding!!.refreshView.setOnRefreshListener { refreshLayout: RefreshLayout ->
+        binding?.refreshView?.setOnRefreshListener { refreshLayout: RefreshLayout ->
             refreshLayout.finishRefresh()
+            if (!messageList.isNullOrEmpty()) {
+                IMChatRoomManager.getMessages(messageList.last())
+            }
         }
 
         /**
@@ -86,7 +93,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
                 binding?.llPicView?.visibility = View.GONE
                 //滚动到底部
-                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
             }
 
             override fun keyBoardHide(height: Int) {
@@ -95,12 +102,12 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     //显示表情输入区
                     binding?.llEmojiView?.visibility = View.VISIBLE
                     //滚动到底部
-                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                 } else if (nowCheckTag == 2) {
                     //显示图片输入区
                     binding?.llPicView?.visibility = View.VISIBLE
                     //滚动到底部
-                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                 }
             }
         })
@@ -216,7 +223,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     //显示表情输入区
                     binding?.llEmojiView?.visibility = View.VISIBLE
                     //滚动到底部
-                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                     return@setOnClickListener
                 }
                 //隐藏输入区（软键盘）(只有显示的时候才隐藏，你面重复)
@@ -228,7 +235,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //显示表情输入区
                 binding?.llEmojiView?.visibility = View.VISIBLE
                 //滚动到底部
-                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
             } else {
                 binding?.ivPic1?.setImageResource(R.mipmap.im_icon_send1)
                 //展示软件盘区
@@ -256,7 +263,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     //显示图片输入区
                     binding?.llPicView?.visibility = View.VISIBLE
                     //滚动到底部
-                    binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                    binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                     return@setOnClickListener
                 }
                 //隐藏输入区（软键盘）(只有显示的时候才隐藏，你面重复)
@@ -268,7 +275,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                 //显示图片输入区
                 binding?.llPicView?.visibility = View.VISIBLE
                 //滚动到底部
-                binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
             } else {
                 binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
                 //展示软件盘区
@@ -306,18 +313,21 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                     @Synchronized
                     override fun onReceiveMessage(message: List<SGMessage>) {
                         //发送成功，接收到消息，插入当前返回的这一条Message
-                        messageList.addAll(message)
-                        adapter?.notifyItemRangeChanged(messageList.size - message.size, messageList.size)
-                        binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                        message.forEach {
+                            messageList.add(0, it)
+                        }
+                        adapter?.notifyDataSetChanged()
+                        binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                     }
 
                     @Synchronized
-                    override fun onMessages(message: List<SGMessage>) {
+                    override fun onMessages(lastItemTime: Long, message: List<SGMessage>) {
+                        if (lastItemTime == Long.MAX_VALUE) {
+                            messageList.clear()
+                        }
                         //拉去数据库没聊天列表
-                        messageList.clear()
                         messageList.addAll(message)
-                        adapter?.notifyDataSetChanged()
-                        binding?.rvConversationList?.layoutManager?.scrollToPosition(messageList.size - 1)
+                        adapter?.notifyItemRangeChanged(messageList.size - message.size, messageList.size)
                     }
 
                     @Synchronized

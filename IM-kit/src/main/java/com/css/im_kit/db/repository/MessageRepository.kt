@@ -23,6 +23,17 @@ object MessageRepository {
     }
 
     /**
+     * 消息分页
+     * page 0  开始
+     *
+     */
+    @Synchronized
+    suspend fun getMessage(shop_id: String, lastItemTime: Long, pageSize: Int): List<Message> {
+        return dao?.getMessages(shop_id, lastItemTime = lastItemTime, pageSize = pageSize)
+                ?: arrayListOf()
+    }
+
+    /**
      * 获取消息
      * messageId 消息id
      */
@@ -37,8 +48,8 @@ object MessageRepository {
      * messageId 消息id
      */
     @Synchronized
-    suspend fun changeMessageContent(messageId: String,content:String) {
-        dao?.changeMessageContent(content,messageId)
+    suspend fun changeMessageContent(messageId: String, content: String) {
+        dao?.changeMessageContent(content, messageId)
     }
 
     /**
@@ -74,6 +85,15 @@ object MessageRepository {
         } else {
             dao?.getLast(shop_id)
         }
+    }
+
+    /**
+     * 拉取历史消息
+     * conversationId ： 会话id
+     */
+    @Synchronized
+    suspend fun getFirst(shop_id: String): Message? {
+        return dao?.getFirst(shop_id)
     }
 
     @Synchronized

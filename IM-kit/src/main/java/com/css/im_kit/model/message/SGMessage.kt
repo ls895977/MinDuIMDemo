@@ -53,6 +53,10 @@ class SGMessage : Serializable, MultiItemEntity {
         this.messageBody = messageBody
     }
 
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
     companion object {
         /**
          * 创建文字消息
@@ -143,7 +147,7 @@ class SGMessage : Serializable, MultiItemEntity {
             val sgMessage = SGMessage()
             sgMessage.messageId = message.m_id
             val extend = gson.fromJson(message.extend, HashMap::class.java)
-            sgMessage.shopId = extend["shop_id"].toString()
+            sgMessage.shopId = extend["shop_id"]?.toString()?:""
             sgMessage.type = when (message.message_type) {
                 DBMessageType.TEXT.value -> {
                     MessageType.TEXT

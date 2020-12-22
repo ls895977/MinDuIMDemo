@@ -5,14 +5,21 @@ import com.css.im_kit.db.bean.Message
 
 @Dao
 interface MessageDao {
+
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) ORDER BY receive_time ASC")
     suspend fun getMessages(shop_id: String): List<Message>
+
+    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND receive_time <:lastItemTime ORDER BY receive_time DESC LIMIT :pageSize")
+    suspend fun getMessages(shop_id: String, lastItemTime: Long, pageSize: Int): List<Message>
 
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id)  ORDER BY id DESC LIMIT 1")
     suspend fun getLast(shop_id: String): Message
 
     @Query("SELECT  * FROM message ORDER BY id DESC LIMIT 1")
     suspend fun getLast(): Message
+
+    @Query("SELECT  * FROM message  WHERE shop_id = (:shop_id) ORDER BY receive_time ASC LIMIT 1")
+    suspend fun getFirst(shop_id: String): Message
 
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND read_status = :isRead")
     suspend fun getNoReadData(shop_id: String, isRead: Boolean): List<Message>
