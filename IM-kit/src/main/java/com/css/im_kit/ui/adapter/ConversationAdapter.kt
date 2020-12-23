@@ -128,6 +128,8 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
 
             //本地消息（发送在本地的）
             7 -> {//product
+                helper.setGone(R.id.tv_user_name, false)
+                helper.setGone(R.id.tv_time, false)
                 val message = item.messageBody as CommodityMessageBody
                 helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)

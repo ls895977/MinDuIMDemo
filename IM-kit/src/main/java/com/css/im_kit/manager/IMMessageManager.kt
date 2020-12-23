@@ -4,6 +4,7 @@ import android.util.Log
 import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
@@ -240,6 +241,28 @@ object IMMessageManager {
     }
 
     /**
+     * 通过展示消息发送商品消息
+     */
+    @Synchronized
+    fun produceShow2Send(messageId: String) {
+        uiScope.launch {
+            withContext(Dispatchers.Default) {
+                val dbMessage = MessageRepository.getMessage4messageId(messageId)
+                dbMessage?.let { message ->
+                    MessageRepository.delete(message)
+                    message.send_time = System.currentTimeMillis()
+                    message.receive_time = System.currentTimeMillis()
+                    message.send_status = SendType.SENDING.text
+                    val produce = gson.fromJson(message.message, RichBean::class.java)
+                    produce.type = "commodity"
+                    message.message = gson.toJson(produce)
+                    saveMessage(message, true)
+                }
+            }
+        }
+    }
+
+    /**
      * 上传图片
      */
     fun sendImages(imgMessages: MutableList<Message>) {
@@ -293,8 +316,6 @@ object IMMessageManager {
                 pageSize = 10000
         )
     }
-
-
 
 
     /**

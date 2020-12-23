@@ -130,6 +130,11 @@ object MessageRepository {
     }
 
     @Synchronized
+    suspend fun delete(messageId: String) {
+        dao?.delete(messageId)
+    }
+
+    @Synchronized
     suspend fun deleteAll() {
         dao?.deleteAll()
     }

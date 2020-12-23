@@ -59,7 +59,7 @@ object IMGlideUtil {
 
     //圆图
     private val avatarOptions: RequestOptions?
-        private get() {
+        get() {
             if (avatarOption == null) {
                 avatarOption = RequestOptions()
                         .placeholder(R.mipmap.im_icon_avatar_default)

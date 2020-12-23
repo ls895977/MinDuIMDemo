@@ -1,11 +1,19 @@
 package com.css.im_kit.db.bean
 
 import com.css.im_kit.db.gson
-import com.google.gson.Gson
 
 /**
  * 商品类型消息内容
  */
+data class RichBean<T>(
+        var type: String,
+        val body: T
+) {
+    fun toJsonString(): String {
+        return gson.toJson(this)
+    }
+}
+
 class CommodityMessage {
     var commodityId: String? = null
     var commodityName: String? = null
@@ -20,7 +28,5 @@ class CommodityMessage {
         this.commodityPrice = commodityPrice
     }
 
-    fun toJsonString(): String {
-        return gson.toJson(this)
-    }
+
 }

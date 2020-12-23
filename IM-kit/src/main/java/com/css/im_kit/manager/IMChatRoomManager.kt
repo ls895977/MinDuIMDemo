@@ -6,6 +6,7 @@ import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
@@ -17,7 +18,6 @@ import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
-import com.css.im_kit.utils.long10
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -54,6 +54,14 @@ object IMChatRoomManager {
     @Synchronized
     fun messageReplay(messageId: String) {
         IMMessageManager.messageReplay(messageId)
+    }
+
+    /**
+     * 通过展示消息发送商品消息
+     */
+    @Synchronized
+    fun produceShow2Send(messageId: String) {
+        IMMessageManager.produceShow2Send(messageId)
     }
 
     /**
@@ -228,6 +236,16 @@ object IMChatRoomManager {
         sendImageMessage(imgs)
     }
 
+    /**
+     * 删除消息
+     */
+    @Synchronized
+    fun removeMessage(messageId: String) {
+        ioScope.launch {
+            MessageRepository.delete(messageId)
+        }
+    }
+
 
     /**
      * 发送商品消息
@@ -239,7 +257,9 @@ object IMChatRoomManager {
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
             val imgMessages = arrayListOf<Message>()
-            commodityMessages.forEachIndexed { index, commodityMessage ->
+            commodityMessages.map {
+                return@map RichBean("commodity", it)
+            }.forEachIndexed { index, commodityMessageBean ->
                 time += index
                 imgMessages.add(Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
@@ -251,14 +271,46 @@ object IMChatRoomManager {
                         send_status = SendType.SENDING.text,
                         send_time = time,
                         receive_time = time,
-                        message = commodityMessage.toJsonString(),
+                        message = commodityMessageBean.toJsonString(),
                         source = source?.value ?: 1,
                         extend = gson.toJson(extend)
                 ))
             }
             IMMessageManager.saveMessages(imgMessages, true)
         }
+    }
 
+    /**
+     * 商品展示消息
+     */
+    @Synchronized
+    fun addShowCommodityMessage(commodityMessages: List<CommodityMessage>) {
+        conversation?.let { conversation ->
+            var time = System.currentTimeMillis()
+            val extend = hashMapOf<Any, Any>()
+            extend["shop_id"] = conversation.shop_id.toString()
+            val imgMessages = arrayListOf<Message>()
+            commodityMessages.map {
+                return@map RichBean("showCommodity", it)
+            }.forEachIndexed { index, commodityMessageBean ->
+                time += index
+                imgMessages.add(Message(
+                        m_id = (IMManager.account + time).md5().substring(16, 32),
+                        send_account = IMManager.account!!,
+                        receive_account = conversation.chat_account ?: "",
+                        shop_id = conversation.shop_id ?: "",
+                        message_type = DBMessageType.RICH.value,
+                        read_status = true,
+                        send_status = SendType.SUCCESS.text,
+                        send_time = time,
+                        receive_time = time,
+                        message = commodityMessageBean.toJsonString(),
+                        source = source?.value ?: 1,
+                        extend = gson.toJson(extend)
+                ))
+            }
+            IMMessageManager.saveMessages(imgMessages, isSelf = true, send = false)
+        }
     }
 
     /**

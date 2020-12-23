@@ -75,7 +75,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             refreshLayout.finishRefresh()
             if (!messageList.isNullOrEmpty()) {
                 IMChatRoomManager.getMessages(messageList.last())
-            }else{
+            } else {
                 IMChatRoomManager.getMessages(System.currentTimeMillis(), 30)
             }
         }
@@ -135,24 +135,17 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         IMChatRoomManager.messageReplay(it.messageId)
                     }
                 }
-                R.id.iv_close -> {//关闭发送商品消息（type=7）TODO
-                    adapter.data.removeAt(position)
+                R.id.iv_close -> {//关闭发送商品消息（type=7）
+                    val message = adapter.data[position] as SGMessage
+                    IMChatRoomManager.removeMessage(message.messageId)
+                    adapter.remove(position)
                     adapter.notifyDataSetChanged()
                 }
                 R.id.tv_send -> {//发送商品（type=7） TODO
                     (adapter.data[position] as SGMessage).let {
-                        ioScope.launch {
-                            async {
-                                when (it.type) {
-                                    MessageType.COMMODITY -> {
-                                        (it.messageBody as CommodityMessageBody).let { it1 ->
-//                                            IMChatRoomManager.sendCommodityMessage(CommodityMessage(it1.commodityId, it1.commodityName, it1.commodityImage, it1.commodityPrice))
-                                        }
-                                    }
-                                    else -> return@async
-                                }
-                            }
-                        }
+                        adapter.data.removeAt(position)
+                        adapter.notifyDataSetChanged()
+                        IMChatRoomManager.produceShow2Send(it.messageId)
                     }
                 }
                 R.id.item_view -> {//整个item
@@ -394,6 +387,13 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * 选择商品后，发送商品消息
      */
     fun sendProductMessage(commodityMessageS: ArrayList<CommodityMessage>) {
+        IMChatRoomManager.sendCommodityMessage(commodityMessageS)
+    }
+
+    /**
+     * 展示商品类型
+     */
+    fun sendShowProductMessage(commodityMessageS: ArrayList<CommodityMessage>) {
         IMChatRoomManager.sendCommodityMessage(commodityMessageS)
     }
 

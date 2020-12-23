@@ -2,6 +2,7 @@ package com.css.im_kit.model.message
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.userinfo.SGUserInfo
@@ -15,7 +16,8 @@ import java.io.Serializable
 enum class MessageType(var str: String) {
     TEXT("TEXT"),
     IMAGE("IMAGE"),
-    COMMODITY("COMMODITY");
+    COMMODITY("COMMODITY"),
+    SHOWCOMMODITY("SHOWCOMMODITY");
 }
 
 class SGMessage : Serializable, MultiItemEntity {
@@ -147,7 +149,7 @@ class SGMessage : Serializable, MultiItemEntity {
             val sgMessage = SGMessage()
             sgMessage.messageId = message.m_id
             val extend = gson.fromJson(message.extend, HashMap::class.java)
-            sgMessage.shopId = extend["shop_id"]?.toString()?:""
+            sgMessage.shopId = extend["shop_id"]?.toString() ?: ""
             sgMessage.type = when (message.message_type) {
                 DBMessageType.TEXT.value -> {
                     MessageType.TEXT
@@ -155,9 +157,19 @@ class SGMessage : Serializable, MultiItemEntity {
                 DBMessageType.IMAGE.value -> {
                     MessageType.IMAGE
                 }
-                //TODO 富文本消息需扩展出商品类型
                 DBMessageType.RICH.value -> {
-                    MessageType.COMMODITY
+                    val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
+                    when (commodityMessage.type) {
+                        "commodity" -> {
+                            MessageType.COMMODITY
+                        }
+                        "showCommodity" -> {
+                            MessageType.SHOWCOMMODITY
+                        }
+                        else -> {
+                            MessageType.TEXT
+                        }
+                    }
                 }
                 //TODO 下面未实现功能
                 DBMessageType.VIDEO.value -> {
@@ -198,6 +210,9 @@ class SGMessage : Serializable, MultiItemEntity {
             }
             MessageType.COMMODITY -> {
                 if (messageBody?.isSelf == true) 3 else 6
+            }
+            MessageType.SHOWCOMMODITY->{
+                7
             }
             else -> 0
         }

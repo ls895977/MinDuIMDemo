@@ -2,6 +2,7 @@ package com.css.im_kit.model.message
 
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
@@ -52,8 +53,17 @@ open class BaseMessageBody : Serializable {
                     ImageMessageBody(message.message)
                 }
                 DBMessageType.RICH.value -> {
-                    val commodityMessage = gson.fromJson(message.message, CommodityMessage::class.java)
-                    CommodityMessageBody.toCommodityMessageBody(commodityMessage)
+                    val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
+                    when (commodityMessage.type) {
+                        "commodity",
+                        "showCommodity" -> {
+                            val commodity = gson.fromJson(gson.toJson(commodityMessage.body), CommodityMessage::class.java)
+                            CommodityMessageBody.toCommodityMessageBody(commodity)
+                        }
+                        else -> {
+                            TextMessageBody("其他消息类型")
+                        }
+                    }
                 }
                 else -> {
                     TextMessageBody("其他消息类型")

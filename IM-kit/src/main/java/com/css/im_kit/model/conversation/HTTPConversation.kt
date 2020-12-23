@@ -1,6 +1,7 @@
 package com.css.im_kit.model.conversation
 
 import com.css.im_kit.db.bean.CommodityMessage
+import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.message.*
@@ -131,32 +132,45 @@ class HTTPConversation : Serializable {
      */
 
     fun toSGConversation(): SGConversation {
-        val messageType:MessageType
-        val baseMessageBody :BaseMessageBody = when(message_type){
-            DBMessageType.TEXT.value->{
+        val messageType: MessageType
+        val baseMessageBody: BaseMessageBody = when (message_type) {
+            DBMessageType.TEXT.value -> {
                 messageType = MessageType.TEXT
-                val map = gson.fromJson(content,HashMap::class.java)
-                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = map["content"].toString())
+                val map = gson.fromJson(content, HashMap::class.java)
+                TextMessageBody(isRead = true, receivedTime = updated_time
+                        ?: "0", sendTime = created_time
+                        ?: "0", isSelf = false, text = map["content"].toString())
             }
-            DBMessageType.IMAGE.value->{
+            DBMessageType.IMAGE.value -> {
                 messageType = MessageType.IMAGE
-                val map = gson.fromJson(content,HashMap::class.java)
-                ImageMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,imageUrl =map["content"].toString())
+                val map = gson.fromJson(content, HashMap::class.java)
+                ImageMessageBody(isRead = true, receivedTime = updated_time
+                        ?: "0", sendTime = created_time
+                        ?: "0", isSelf = false, imageUrl = map["content"].toString())
             }
-            DBMessageType.RICH.value->{
-                messageType = MessageType.COMMODITY
-                val commodity = gson.fromJson(content,CommodityMessage::class.java)
-                CommodityMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0"
-                        ,isSelf = false,commodityId = commodity.commodityId,commodityImage = commodity.commodityImage
-                        ,commodityName = commodity.commodityName,commodityPrice = commodity.commodityPrice)
+            DBMessageType.RICH.value -> {
+                val bean = gson.fromJson(content, RichBean::class.java)
+                if (bean.type == "commodity") {
+                    messageType = MessageType.COMMODITY
+                    val commodity = gson.fromJson(gson.toJson(bean.body), CommodityMessage::class.java)
+                    CommodityMessageBody(isRead = true, receivedTime = updated_time
+                            ?: "0", sendTime = created_time ?: "0"
+                            , isSelf = false, commodityId = commodity.commodityId, commodityImage = commodity.commodityImage
+                            , commodityName = commodity.commodityName, commodityPrice = commodity.commodityPrice)
+                } else {
+                    messageType = MessageType.TEXT
+                    TextMessageBody(isRead = true, receivedTime = updated_time
+                            ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
+                }
             }
             else -> {
                 messageType = MessageType.TEXT
-                TextMessageBody(isRead = true,receivedTime = updated_time?:"0",sendTime = created_time?:"0",isSelf = false,text = "未知类型")
+                TextMessageBody(isRead = true, receivedTime = updated_time
+                        ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
             }
         }
-        val message =SGMessage(
-                shopId = shop_id?:"",
+        val message = SGMessage(
+                shopId = shop_id ?: "",
                 messageId = "",
                 type = messageType,
                 userInfo = null,

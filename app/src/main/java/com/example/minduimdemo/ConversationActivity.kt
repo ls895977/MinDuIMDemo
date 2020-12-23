@@ -92,7 +92,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         conversationFragment?.addProductOnClickListener(View.OnClickListener {
             val commodityMessageLists = arrayListOf<CommodityMessage>()
             commodityMessageLists.add(CommodityMessage("sdsa", "测试商品", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "200"))
-            conversationFragment?.sendProductMessage(commodityMessageLists)
+            conversationFragment?.sendShowProductMessage(commodityMessageLists)
         })
         conversationFragment?.addImageOnClickListener(View.OnClickListener {
             ChooseCameraPicUtil.choosePic(this)
