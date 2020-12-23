@@ -75,6 +75,8 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             refreshLayout.finishRefresh()
             if (!messageList.isNullOrEmpty()) {
                 IMChatRoomManager.getMessages(messageList.last())
+            }else{
+                IMChatRoomManager.getMessages(System.currentTimeMillis(), 30)
             }
         }
 

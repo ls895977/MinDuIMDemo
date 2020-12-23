@@ -288,7 +288,7 @@ object IMChatRoomManager {
     /**
      * 获取消息列表
      */
-    private fun getMessages(lastItemTime: Long, pageSize: Int) {
+    fun getMessages(lastItemTime: Long, pageSize: Int) {
         if (conversation == null) {
             Log.e("SGIM", "聊天室为空")
             return
