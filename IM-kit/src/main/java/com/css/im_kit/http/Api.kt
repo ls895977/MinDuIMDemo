@@ -2,7 +2,6 @@ package com.css.im_kit.http
 
 import com.css.im_kit.http.bean.AssignCustomerBack
 import com.css.im_kit.http.bean.MessageHistoryBack
-import com.css.im_kit.http.bean.MessageHistoryItem
 import com.css.im_kit.manager.QNTokenBean
 import com.css.im_kit.model.conversation.HTTPConversation
 import okhttp3.RequestBody
@@ -53,6 +52,12 @@ interface Api {
      * 历史记录
      */
     @POST("/chat/messageHistory")
-    fun messageHistory(@Body  requestBody: RequestBody): Call<BaseData<MessageHistoryBack>>
+    fun messageHistory(@Body requestBody: RequestBody): Call<BaseData<MessageHistoryBack>>
+
+    /**
+     * 把消息置为已读
+     */
+    @POST("/chat/changRead")
+    fun changRead(@Body requestBody: RequestBody): Call<BaseData<Any>>
 
 }

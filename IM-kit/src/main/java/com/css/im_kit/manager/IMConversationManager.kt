@@ -73,7 +73,7 @@ object IMConversationManager {
                     messages.forEachIndexed { index, message ->
                         if (message.shopId == it.shop_id) {
                             val task = async {
-                                MessageRepository.getNoReadData(message.shopId)
+                                MessageRepository.getNoReadData(message.shopId, IMManager.account!!)
                             }
                             val result = task.await()
                             it.unread_account = result
@@ -118,8 +118,8 @@ object IMConversationManager {
                 }?.let {
                     sgConversations.clear()
                     it.forEach { item ->
-                        val sgConversation= item.toSGConversation()
-                        sgConversation.chat_account_info?.let {its->
+                        val sgConversation = item.toSGConversation()
+                        sgConversation.chat_account_info?.let { its ->
                             UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
                         }
                         sgConversations.add(sgConversation)

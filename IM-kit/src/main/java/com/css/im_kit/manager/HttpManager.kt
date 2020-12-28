@@ -155,7 +155,37 @@ object HttpManager {
             return@withContext MessageRepository.getMessage(shop_id = shopId, pageSize = pageSize, lastItemTime = time)
         }
     }
+
+
+    /**
+     * 把消息置为已读
+     */
+
+    suspend fun changRead(m_ids: List<String>) {
+        withContext(Dispatchers.Default) {
+            val nonceStr = System.currentTimeMillis().toString().md5()
+            val map = HashMap<String, String>()
+            map["app_id"] = IMManager.app_id ?: ""
+            map["nonce_str"] = nonceStr
+            val body = HashMap<String, Any>()
+            body["app_id"] = IMManager.app_id ?: ""
+            body["m_ids"] = m_ids
+            body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+            body["nonce_str"] = nonceStr
+
+            Retrofit.api?.changRead(
+                    requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+            )?.awaitResponse()?.let {
+                if (it.isSuccessful) {
+                    if (it.body()?.code == "20000") {
+                        MessageRepository.read(m_ids)
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 interface HttpCallBack {
     fun success(shop: Shop, sgUserInfo: SGUserInfo)

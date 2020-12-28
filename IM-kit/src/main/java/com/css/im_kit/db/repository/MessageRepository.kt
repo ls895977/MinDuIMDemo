@@ -120,8 +120,8 @@ object MessageRepository {
     }
 
     @Synchronized
-    suspend fun getNoReadData(shop_id: String): Int {
-        return dao?.getNoReadData(shop_id, false)?.size ?: 0
+    suspend fun getNoReadData(shop_id: String, send_account: String): Int {
+        return dao?.getNoReadData(shop_id, false, send_account = send_account)?.size ?: 0
     }
 
     @Synchronized

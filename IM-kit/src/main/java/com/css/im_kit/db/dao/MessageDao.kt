@@ -21,8 +21,8 @@ interface MessageDao {
     @Query("SELECT  * FROM message  WHERE shop_id = (:shop_id) ORDER BY receive_time ASC LIMIT 1")
     suspend fun getFirst(shop_id: String): Message
 
-    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND read_status = :isRead")
-    suspend fun getNoReadData(shop_id: String, isRead: Boolean): List<Message>
+    @Query("SELECT id FROM message WHERE shop_id = (:shop_id) AND read_status = :read_status AND send_account !=:send_account")
+    suspend fun getNoReadData(shop_id: String, read_status: Boolean, send_account: String): List<Int>
 
     @Query("UPDATE message SET send_status = :sendType WHERE m_id IN (:messageIds) ")
     suspend fun changeMessageSendType(sendType: Int, messageIds: List<String>)

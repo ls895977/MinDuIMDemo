@@ -65,39 +65,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
         var inChat = false
         binding?.joinChat?.setOnClickListener {
-            if (inChat) {
-                IMChatRoomManager.dismissSgMessageCallback()
-                Toast.makeText(this, "退出会话", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "进入会话", Toast.LENGTH_SHORT).show()
-                IMChatRoomManager
-                        .initConversation(SGConversation())
-                        .addSGConversationListListener(object : ChatRoomCallback {
-                            /**
-                             * 新消息
-                             */
-                            override fun onReceiveMessage(message: List<SGMessage>) {
-                                Log.e("111", "1111")
-                            }
 
-                            /**
-                             * 会话所有消息
-                             */
-                            override fun onMessages(lastItemTime: Long, message: List<SGMessage>) {
-                                Log.e("111", "1111")
-                            }
-
-                            @Synchronized
-                            override suspend fun onMessageInProgress(message: SGMessage) {
-                                Log.e("111", "1111")
-                            }
-
-
-                        })
-                        .create()
-
-
-            }
             inChat = !inChat
         }
 
@@ -121,21 +89,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
          * 发送新消息
          */
         binding?.sendNewMessage?.setOnClickListener {
-            when (rewStaue) {
-                MessageType.TEXT -> {
-                    rewStaue = MessageType.IMAGE
-                    IMChatRoomManager.sendTextMessage("发送一条消息")
-                }
-                MessageType.IMAGE -> {
-                    rewStaue = MessageType.COMMODITY
-                    IMChatRoomManager.sendImageMessages(arrayListOf("http://testimg.supersg.cn/user/773870855045251072.jpeg"))
-                }
-                MessageType.COMMODITY -> {
-                    rewStaue = MessageType.TEXT
-                    val commodityMessage = CommodityMessage("commodityId", "测试商品敖德萨大所大所大所大所多撒大大大", "http://testimg.supersg.cn/user/773870855045251072.jpeg", "12.00")//2020-11-08 16:14:23
-                    IMChatRoomManager.sendCommodityMessage(arrayListOf(commodityMessage))
-                }
-            }
+
         }
         binding?.initSocket?.setOnClickListener {
             val url = "ws://devchatws.supersg.cn"
@@ -175,7 +129,6 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
     override fun onDestroy() {
         super.onDestroy()
-        IMChatRoomManager.dismissSgMessageCallback()
         IMConversationManager.removeSGConversationListListener(this)
     }
 }

@@ -85,7 +85,7 @@ object IMChatRoomManager {
                     it.messageBody?.isRead = true
                     readIDs.add(it.messageId)
                 }
-                MessageRepository.read(readIDs)
+                HttpManager.changRead(readIDs)
                 chatRoomCallback?.onReceiveMessage(message)
             }
         }
@@ -385,7 +385,7 @@ object IMChatRoomManager {
                         }
                     }
                     if (!noReadMessageId.isNullOrEmpty()) {
-                        MessageRepository.read(noReadMessageId)
+                        HttpManager.changRead(noReadMessageId)
                     }
                     sgMessages.forEach {
                         it.messageBody?.isRead = true
