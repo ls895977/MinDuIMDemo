@@ -10,6 +10,7 @@ import com.css.im_kit.model.message.TextMessageBody
 import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMGlideUtil
+import com.css.im_kit.utils.long13
 
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
@@ -31,10 +32,11 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         //时间
         helper.setGone(R.id.time, !item.newMessage?.messageBody?.receivedTime.isNullOrEmpty())
         item.newMessage?.messageBody?.receivedTime?.let {
+            val time = it.toLong().long13()
             try {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(it.toLong()))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(time))
             } catch (e: Exception) {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(IMDateUtil.dateToStamp(it)))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(IMDateUtil.dateToStamp(time.toString())))
             }
 
         }
