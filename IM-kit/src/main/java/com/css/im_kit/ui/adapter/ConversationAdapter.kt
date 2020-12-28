@@ -64,7 +64,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         //加载圈(自己的才有)
         item.messageBody?.isSelf?.let {
             if (it) {
-                helper.setBackgroundRes(R.id.loading_image, R.drawable.anim_loading_location)
+                helper.setBackgroundRes(R.id.loading_image, R.drawable.im_anim_loading_location)
                 val animationDrawable = helper.getView<ImageView>(R.id.loading_image).background as AnimationDrawable
                 if (item.messageBody?.sendType == SendType.SENDING) {//发送中
                     helper.setGone(R.id.loading_image, true)

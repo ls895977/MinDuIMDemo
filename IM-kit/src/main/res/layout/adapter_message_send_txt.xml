@@ -72,7 +72,7 @@
                 android:layout_height="@dimen/dp_20"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="@dimen/dp_5"
-                android:background="@drawable/anim_loading_location"
+                android:background="@drawable/im_anim_loading_location"
                 android:visibility="gone" />
 
             <TextView
