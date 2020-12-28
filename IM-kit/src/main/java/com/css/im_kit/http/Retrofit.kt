@@ -52,6 +52,7 @@ object Retrofit {
                     .connectTimeout(20000, TimeUnit.MILLISECONDS)
                     .writeTimeout(20000, TimeUnit.MILLISECONDS)
                     .retryOnConnectionFailure(true)
+                    .addInterceptor(getHeaderInterceptor())
                     //设置Header
                     .build()
         }
