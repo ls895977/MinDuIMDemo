@@ -30,7 +30,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         /**
          * 用户端分配客服跳转
          */
-        fun toConversationActivity(context: Context, shopId: String) {
+        fun toConversationActivity(context: Context, comeFrom: Int, shopId: String, productId: String, productImage: String, productName: String, productPrice: String) {
             HttpManager.assignCustomer(shopId, object : HttpCallBack {
                 override fun success(shop: Shop, sgUserInfo: SGUserInfo) {
                     val sgConversation = SGConversation()
@@ -41,6 +41,11 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
                     IMUserInfoManager.insertOrUpdateUser(sgUserInfo.toDBUserInfo())
                     val intent = Intent(context, ConversationActivity::class.java)
                     intent.putExtra("conversation", sgConversation)
+                    intent.putExtra("comeFrom", comeFrom)
+                    intent.putExtra("productId", productId)
+                    intent.putExtra("productImage", productImage)
+                    intent.putExtra("productName", productName)
+                    intent.putExtra("productPrice", productPrice)
                     context.startActivity(intent)
                 }
 
@@ -54,6 +59,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         }
     }
 
+    //IM
     private var conversation: SGConversation? = null
     private var conversationFragment: ConversationFragment? = null
 
@@ -84,7 +90,7 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
      */
     override fun onSetFragmentDataListener() {
         //拉去回话数据
-        conversationFragment?.updateData()
+        insertProductMessage()
         //设置商品输入展示
         conversationFragment?.setProductMessageVisibility(true)
         //发送商品消息点击事件
@@ -96,6 +102,22 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         conversationFragment?.addImageOnClickListener(View.OnClickListener {
             ChooseCameraPicUtil.choosePic(this)
         })
+    }
+
+    /**
+     * 发送商品消息按钮(type=7)
+     */
+    private fun insertProductMessage() {
+        val comeFromTag = intent.getIntExtra("comeFrom", 0)
+        val productId = intent.getStringExtra("productId") ?: ""
+        val productImage = intent.getStringExtra("productImage") ?: ""
+        val productName = intent.getStringExtra("productName") ?: ""
+        val productPrice = intent.getStringExtra("productPrice") ?: ""
+        if (comeFromTag == 1) {
+            conversationFragment?.updateData(true, productId, productImage, productName, productPrice)
+        } else {
+            conversationFragment?.updateData(false, "", "", "", "")
+        }
     }
 
     /**

@@ -18,7 +18,7 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.launch
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataListener, BaseQuickAdapter.OnItemChildClickListener, BaseQuickAdapter.OnItemChildLongClickListener {
-//    private var conversationList = arrayListOf<SGConversation>()
+    //    private var conversationList = arrayListOf<SGConversation>()
     private var conversationListFragment: ConversationListFragment? = null
 
     override fun layoutResource(): Int = R.layout.activity_main
@@ -68,9 +68,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
      * 消息点击事件
      */
     override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View?, position: Int) {
-        val intent = Intent(this, ConversationActivity::class.java)
-        intent.putExtra("conversation", adapter.data[position] as SGConversation)
-        startActivity(intent)
+        //分配客服跳转
+        val comeFromTag = 0
+        val shopId = "1"
+        val productId = "sdsa"
+        val productImage = "http://testimg.supersg.cn/user/773870855045251072.jpeg"
+        val productName = "测试商品"
+        val productPrice = "200"
+        ConversationActivity.toConversationActivity(this, comeFromTag, shopId, productId, productImage, productName, productPrice)
+        //普通跳转
+//        val intent = Intent(this, ConversationActivity::class.java)
+//        intent.putExtra("conversation", adapter.data[position] as SGConversation)
+//        startActivity(intent)
     }
 
     /**

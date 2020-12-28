@@ -1,5 +1,6 @@
 package com.css.im_kit.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.text.Selection
 import android.text.Spannable
@@ -16,13 +17,11 @@ import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.SendType
-import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.CommodityMessageBody
 import com.css.im_kit.model.message.ImageMessageBody
-import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.ui.activity.BigPicActivity
 import com.css.im_kit.ui.adapter.ConversationAdapter
@@ -31,6 +30,8 @@ import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.bean.EmojiBean
 import com.css.im_kit.ui.listener.IMListener
 import com.css.im_kit.utils.FaceTextUtil
+import com.css.im_kit.utils.IMDensityUtils
+import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.async
@@ -38,7 +39,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class ConversationFragment(private var conversation: SGConversation, var setDataListener: IMListener.SetDataListener, var setClickProductListener: IMListener.SetClickProductListener) : BaseFragment<FragmentConversationBinding?>() {
+class ConversationFragment(private var conversation: SGConversation, private var setDataListener: IMListener.SetDataListener, var setClickProductListener: IMListener.SetClickProductListener) : BaseFragment<FragmentConversationBinding?>() {
+    private var isFirstGetData = false//是否第一次获取数据
     private var keyboardTag = false//软键盘状态
     private var emojiTag = false//表情区域状态
     private var picTag = false//照相机区域状态
@@ -46,6 +48,12 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     private var messageList = arrayListOf<SGMessage>()
     private var adapter: ConversationAdapter? = null
     private var adapterEmoji: EmojiAdapter? = null
+
+    //商品联系客服时需要
+    private var productId = ""
+    private var productImage = ""
+    private var productName = ""
+    private var productPrice = ""
 
     override fun layoutResource(): Int = R.layout.fragment_conversation
 
@@ -72,6 +80,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
     override fun initListeners() {
         //刷新
         binding?.refreshView?.setOnRefreshListener { refreshLayout: RefreshLayout ->
+            isFirstGetData = false
             refreshLayout.finishRefresh()
             if (!messageList.isNullOrEmpty()) {
                 IMChatRoomManager.getMessages(messageList.last())
@@ -135,41 +144,25 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         IMChatRoomManager.messageReplay(it.messageId)
                     }
                 }
-                R.id.iv_close -> {//关闭发送商品消息（type=7）
-                    val message = adapter.data[position] as SGMessage
-                    IMChatRoomManager.removeMessage(message.messageId)
-                    adapter.remove(position)
-                    adapter.notifyDataSetChanged()
-                }
-                R.id.tv_send -> {//发送商品（type=7） TODO
-                    (adapter.data[position] as SGMessage).let {
-                        adapter.data.removeAt(position)
-                        adapter.notifyDataSetChanged()
-                        IMChatRoomManager.produceShow2Send(it.messageId)
-                    }
-                }
-                R.id.item_view -> {//整个item
-
-                }
+                //整个item
+//                R.id.item_view -> {}
             }
         }
-        //长按删除
-        adapter!!.setOnItemLongClickListener { adapter, view, position ->
-            when (view.id) {
-                R.id.item_view -> {
-
-                }
-            }
-            return@setOnItemLongClickListener false
-        }
+//        //长按删除
+//        adapter!!.setOnItemLongClickListener { adapter, view, position ->
+//            when (view.id) {
+//                R.id.item_view -> {}
+//            }
+//            return@setOnItemLongClickListener false
+//        }
 
         //输入区
         binding!!.etContent.addTextChangedListener {
             val str = binding?.etContent?.text.toString()
             if (str.trim().isNotEmpty()) {
-                binding?.tvSend?.visibility = View.VISIBLE
+                binding?.tvTextSend?.visibility = View.VISIBLE
             } else {
-                binding?.tvSend?.visibility = View.GONE
+                binding?.tvTextSend?.visibility = View.GONE
             }
         }
 
@@ -196,16 +189,24 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         binding!!.ivDeleceEmoji.setOnClickListener {
             binding?.etContent?.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL))
         }
-        //输入区
+        //输入区(点击)
         binding?.etContent?.setOnClickListener {
+            binding?.rlMessage7?.visibility = View.GONE
             nowCheckTag = 0
             //获取当前软键盘的状态，true打开，false隐藏
             if (!keyboardTag) {
                 showSoftKeyboard(binding?.etContent)
             }
         }
+        //输入区（获取焦点）
+        binding!!.etContent.setOnFocusChangeListener { _, b ->
+            if (b) {
+                binding?.rlMessage7?.visibility = View.GONE
+            }
+        }
         //表情输入区
         binding?.ivPic1?.setOnClickListener {
+            binding?.rlMessage7?.visibility = View.GONE
             nowCheckTag = 0
             emojiTag = !emojiTag
             if (emojiTag) {//先关闭展开布局》再显示表情输入区
@@ -246,6 +247,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         }
         //图片输入区
         binding?.ivPic2?.setOnClickListener {
+            binding?.rlMessage7?.visibility = View.GONE
             nowCheckTag = 0
             picTag = !picTag
             if (picTag) {//先关闭展开布局》再显示图片输入区
@@ -285,13 +287,22 @@ class ConversationFragment(private var conversation: SGConversation, var setData
             }
         }
         //发送消息
-        binding!!.tvSend.setOnClickListener {
+        binding!!.tvTextSend.setOnClickListener {
             val sendText = binding?.etContent?.text.toString()
             if (sendText.isEmpty()) {
                 return@setOnClickListener
             }
             IMChatRoomManager.sendTextMessage(sendText)
             binding?.etContent?.setText("")
+        }
+        //关闭发送商品消息（type=7）
+        binding!!.ivClose.setOnClickListener {
+            binding?.rlMessage7?.visibility = View.GONE
+        }
+        //发送商品（type=7）
+        binding!!.tvProductSend.setOnClickListener {
+            binding?.rlMessage7?.visibility = View.GONE
+            IMChatRoomManager.sendCommodityMessage(arrayListOf(CommodityMessage(productId, productName, productImage, productPrice)))
         }
     }
 
@@ -300,8 +311,14 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      * Activity
      * 调用
      * 更新当前界面数据
+     * isAddSend7Message:type=7的特殊消息(只有第一次》商品详情》进入（并且之前没发过）才会发送)
      */
-    fun updateData() {
+    fun updateData(isAddSend7Message: Boolean, productId: String, productImage: String, productName: String, productPrice: String) {
+        this.productId = productId
+        this.productName = productName
+        this.productImage = productImage
+        this.productPrice = productPrice
+        isFirstGetData = true
         IMChatRoomManager
                 .initConversation(conversation)
                 .addSGConversationListListener(object : ChatRoomCallback {
@@ -315,6 +332,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                     }
 
+                    @SuppressLint("SetTextI18n")
                     @Synchronized
                     override fun onMessages(lastItemTime: Long, message: List<SGMessage>) {
                         if (lastItemTime == Long.MAX_VALUE) {
@@ -323,6 +341,16 @@ class ConversationFragment(private var conversation: SGConversation, var setData
                         //拉去数据库没聊天列表
                         messageList.addAll(message)
                         adapter?.notifyItemRangeChanged(messageList.size - message.size, messageList.size)
+
+                        //type=7的特殊消息
+                        if (isAddSend7Message && isFirstGetData) {
+                            binding?.rlMessage7?.visibility = View.VISIBLE
+                            binding?.tvProductPrice?.text = "￥${productPrice}"
+                            binding?.tvProductName?.text = productName
+                            IMGlideUtil.loadRound2Img(activity, productImage, binding?.ivProductImage, IMDensityUtils.dp2px(requireContext(), 8f))
+                        } else {
+                            binding?.rlMessage7?.visibility = View.GONE
+                        }
                     }
 
                     @Synchronized
@@ -356,7 +384,7 @@ class ConversationFragment(private var conversation: SGConversation, var setData
         binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
         binding?.llPicView?.visibility = View.GONE
         //隐藏发送按钮
-        binding?.tvSend?.visibility = View.GONE
+        binding?.tvTextSend?.visibility = View.GONE
     }
 
     /**
@@ -409,13 +437,5 @@ class ConversationFragment(private var conversation: SGConversation, var setData
      */
     fun sendImageMessage(images: ArrayList<String>) {
         IMChatRoomManager.sendImageMessages(images)
-    }
-
-    /**
-     * （用户端，商品详情）进入聊天时，发送一条当前本书第商品消息
-     * （type=7）
-     */
-    fun sendProductMessage(commodityMessage: CommodityMessage) {
-        IMChatRoomManager.sendCommodityMessage(arrayListOf(commodityMessage))
     }
 }

@@ -10,6 +10,9 @@ import com.scwang.smart.refresh.footer.ClassicsFooter;
 import com.scwang.smart.refresh.header.ClassicsHeader;
 import com.scwang.smart.refresh.layout.SmartRefreshLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TestApplication extends Application {
     public static Context mContext;
 

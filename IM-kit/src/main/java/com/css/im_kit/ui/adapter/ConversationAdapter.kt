@@ -33,7 +33,6 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         addItemType(4, R.layout.adapter_message_receiver_txt)
         addItemType(5, R.layout.adapter_message_receiver_img)
         addItemType(6, R.layout.adapter_message_receiver_product)
-        addItemType(7, R.layout.adapter_message_send_local_product)
     }
 
     override fun convert(helper: BaseViewHolder, item: SGMessage) {
@@ -124,19 +123,6 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
                 IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
                 helper.addOnClickListener(R.id.ll_content)
-            }
-
-            //本地消息（发送在本地的）
-            7 -> {//product
-                helper.setGone(R.id.tv_user_name, false)
-                helper.setGone(R.id.tv_time, false)
-                val message = item.messageBody as CommodityMessageBody
-                helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
-                helper.setText(R.id.tv_product_name, message.commodityName)
-                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
-                //点击事件
-                helper.addOnClickListener(R.id.iv_close)
-                helper.addOnClickListener(R.id.tv_send)
             }
         }
 
