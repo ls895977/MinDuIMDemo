@@ -28,7 +28,7 @@ object MessageRepository {
      *
      */
     @Synchronized
-    suspend fun getMessage(shop_id: String, lastItemTime: Long, pageSize: Int): List<Message> {
+    suspend fun getMessage(shop_id: String, lastItemTime: Long, pageSize: Int): MutableList<Message> {
         return dao?.getMessages(shop_id, lastItemTime = lastItemTime, pageSize = pageSize)
                 ?: arrayListOf()
     }
