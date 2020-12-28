@@ -14,8 +14,6 @@ import com.css.im_kit.utils.long13
 
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
-
-
         if (item.shop == null) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))
@@ -55,7 +53,7 @@ class ConversationListAdapter(var context: Context, data: List<SGConversation>) 
         }
 
         //未读消息条数
-        helper.setText(R.id.message_count, item.unread_account.toString())
+        helper.setText(R.id.message_count, if (item.unread_account > 99) "99+" else item.unread_account.toString())
         helper.setGone(R.id.message_count, item.unread_account > 0)
 
         //点击事件
