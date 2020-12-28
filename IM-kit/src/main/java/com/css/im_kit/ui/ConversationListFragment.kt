@@ -95,6 +95,9 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
         this.conversationList.clear()
         this.conversationList.addAll(sgConversation)
         conversationListAdapter?.notifyDataSetChanged()
+        if (conversationList.isNullOrEmpty()) {
+            binding?.ivNoContent?.visibility = View.VISIBLE
+        }
     }
 
     /**

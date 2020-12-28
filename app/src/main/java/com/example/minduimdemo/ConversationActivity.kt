@@ -10,7 +10,6 @@ import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.HttpCallBack
 import com.css.im_kit.manager.HttpManager
-import com.css.im_kit.manager.IMChatRoomManager
 import com.css.im_kit.manager.IMUserInfoManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.conversation.Shop
