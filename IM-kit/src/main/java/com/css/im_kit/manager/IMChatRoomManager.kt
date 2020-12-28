@@ -319,6 +319,7 @@ object IMChatRoomManager {
     fun create() {
         getMessages(System.currentTimeMillis(), 30)
         getMessageSource()
+        IMMessageManager.removeMessageListener(myMessageCallback)
         IMMessageManager.addMessageListener(myMessageCallback)
     }
 
