@@ -7,6 +7,7 @@ import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
+import java.lang.Exception
 
 /**
  * TEXT 文字类型
@@ -158,18 +159,23 @@ class SGMessage : Serializable, MultiItemEntity {
                     MessageType.IMAGE
                 }
                 DBMessageType.RICH.value -> {
-                    val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
-                    when (commodityMessage.type) {
-                        "commodity" -> {
-                            MessageType.COMMODITY
+                    try {
+                        val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
+                        when (commodityMessage.type) {
+                            "commodity" -> {
+                                MessageType.COMMODITY
+                            }
+                            "showCommodity" -> {
+                                MessageType.SHOWCOMMODITY
+                            }
+                            else -> {
+                                MessageType.TEXT
+                            }
                         }
-                        "showCommodity" -> {
-                            MessageType.SHOWCOMMODITY
-                        }
-                        else -> {
-                            MessageType.TEXT
-                        }
+                    }catch (e:Exception){
+                        MessageType.TEXT
                     }
+
                 }
                 //TODO 下面未实现功能
                 DBMessageType.VIDEO.value -> {

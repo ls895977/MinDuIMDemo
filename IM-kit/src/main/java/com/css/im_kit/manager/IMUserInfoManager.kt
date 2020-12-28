@@ -124,9 +124,15 @@ object IMUserInfoManager {
     fun refreshUserInfoCache(userInfo: UserInfo) {
         ioScope.launch {
             IMManager.account?.let {
-                UserInfoRepository.loadById(it)?.let { user ->
-                    user.avatar = userInfo.avatar
-                    user.nickname = userInfo.nickname
+                UserInfoRepository.loadById(it).let { user ->
+                    if (user == null) {
+                        return@let userInfo
+                    } else {
+                        user.avatar = userInfo.avatar
+                        user.nickname = userInfo.nickname
+                        return@let user
+                    }
+                }?.let { user ->
                     HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
                         override fun success(sgUserInfo: SGUserInfo) {
                             insertOrUpdateUser(sgUserInfo.toDBUserInfo())

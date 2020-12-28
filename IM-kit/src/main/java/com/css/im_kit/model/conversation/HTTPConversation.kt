@@ -132,7 +132,7 @@ class HTTPConversation : Serializable {
      */
 
     fun toSGConversation(): SGConversation {
-        val messageType: MessageType
+        var messageType: MessageType
         val baseMessageBody: BaseMessageBody = when (message_type) {
             DBMessageType.TEXT.value -> {
                 messageType = MessageType.TEXT
@@ -149,19 +149,26 @@ class HTTPConversation : Serializable {
                         ?: "0", isSelf = false, imageUrl = map["content"].toString())
             }
             DBMessageType.RICH.value -> {
-                val bean = gson.fromJson(content, RichBean::class.java)
-                if (bean.type == "commodity") {
-                    messageType = MessageType.COMMODITY
-                    val commodity = gson.fromJson(gson.toJson(bean.body), CommodityMessage::class.java)
-                    CommodityMessageBody(isRead = true, receivedTime = updated_time
-                            ?: "0", sendTime = created_time ?: "0"
-                            , isSelf = false, commodityId = commodity.commodityId, commodityImage = commodity.commodityImage
-                            , commodityName = commodity.commodityName, commodityPrice = commodity.commodityPrice)
-                } else {
+                try {
+                    val bean = gson.fromJson(content, RichBean::class.java)
+                    if (bean.type == "commodity") {
+                        messageType = MessageType.COMMODITY
+                        val commodity = gson.fromJson(gson.toJson(bean.body), CommodityMessage::class.java)
+                        CommodityMessageBody(isRead = true, receivedTime = updated_time
+                                ?: "0", sendTime = created_time ?: "0"
+                                , isSelf = false, commodityId = commodity.commodityId, commodityImage = commodity.commodityImage
+                                , commodityName = commodity.commodityName, commodityPrice = commodity.commodityPrice)
+                    } else {
+                        messageType = MessageType.TEXT
+                        TextMessageBody(isRead = true, receivedTime = updated_time
+                                ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
+                    }
+                }catch (e:Exception){
                     messageType = MessageType.TEXT
                     TextMessageBody(isRead = true, receivedTime = updated_time
                             ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
                 }
+
             }
             else -> {
                 messageType = MessageType.TEXT
