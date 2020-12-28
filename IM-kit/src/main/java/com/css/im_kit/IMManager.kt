@@ -25,6 +25,7 @@ object IMManager {
     var account: String? = null
     var app_id: String? = null
     var app_secret: String? = null
+    var tokenKeyName: String? = null
 
     /**
      * 聊天列表url地址
