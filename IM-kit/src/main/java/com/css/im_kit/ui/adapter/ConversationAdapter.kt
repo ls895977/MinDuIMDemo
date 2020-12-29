@@ -41,12 +41,12 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         val time = if (item.messageBody?.isSelf!!) item.messageBody?.sendTime?.toLong() else item.messageBody?.receivedTime?.toLong()
         time?.let {
             helper.setText(R.id.tv_time, IMDateUtil.getSimpleTime1(time))
-            if (helper.adapterPosition == 0) {
+            if (helper.adapterPosition == (data.size - 1)) {
                 helper.setGone(R.id.tv_time, true)
             } else {
                 val timeNext = if (data[helper.adapterPosition - 1].messageBody?.isSelf!!) data[helper.adapterPosition].messageBody?.sendTime?.toLong() else data[helper.adapterPosition - 1].messageBody?.receivedTime?.toLong()
                 timeNext?.let {
-                    if (abs(time - timeNext) > 5 * 60 * 1000) {//大于5分钟显示时间
+                    if (abs(timeNext - time) > 5 * 60 * 1000) {//大于5分钟显示时间
                         helper.setGone(R.id.tv_time, true)
                     }
                 }
