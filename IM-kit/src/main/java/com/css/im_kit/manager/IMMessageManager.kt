@@ -2,6 +2,7 @@ package com.css.im_kit.manager
 
 import android.util.Log
 import com.css.im_kit.IMManager
+import com.css.im_kit.IMManager.tokenKeyName
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.RichBean
@@ -25,6 +26,8 @@ import com.qiniu.android.storage.UploadManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.awaitResponse
 
 object IMMessageManager {
@@ -268,9 +271,16 @@ object IMMessageManager {
     fun sendImages(imgMessages: MutableList<Message>) {
         ioScope.launch {
             withContext(Dispatchers.Default) {
+                val body = HashMap<String, String>()
+                // source = "sgim"
+                if (tokenKeyName.isNullOrEmpty()) {
+                    body["source"] = "sgim"
+                } else {
+                    body["type"] = "sgim"
+                }
                 Retrofit.api?.getQiuNiuTokenUrl(
                         url = IMManager.qiuNiuTokenUrl,
-                        source = "sgim"
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
                 )
             }?.awaitResponse()?.let { response ->
                 if (response.isSuccessful) {

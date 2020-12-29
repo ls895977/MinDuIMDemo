@@ -23,7 +23,7 @@ interface Api {
 
     @FormUrlEncoded
     @POST
-    fun getQiuNiuTokenUrl(@Url url: String, @Field("source") source: String): Call<BaseData<QNTokenBean>>
+    fun getQiuNiuTokenUrl(@Url url: String, @Body requestBody: RequestBody): Call<BaseData<QNTokenBean>>
 
     /**
      * 分配客服
