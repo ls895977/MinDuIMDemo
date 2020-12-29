@@ -33,6 +33,7 @@ import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDensityUtils
 import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
+import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -57,7 +58,13 @@ class ConversationFragment(private var conversation: SGConversation, private var
 
     override fun layoutResource(): Int = R.layout.fragment_conversation
 
-    override fun initView() = Unit
+    override fun initView() {
+//        ClassicsHeader.REFRESH_HEADER_PULLING = "下拉可以加载"
+//        ClassicsHeader.REFRESH_HEADER_REFRESHING = "正在加载..."
+//        ClassicsHeader.REFRESH_HEADER_RELEASE = "释放立即加载"
+//        ClassicsHeader.REFRESH_HEADER_FINISH = "加载完成"
+//        ClassicsHeader.REFRESH_HEADER_FAILED = "加载失败"
+    }
 
     override fun initData() {
         messageList = arrayListOf()

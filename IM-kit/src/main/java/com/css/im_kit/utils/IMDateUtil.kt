@@ -30,7 +30,7 @@ object IMDateUtil {
         val agoTime = nowTime - oldTime
         return when {
             agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
-            agoTime <= ONE_DAY * 2 -> "昨天"
+            agoTime <= ONE_DAY.times(2) -> "昨天"
             else -> format(oldTime.times(1000), YY_MM_DD_HH_MM1)
         }
     }
@@ -44,7 +44,7 @@ object IMDateUtil {
         val agoTime = nowTime - oldTime
         return when {
             agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
-            agoTime <= ONE_DAY * 2 -> "昨天  ${format(oldTime.times(1000), HH_MM)}"
+            agoTime <= ONE_DAY.times(2) -> "昨天  ${format(oldTime.times(1000), HH_MM)}"
             else -> format(oldTime.times(1000), YY_MM_DD_HH_MM)
         }
     }
@@ -60,8 +60,8 @@ object IMDateUtil {
             agoTime < 60 -> "刚刚"
             agoTime <= ONE_HOUR -> "${agoTime / ONE_MINUTE}分钟前"
             agoTime <= ONE_DAY -> format(oldTime.times(1000), HH_MM)
-            agoTime <= ONE_DAY * 2 -> "昨天"
-            agoTime <= ONE_DAY * 3 -> "前天"
+            agoTime <= ONE_DAY.times(2) -> "昨天"
+            agoTime <= ONE_DAY.times(3) -> "前天"
             agoTime <= ONE_MONTH -> format(oldTime.times(1000), CN_MM_DD)
             else -> format(oldTime.times(1000), CHN_YYYY_MM_DD)
         }
@@ -79,9 +79,9 @@ object IMDateUtil {
             if (ago / ONE_MINUTE == 0L) "刚刚" else "${ago / ONE_MINUTE}分钟前"
         } else if (ago <= ONE_DAY) {
             "${ago / ONE_HOUR}小时前"
-        } else if (ago <= ONE_DAY * 2) {
+        } else if (ago <= ONE_DAY.times(2)) {
             "昨天"
-        } else if (ago <= ONE_DAY * 3) {
+        } else if (ago <= ONE_DAY.times(3)) {
             "前天"
         } else if (ago <= ONE_MONTH) {
             "${ago / ONE_DAY}天前"

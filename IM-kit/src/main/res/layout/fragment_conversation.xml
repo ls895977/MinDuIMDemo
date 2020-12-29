@@ -18,6 +18,16 @@
             android:overScrollMode="never"
             app:srlEnableLoadMore="false">
 
+            <com.scwang.smart.refresh.header.ClassicsHeader
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srlTextFailed="加载失败"
+                app:srlTextFinish="加载完成"
+                app:srlTextPulling="下拉可以加载聊天记录"
+                app:srlTextRefreshing="正在加载..."
+                app:srlTextRelease="释放立即加载聊天记录"
+                app:srlTextUpdate="上次加载 M-d HH:mm" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_conversation_list"
                 android:layout_width="match_parent"
