@@ -53,17 +53,26 @@ object IMMessageManager {
                     //新消息
                     else -> {
                         val message = receiveMessage.toDBMessage()
-                        message.read_status = true
+                        message.read_status = 1
                         ioScope.launch {
                             async {
                                 saveMessage(message, false)
                             }
                         }
-
                     }
                 }
             }
         })
+    }
+
+    /**
+     * 未读消失数量增加或减少
+     */
+    @Synchronized
+    fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+        messageCallback.forEach {
+            it.unreadMessageNumCount(shop_id, isAdd, num)
+        }
     }
 
     /**

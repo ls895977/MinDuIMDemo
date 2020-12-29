@@ -70,6 +70,8 @@ object IMChatRoomManager {
     fun dismissSgMessageCallback() {
         this.chatRoomCallback = null
         this.conversation = null
+        httpPage = 1
+        time = 0L
         IMMessageManager.removeMessageListener(myMessageCallback)
     }
 
@@ -80,13 +82,19 @@ object IMChatRoomManager {
         @Synchronized
         override fun onReceiveMessage(message: MutableList<SGMessage>) {
             uiScope.launch {
-                val readIDs = arrayListOf<String>()
-                message.forEach {
-                    it.messageBody?.isRead = true
-                    readIDs.add(it.messageId)
+                conversation?.let {
+                    chatRoomCallback?.onReceiveMessage(message)
+                    val ids = arrayListOf<String>()
+                    message.forEach {
+                        if (it.messageBody?.isSelf == false) {
+                            ids.add(it.messageId)
+                        }
+                    }
+                    if (!ids.isNullOrEmpty()) {
+                        HttpManager.changRead(ids)
+                    }
+
                 }
-                HttpManager.changRead(readIDs)
-                chatRoomCallback?.onReceiveMessage(message)
             }
         }
 
@@ -120,6 +128,11 @@ object IMChatRoomManager {
                 }
             }
         }
+
+        @Synchronized
+        override fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+
+        }
     }
 
     /**
@@ -148,7 +161,7 @@ object IMChatRoomManager {
                     receive_account = conversation.chat_account ?: "",
                     shop_id = conversation.shop_id ?: "",
                     message_type = DBMessageType.TEXT.value,
-                    read_status = false,
+                    read_status = 0,
                     send_status = SendType.SENDING.text,
                     send_time = time,
                     receive_time = time,
@@ -214,7 +227,7 @@ object IMChatRoomManager {
                         receive_account = conversation.chat_account ?: "",
                         shop_id = conversation.shop_id ?: "",
                         message_type = DBMessageType.IMAGE.value,
-                        read_status = false,
+                        read_status = 0,
                         send_status = SendType.SENDING.text,
                         send_time = time,
                         receive_time = time,
@@ -267,7 +280,7 @@ object IMChatRoomManager {
                         receive_account = conversation.chat_account ?: "",
                         shop_id = conversation.shop_id ?: "",
                         message_type = DBMessageType.RICH.value,
-                        read_status = false,
+                        read_status = 0,
                         send_status = SendType.SENDING.text,
                         send_time = time,
                         receive_time = time,
@@ -300,7 +313,7 @@ object IMChatRoomManager {
                         receive_account = conversation.chat_account ?: "",
                         shop_id = conversation.shop_id ?: "",
                         message_type = DBMessageType.RICH.value,
-                        read_status = true,
+                        read_status = 0,
                         send_status = SendType.SUCCESS.text,
                         send_time = time,
                         receive_time = time,
@@ -379,14 +392,16 @@ object IMChatRoomManager {
                     }
                     val noReadMessageId = arrayListOf<String>()
                     sgMessages.filter {
-                        it.messageBody?.isRead == false
+                        it.messageBody?.isRead == false && it.messageBody?.isSelf != true
                     }.forEach {
-                        it.messageId.let { it1 ->
-                            noReadMessageId.add(it1)
-                        }
+                        noReadMessageId.add(it.messageId)
                     }
                     if (!noReadMessageId.isNullOrEmpty()) {
                         HttpManager.changRead(noReadMessageId)
+                        IMMessageManager.unreadMessageNumCount(
+                                conversation?.shop_id ?: "",
+                                false,
+                                noReadMessageId.size)
                     }
                     sgMessages.forEach {
                         it.messageBody?.isRead = true

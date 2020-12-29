@@ -84,7 +84,7 @@ fun MessageHistoryItem.toMessage(): Message {
             shop_id = this.shop_id,
             source = message.source,
             message_type = message.type,
-            read_status = true,
+            read_status = this.read_status,
             send_status = SendType.SUCCESS.text,
             send_time = message.time.long13(),
             receive_time = message.time.long13(),

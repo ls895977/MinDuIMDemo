@@ -74,7 +74,7 @@ open class BaseMessageBody : Serializable {
                     TextMessageBody("其他消息类型")
                 }
             }
-            baseMessageBody.isRead = message.read_status
+            baseMessageBody.isRead = message.read_status == 1
             baseMessageBody.sendTime = message.send_time.toString()
             baseMessageBody.receivedTime = message.receive_time.toString()
             baseMessageBody.sendType = when (message.send_status) {

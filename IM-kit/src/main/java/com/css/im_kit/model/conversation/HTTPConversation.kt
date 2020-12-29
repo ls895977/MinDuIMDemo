@@ -150,10 +150,11 @@ class HTTPConversation : Serializable {
             }
             DBMessageType.RICH.value -> {
                 try {
-                    val bean = gson.fromJson(content, RichBean::class.java)
-                    if (bean.type == "commodity") {
+                    val bean = gson.fromJson(content, HashMap::class.java)
+                    val messageBean = gson.fromJson(bean["content"].toString(), HashMap::class.java)
+                    if (messageBean["type"] == "commodity") {
                         messageType = MessageType.COMMODITY
-                        val commodity = gson.fromJson(gson.toJson(bean.body), CommodityMessage::class.java)
+                        val commodity = gson.fromJson(gson.toJson(messageBean["body"]), CommodityMessage::class.java)
                         CommodityMessageBody(isRead = true, receivedTime = updated_time
                                 ?: "0", sendTime = created_time ?: "0"
                                 , isSelf = false, commodityId = commodity.commodityId, commodityImage = commodity.commodityImage

@@ -116,12 +116,12 @@ object MessageRepository {
      */
     @Synchronized
     suspend fun read(messageIds: List<String>) {
-        dao?.read(messageIds, true)
+        dao?.read(messageIds, 1)
     }
 
     @Synchronized
     suspend fun getNoReadData(shop_id: String, send_account: String): Int {
-        return dao?.getNoReadData(shop_id, false, send_account = send_account)?.size ?: 0
+        return dao?.getNoReadData(shop_id, 0, send_account = send_account)?.size ?: 0
     }
 
     @Synchronized

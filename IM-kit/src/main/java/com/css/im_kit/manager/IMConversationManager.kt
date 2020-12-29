@@ -4,7 +4,6 @@ import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.ioScope
-import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
@@ -13,7 +12,6 @@ import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
@@ -72,11 +70,9 @@ object IMConversationManager {
                 sgConversations.forEach {
                     messages.forEachIndexed { index, message ->
                         if (message.shopId == it.shop_id) {
-                            val task = async {
-                                MessageRepository.getNoReadData(message.shopId, IMManager.account!!)
+                            if (message.messageBody?.isSelf == false) {
+                                it.unread_account = it.unread_account + 1
                             }
-                            val result = task.await()
-                            it.unread_account = result
                             it.newMessage = message
                             sgConversationCallbacks.forEach { callback ->
                                 callback.onConversationList(sgConversations)
@@ -90,6 +86,24 @@ object IMConversationManager {
 
         @Synchronized
         override fun onSendMessageReturn(shop_id: String, messageID: String) {
+        }
+
+        @Synchronized
+        override fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+            uiScope.launch {
+                sgConversations.find {
+                    it.shop_id == shop_id
+                }?.let {
+                    it.unread_account = if (isAdd) {
+                        it.unread_account + num
+                    } else {
+                        it.unread_account - num
+                    }
+                    sgConversationCallbacks.forEach { callback ->
+                        callback.onConversationList(sgConversations)
+                    }
+                }
+            }
         }
     }
 

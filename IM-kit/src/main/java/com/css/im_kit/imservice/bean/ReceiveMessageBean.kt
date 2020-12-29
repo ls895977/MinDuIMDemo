@@ -51,7 +51,7 @@ data class ReceiveMessageBean(
                 shop_id = extend?.get("shop_id") ?: "",
                 source = source,
                 message_type = type,
-                read_status = false,
+                read_status = 1,
                 send_status = SendType.SUCCESS.text,
                 send_time = time.long13(),
                 receive_time = System.currentTimeMillis(),

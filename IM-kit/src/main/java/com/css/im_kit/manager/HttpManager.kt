@@ -23,6 +23,7 @@ object HttpManager {
     /**
      * 分配客服
      */
+    @Synchronized
     fun assignCustomer(shopId: String, callBack: HttpCallBack) {
         uiScope.launch {
             withContext(Dispatchers.Default) {
@@ -70,6 +71,7 @@ object HttpManager {
     /**
      * 用户修改信息
      */
+    @Synchronized
     fun modifyUserInfo(sgUserInfo: SGUserInfo, callBack: HttpModifyUserInfoCallBack) {
         uiScope.launch {
             withContext(Dispatchers.Default) {
@@ -108,6 +110,7 @@ object HttpManager {
     /**
      * 历史消息
      */
+    @Synchronized
     suspend fun messageHistory(shopId: String,
                                time: Long,
                                page: String,
@@ -160,7 +163,7 @@ object HttpManager {
     /**
      * 把消息置为已读
      */
-
+    @Synchronized
     suspend fun changRead(m_ids: List<String>) {
         withContext(Dispatchers.Default) {
             val nonceStr = System.currentTimeMillis().toString().md5()

@@ -12,5 +12,10 @@ interface MessageCallback {
     /**
      * 接收到消息发送成功回执
      */
-    fun onSendMessageReturn(shop_id: String,messageID: String)
+    fun onSendMessageReturn(shop_id: String, messageID: String)
+
+    /**
+     * 未读数量计算
+     */
+    fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int)
 }

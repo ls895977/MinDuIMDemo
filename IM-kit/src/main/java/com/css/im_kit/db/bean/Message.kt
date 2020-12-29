@@ -17,7 +17,7 @@ data class Message(
         var shop_id: String,//店铺id
         var source: Int,//消息来源-见备注
         var message_type: Int,//消息类型
-        var read_status: Boolean,//是否未读
+        var read_status: Int,//是否未读
         var send_status: Int,//是否发送成功
         var send_time: Long,//发送时间
         var receive_time: Long,//接收时间
