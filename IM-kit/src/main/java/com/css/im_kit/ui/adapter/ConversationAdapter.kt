@@ -44,11 +44,15 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
             if (helper.adapterPosition == (data.size - 1)) {
                 helper.setGone(R.id.tv_time, true)
             } else {
-                val timeNext = if (data[helper.adapterPosition - 1].messageBody?.isSelf!!) data[helper.adapterPosition].messageBody?.sendTime?.toLong() else data[helper.adapterPosition - 1].messageBody?.receivedTime?.toLong()
-                timeNext?.let {
-                    if (abs(timeNext - time) > 5 * 60 * 1000) {//大于5分钟显示时间
-                        helper.setGone(R.id.tv_time, true)
+                if (helper.adapterPosition >= 0) {
+                    val timeNext = if (data[helper.adapterPosition + 1].messageBody?.isSelf!!) data[helper.adapterPosition + 1].messageBody?.sendTime?.toLong() else data[helper.adapterPosition + 1].messageBody?.receivedTime?.toLong()
+                    timeNext?.let {
+                        if (abs(timeNext - time) > 5 * 60 * 1000) {//大于5分钟显示时间
+                            helper.setGone(R.id.tv_time, true)
+                        }
                     }
+                } else {
+                    helper.setGone(R.id.tv_time, false)
                 }
             }
         }
