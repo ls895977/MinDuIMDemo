@@ -8,10 +8,7 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.Shop
 import com.css.im_kit.model.userinfo.SGUserInfo
-import com.css.im_kit.utils.generateSignature
-import com.css.im_kit.utils.long10
-import com.css.im_kit.utils.md5
-import com.css.im_kit.utils.toMessage
+import com.css.im_kit.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -93,7 +90,11 @@ object HttpManager {
                     if (it.isSuccessful) {
                         if (it.body()?.code == "20000") {
                             return@let sgUserInfo
+                        } else {
+                            it.body()?.msg?.toast()
                         }
+                    } else {
+                        "用户信息修改失败".toast()
                     }
                     return@let null
                 }.let {

@@ -1,6 +1,8 @@
 package com.css.im_kit.utils
 
 import android.util.Log
+import android.widget.Toast
+import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
@@ -21,6 +23,11 @@ fun ByteArray.hex(): String {
 fun String.log() {
     Log.e("SGIM", this)
 }
+
+fun String.toast() {
+    Toast.makeText(IMManager.context, this, Toast.LENGTH_SHORT).show()
+}
+
 
 /**
  * 生成签名. 注意，若含有sign_type字段，必须和signType参数保持一致。

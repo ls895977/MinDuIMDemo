@@ -21,6 +21,7 @@ import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.getExtendS
+import com.css.im_kit.utils.toast
 import com.qiniu.android.storage.Configuration
 import com.qiniu.android.storage.UploadManager
 import kotlinx.coroutines.*
@@ -285,7 +286,7 @@ object IMMessageManager {
                 if (tokenKeyName.isNullOrEmpty()) {
                     body["source"] = "sgim"
                 } else {
-                    body["type"] = "sgim"
+                    body[IMManager.qiNiuTypeKey ?: ""] = "sgim"
                 }
                 Retrofit.api?.getQiuNiuTokenUrl(
                         url = IMManager.qiuNiuTokenUrl,
@@ -296,8 +297,12 @@ object IMMessageManager {
                     response.body()?.also {
                         if (it.code == "20000") {
                             return@let it.data
+                        } else {
+                            it.msg.toast()
                         }
                     }
+                } else {
+                    "请稍后再试".toast()
                 }
                 return@let null
             }?.let {

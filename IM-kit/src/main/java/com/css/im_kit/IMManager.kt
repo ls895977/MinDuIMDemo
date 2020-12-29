@@ -1,6 +1,7 @@
 package com.css.im_kit
 
 import android.app.Application
+import android.content.Context
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
@@ -12,7 +13,9 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 import kotlinx.coroutines.launch
 
 object IMManager {
+    var context: Context? = null
     fun build(context: Application, app_id: String, app_secret: String) {
+        this.context = context
         MessageRepository.build(context)
         UserInfoRepository.build(context)
         NetworkMonitorManager.getInstance().init(context)
