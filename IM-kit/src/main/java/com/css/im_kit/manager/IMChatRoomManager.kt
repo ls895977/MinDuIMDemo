@@ -385,7 +385,7 @@ object IMChatRoomManager {
                             sgMessage.messageBody?.isSelf = message.send_account == IMManager.account
                             val user = UserInfoRepository.loadById(message.send_account)
                             user?.let {
-                                if (conversation.shop == null) {
+                                if (conversation.shop == null || user.account == IMManager.account) {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
                                 } else {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, conversation.shop?.log)
