@@ -21,7 +21,6 @@ interface Api {
                  @Field("nonce_str") nonce_str: String
     ): Call<BaseData<MutableList<HTTPConversation>>>
 
-    @FormUrlEncoded
     @POST
     fun getQiuNiuTokenUrl(@Url url: String, @Body requestBody: RequestBody): Call<BaseData<QNTokenBean>>
 
