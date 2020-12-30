@@ -46,7 +46,6 @@ class ConversationFragment(private var conversation: SGConversation, private var
     private var emojiTag = false//表情区域状态
     private var picTag = false//照相机区域状态
     private var nowCheckTag = 0//当前是哪个区域需要展示，1 表情区域，2 照相机区域，0其他区域
-    private var messageList = arrayListOf<SGMessage>()
     private var adapter: ConversationAdapter? = null
     private var adapterEmoji: EmojiAdapter? = null
 
@@ -67,8 +66,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
     }
 
     override fun initData() {
-        messageList = arrayListOf()
-        adapter = ConversationAdapter(requireActivity(), messageList)
+        adapter = ConversationAdapter(requireActivity())
         binding?.rvConversationList?.adapter = adapter
         val layout = LinearLayoutManager(requireContext())
         layout.stackFromEnd = false //列表再底部开始展示，反转后由上面开始展示
@@ -89,6 +87,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
         binding?.refreshView?.setOnRefreshListener { refreshLayout: RefreshLayout ->
             isFirstGetData = false
             refreshLayout.finishRefresh()
+            val messageList = adapter?.data
             if (!messageList.isNullOrEmpty()) {
                 IMChatRoomManager.getMessages(messageList.last())
             } else {
@@ -333,7 +332,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     override fun onReceiveMessage(message: List<SGMessage>) {
                         //发送成功，接收到消息，插入当前返回的这一条Message
                         message.forEach {
-                            messageList.add(0, it)
+                            adapter?.addData(0,it)
                         }
                         adapter?.notifyDataSetChanged()
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
@@ -343,11 +342,10 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     @Synchronized
                     override fun onMessages(lastItemTime: Long, message: List<SGMessage>) {
                         if (lastItemTime == Long.MAX_VALUE) {
-                            messageList.clear()
+                            adapter?.setNewData(arrayListOf())
                         }
                         //拉去数据库没聊天列表
-                        messageList.addAll(message)
-                        adapter?.notifyItemRangeChanged(messageList.size - message.size, messageList.size)
+                        adapter?.addData(message)
 
                         //type=7的特殊消息
                         if (isAddSend7Message && isFirstGetData) {
@@ -363,10 +361,10 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     @Synchronized
                     override suspend fun onMessageInProgress(message: SGMessage) {
                         //消息发送进度
-                        messageList.forEachIndexed { index, sgMessage ->
+                        adapter?.data?.forEachIndexed { index, sgMessage ->
                             if (sgMessage.messageId == message.messageId) {
                                 sgMessage.messageBody = message.messageBody
-                                adapter?.notifyItemChanged(index)
+                                adapter?.refreshNotifyItemChanged(index)
                                 return@forEachIndexed
                             }
                         }

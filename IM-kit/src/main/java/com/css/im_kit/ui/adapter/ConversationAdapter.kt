@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 
-class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMessage>) : BaseMultiItemQuickAdapter<SGMessage, BaseViewHolder>(data) {
+class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAdapter<SGMessage, BaseViewHolder>(null) {
     init {
         //消息type（文本、图片、商品）我发送的1/2/3；别人的4/5/6。
         addItemType(1, R.layout.adapter_message_send_txt)
