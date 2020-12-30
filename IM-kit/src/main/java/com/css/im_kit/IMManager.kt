@@ -28,8 +28,6 @@ object IMManager {
     var account: String? = null
     var app_id: String? = null
     var app_secret: String? = null
-    var tokenKeyName: String? = null
-    var qiNiuTypeKey: String? = null
     var isBusiness = false
 
     /**
