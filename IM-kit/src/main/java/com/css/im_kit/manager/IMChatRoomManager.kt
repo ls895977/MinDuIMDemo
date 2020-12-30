@@ -83,13 +83,20 @@ object IMChatRoomManager {
         override fun onReceiveMessage(message: MutableList<SGMessage>) {
             uiScope.launch {
                 conversation?.let {
-                    chatRoomCallback?.onReceiveMessage(message)
+
                     val ids = arrayListOf<String>()
                     message.forEach {
+                        if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
+                            it.userInfo?.user_type = "1"
+                        }else{
+                            it.userInfo?.avatar = conversation?.shop?.log
+                            it.userInfo?.user_type = "2"
+                        }
                         if (it.messageBody?.isSelf == false) {
                             ids.add(it.messageId)
                         }
                     }
+                    chatRoomCallback?.onReceiveMessage(message)
                     if (!ids.isNullOrEmpty()) {
                         HttpManager.changRead(ids)
                     }
@@ -116,7 +123,11 @@ object IMChatRoomManager {
                                         message.receive_account
                             )
                             user?.let {
-                                sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
+                                if (conversation?.shop == null || user.account == IMManager.account) {
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
+                                } else {
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation?.shop?.log)
+                                }
                             }
                             return@async sgMessage
                         }
@@ -386,9 +397,9 @@ object IMChatRoomManager {
                             val user = UserInfoRepository.loadById(message.send_account)
                             user?.let {
                                 if (conversation.shop == null || user.account == IMManager.account) {
-                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
                                 } else {
-                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, conversation.shop?.log)
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation.shop?.log)
                                 }
                             }
                             sgMessages.add(sgMessage)
