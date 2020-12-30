@@ -83,12 +83,11 @@ object IMChatRoomManager {
         override fun onReceiveMessage(message: MutableList<SGMessage>) {
             uiScope.launch {
                 conversation?.let {
-
                     val ids = arrayListOf<String>()
                     message.forEach {
                         if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
                             it.userInfo?.user_type = "1"
-                        }else{
+                        } else {
                             it.userInfo?.avatar = conversation?.shop?.log
                             it.userInfo?.user_type = "2"
                         }
@@ -113,9 +112,7 @@ object IMChatRoomManager {
                         val message = MessageRepository.getMessage4messageId(messageID)
                         message?.let {
                             val sgMessage = SGMessage.format(message)
-                            if (message.send_account == IMManager.account) {
-                                sgMessage.messageBody?.isSelf = true
-                            }
+
                             val user = UserInfoRepository.loadById(
                                     if (message.send_account == IMManager.account)
                                         message.send_account
@@ -140,10 +137,10 @@ object IMChatRoomManager {
             }
         }
 
-        @Synchronized
-        override fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isAdd: Boolean, num: Int) {
 
         }
+
     }
 
     /**
@@ -305,39 +302,6 @@ object IMChatRoomManager {
     }
 
     /**
-     * 商品展示消息
-     */
-    @Synchronized
-    fun addShowCommodityMessage(commodityMessages: List<CommodityMessage>) {
-        conversation?.let { conversation ->
-            var time = System.currentTimeMillis()
-            val extend = hashMapOf<Any, Any>()
-            extend["shop_id"] = conversation.shop_id.toString()
-            val imgMessages = arrayListOf<Message>()
-            commodityMessages.map {
-                return@map RichBean("showCommodity", it)
-            }.forEachIndexed { index, commodityMessageBean ->
-                time += index
-                imgMessages.add(Message(
-                        m_id = (IMManager.account + time).md5().substring(16, 32),
-                        send_account = IMManager.account!!,
-                        receive_account = conversation.chat_account ?: "",
-                        shop_id = conversation.shop_id ?: "",
-                        message_type = DBMessageType.RICH.value,
-                        read_status = 0,
-                        send_status = SendType.SUCCESS.text,
-                        send_time = time,
-                        receive_time = time,
-                        message = commodityMessageBean.toJsonString(),
-                        source = source?.value ?: 1,
-                        extend = gson.toJson(extend)
-                ))
-            }
-            IMMessageManager.saveMessages(imgMessages, isSelf = true, send = false)
-        }
-    }
-
-    /**
      * 构建
      */
     fun create() {
@@ -374,8 +338,22 @@ object IMChatRoomManager {
                 val task = async {
                     val sgMessages = arrayListOf<SGMessage>()
                     conversation?.let { conversation ->
-                        val resultMessage = MessageRepository.getMessage(conversation.shop_id
-                                ?: "", lastItemTime = lastItemTime, pageSize = pageSize)
+                        val resultMessage =
+                                if (IMManager.isBusiness) {
+                                    MessageRepository.getMessage(
+                                            conversation.shop_id ?: "",
+                                            lastItemTime = lastItemTime,
+                                            pageSize = pageSize
+                                    )
+                                } else {
+                                    MessageRepository.getMessage4Account(
+                                            chat_account = conversation.chat_account ?: "",
+                                            lastItemTime = lastItemTime,
+                                            pageSize = pageSize
+                                    )
+                                }
+
+
                         resultMessage.let {
                             //获取历史记录
                             if (resultMessage.isNullOrEmpty()) {
@@ -385,7 +363,9 @@ object IMChatRoomManager {
                                 val messages = IMMessageManager.getMessageHistory(
                                         time = time,
                                         shopId = conversation.shop_id ?: "",
-                                        page = httpPage.toString())
+                                        page = httpPage.toString(),
+                                        receive_account = conversation.chat_account ?: ""
+                                )
                                 if (!resultMessage.isNullOrEmpty()) httpPage++
                                 return@let messages
                             } else {
@@ -393,10 +373,9 @@ object IMChatRoomManager {
                             }
                         }?.forEach { message ->
                             val sgMessage = SGMessage.format(message)
-                            sgMessage.messageBody?.isSelf = message.send_account == IMManager.account
                             val user = UserInfoRepository.loadById(message.send_account)
                             user?.let {
-                                if (conversation.shop == null || user.account == IMManager.account) {
+                                if (!IMManager.isBusiness && it.account == IMManager.account) {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
                                 } else {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation.shop?.log)
@@ -415,6 +394,8 @@ object IMChatRoomManager {
                         HttpManager.changRead(noReadMessageId)
                         IMMessageManager.unreadMessageNumCount(
                                 conversation?.shop_id ?: "",
+                                conversation?.account ?: "",
+                                conversation?.chat_account ?: "",
                                 false,
                                 noReadMessageId.size)
                     }

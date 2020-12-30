@@ -30,6 +30,7 @@ object IMManager {
     var app_secret: String? = null
     var tokenKeyName: String? = null
     var qiNiuTypeKey: String? = null
+    var isBusiness = false
 
     /**
      * 聊天列表url地址

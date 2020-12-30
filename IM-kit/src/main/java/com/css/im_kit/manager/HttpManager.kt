@@ -113,6 +113,7 @@ object HttpManager {
      */
     @Synchronized
     suspend fun messageHistory(shopId: String,
+                               receive_account: String,
                                time: Long,
                                page: String,
                                flag: String,
@@ -123,6 +124,9 @@ object HttpManager {
         map["app_id"] = IMManager.app_id ?: ""
         map["account"] = IMManager.account ?: ""
         map["shop_id"] = shopId
+        if (IMManager.isBusiness) {
+            map["receive_account"] = receive_account
+        }
         map["page"] = page
         map["size"] = pageSize.toString()
         map["time"] = time.long10().plus(1).toString()
@@ -132,6 +136,9 @@ object HttpManager {
         body["nonce_str"] = nonceStr
         body["app_id"] = IMManager.app_id ?: ""
         body["shop_id"] = shopId
+        if (IMManager.isBusiness) {
+            body["receive_account"] = receive_account
+        }
         body["page"] = page
         body["size"] = pageSize.toString()
         body["time"] = time.long10().plus(1).toString()

@@ -33,6 +33,12 @@ object MessageRepository {
                 ?: arrayListOf()
     }
 
+    @Synchronized
+    suspend fun getMessage4Account(chat_account: String, lastItemTime: Long, pageSize: Int): MutableList<Message> {
+        return dao?.getMessages4Account(chat_account = chat_account, lastItemTime = lastItemTime, pageSize = pageSize)
+                ?: arrayListOf()
+    }
+
     /**
      * 获取消息
      * messageId 消息id

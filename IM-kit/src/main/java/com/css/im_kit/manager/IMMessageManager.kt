@@ -70,9 +70,9 @@ object IMMessageManager {
      * 未读消失数量增加或减少
      */
     @Synchronized
-    fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+    fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isAdd: Boolean, num: Int) {
         messageCallback.forEach {
-            it.unreadMessageNumCount(shop_id, isAdd, num)
+            it.unreadMessageNumCount(shop_id, account, chat_account, isAdd, num)
         }
     }
 
@@ -124,7 +124,6 @@ object IMMessageManager {
                 sgMessage.shopId = message.shop_id
                 val userInfo = UserInfoRepository.loadById(message.send_account)
                 sgMessage.userInfo = SGUserInfo.format(userInfo)
-                sgMessage.messageBody?.isSelf = isSelf
                 return sgMessage
 
             }
@@ -319,9 +318,10 @@ object IMMessageManager {
      * sgMessage 最后一条消息
      */
 
-    suspend fun getMessageHistory(time: Long, shopId: String, page: String): List<Message>? {
+    suspend fun getMessageHistory(time: Long, shopId: String, receive_account: String, page: String): List<Message>? {
         return HttpManager.messageHistory(
                 shopId = shopId,
+                receive_account = receive_account,
                 time = time,
                 page = page,
                 flag = "1",
@@ -332,9 +332,10 @@ object IMMessageManager {
     /**
      * 更新消息数据到最新
      */
-    suspend fun getMessage2New(time: Long, shopId: String): List<Message>? {
+    suspend fun getMessage2New(time: Long, receive_account: String, shopId: String): List<Message>? {
         return HttpManager.messageHistory(
                 shopId = shopId,
+                receive_account = receive_account,
                 time = time,
                 page = "1",
                 flag = "2",
@@ -376,7 +377,7 @@ object IMMessageManager {
                     if (info.isOK) {
                         uiScope.launch {
                             withContext(Dispatchers.Default) {
-                                message.message = IMManager.getImageBaseUrl() + key
+                                message.message = key
                                 MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
                                 MessageRepository.changeMessageContent(message.m_id, message.message)
                                 Log.e("发送消息", message.toSendMessageBean().toJsonString())

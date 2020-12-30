@@ -372,7 +372,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                         }
                     }
                 })
-                ?.create()
+                .create()
     }
 
     /**

@@ -30,7 +30,7 @@ object IMGlideUtil {
         if (TextUtils.isEmpty(url)) {
             Glide.with(context!!).load(R.mipmap.im_icon_avatar_default).apply(avatarOptions!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url).apply(avatarOptions!!).into(img!!)
+            Glide.with(context!!).load(url?.hasHttp()).apply(avatarOptions!!).into(img!!)
         }
     }
 
@@ -39,7 +39,7 @@ object IMGlideUtil {
         if (TextUtils.isEmpty(url)) {
             Glide.with(context!!).load(R.color.color_f3f3f3).apply(getRounOptions(radius)!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url).apply(getRounOptions(radius)!!).into(img!!)
+            Glide.with(context!!).load(url?.hasHttp()).apply(getRounOptions(radius)!!).into(img!!)
         }
     }
 
@@ -48,7 +48,7 @@ object IMGlideUtil {
         if (TextUtils.isEmpty(url)) {
             Glide.with(context!!).load(R.color.color_f3f3f3).apply(getRounOptions2(radius)!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url).apply(getRounOptions2(radius)!!).into(img!!)
+            Glide.with(context!!).load(url?.hasHttp()).apply(getRounOptions2(radius)!!).into(img!!)
         }
     }
 

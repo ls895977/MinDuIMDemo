@@ -70,14 +70,17 @@ object IMConversationManager {
                 sgConversations.forEach {
                     messages.forEachIndexed { index, message ->
                         if (message.shopId == it.shop_id) {
-                            if (message.messageBody?.isSelf == false) {
-                                it.unread_account = it.unread_account + 1
+                            if (((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
+                                            (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
+                                if (message.messageBody?.isSelf == false) {
+                                    it.unread_account = it.unread_account + 1
+                                }
+                                it.newMessage = message
+                                sgConversationCallbacks.forEach { callback ->
+                                    callback.onConversationList(sgConversations)
+                                }
+                                return@forEachIndexed
                             }
-                            it.newMessage = message
-                            sgConversationCallbacks.forEach { callback ->
-                                callback.onConversationList(sgConversations)
-                            }
-                            return@forEachIndexed
                         }
                     }
                 }
@@ -89,10 +92,10 @@ object IMConversationManager {
         }
 
         @Synchronized
-        override fun unreadMessageNumCount(shop_id: String, isAdd: Boolean, num: Int) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isAdd: Boolean, num: Int) {
             uiScope.launch {
                 sgConversations.find {
-                    it.shop_id == shop_id
+                    it.shop_id == shop_id && it.account == account && chat_account == chat_account
                 }?.let {
                     it.unread_account = if (isAdd) {
                         it.unread_account + num

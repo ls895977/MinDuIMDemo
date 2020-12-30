@@ -113,3 +113,11 @@ fun Long.long13(): Long {
     else
         this
 }
+
+fun String.hasHttp(): String {
+    return if (!this.contains("http")) {
+        IMManager.getImageBaseUrl() + this
+    } else {
+        this
+    }
+}

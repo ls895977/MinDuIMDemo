@@ -3,6 +3,7 @@ package com.css.im_kit.ui.adapter
 import android.content.Context
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.css.im_kit.IMManager
 import com.css.im_kit.R
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
@@ -14,7 +15,7 @@ import com.css.im_kit.utils.long13
 
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
-        if (item.shop == null) {
+        if (!IMManager.isBusiness) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))
             //用户名

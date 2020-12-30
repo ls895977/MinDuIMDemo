@@ -20,7 +20,7 @@ class CommodityMessageBody : BaseMessageBody {
         this.commodityPrice = commodityPrice
     }
 
-    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean, commodityId: String?, commodityName: String?, commodityImage: String?, commodityPrice: String?) : super(isRead, receivedTime, sendTime, isSelf) {
+    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, sendAccount: String?, receiveAccount: String, commodityId: String?, commodityName: String?, commodityImage: String?, commodityPrice: String?) : super(isRead, receivedTime, sendTime, sendAccount, receiveAccount) {
         this.commodityId = commodityId
         this.commodityName = commodityName
         this.commodityImage = commodityImage

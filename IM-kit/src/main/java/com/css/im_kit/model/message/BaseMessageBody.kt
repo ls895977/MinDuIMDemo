@@ -1,5 +1,6 @@
 package com.css.im_kit.model.message
 
+import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.RichBean
@@ -25,9 +26,24 @@ open class BaseMessageBody : Serializable {
     var sendTime: String? = null
 
     /**
+     * 发送人id
+     */
+    var sendAccount: String? = null
+
+    /**
+     * 接收人人id
+     */
+    var receiveAccount: String? = null
+
+    /**
      * 是否是自己发送的消息
      */
     var isSelf: Boolean = false
+        private set
+        get() {
+            return sendAccount == IMManager.account
+        }
+
 
     /**
      * 是否是自己发送的消息
@@ -35,11 +51,12 @@ open class BaseMessageBody : Serializable {
     var sendType: SendType = SendType.SENDING
 
     constructor()
-    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, isSelf: Boolean) {
+    constructor(isRead: Boolean, receivedTime: String?, sendTime: String?, sendAccount: String?, receiveAccount: String) {
         this.isRead = isRead
         this.receivedTime = receivedTime
         this.sendTime = sendTime
-        this.isSelf = isSelf
+        this.sendAccount = sendAccount
+        this.receiveAccount = receiveAccount
     }
 
     companion object {
@@ -83,6 +100,8 @@ open class BaseMessageBody : Serializable {
             baseMessageBody.isRead = message.read_status == 1
             baseMessageBody.sendTime = message.send_time.toString()
             baseMessageBody.receivedTime = message.receive_time.toString()
+            baseMessageBody.sendAccount = message.send_account
+            baseMessageBody.receiveAccount = message.receive_account
             baseMessageBody.sendType = when (message.send_status) {
                 1 -> {
                     SendType.SUCCESS
