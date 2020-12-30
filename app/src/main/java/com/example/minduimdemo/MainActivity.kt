@@ -69,17 +69,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
      */
     override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View?, position: Int) {
         //分配客服跳转
-        val comeFromTag = 0
-        val shopId = "1"
-        val productId = "sdsa"
-        val productImage = "http://testimg.supersg.cn/user/773870855045251072.jpeg"
-        val productName = "测试商品"
-        val productPrice = "200"
-        ConversationActivity.toConversationActivity(this, comeFromTag, shopId, productId, productImage, productName, productPrice)
+//        val comeFromTag = 0
+//        val shopId = "1"
+//        val productId = "sdsa"
+//        val productImage = "http://testimg.supersg.cn/user/773870855045251072.jpeg"
+//        val productName = "测试商品"
+//        val productPrice = "200"
+//        ConversationActivity.toConversationActivity(this, comeFromTag, shopId, productId, productImage, productName, productPrice)
         //普通跳转
-//        val intent = Intent(this, ConversationActivity::class.java)
-//        intent.putExtra("conversation", adapter.data[position] as SGConversation)
-//        startActivity(intent)
+        val intent = Intent(this, ConversationActivity::class.java)
+        intent.putExtra("conversation", adapter.data[position] as SGConversation)
+        startActivity(intent)
     }
 
     /**
