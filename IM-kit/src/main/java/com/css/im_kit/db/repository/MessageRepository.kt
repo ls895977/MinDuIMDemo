@@ -67,7 +67,7 @@ object MessageRepository {
     @Synchronized
     suspend fun insert(message: Message): Boolean {
         val data = getMessage(message.m_id)
-        if (!data.isNullOrEmpty()) {
+        if (data.isNullOrEmpty()) {
             dao?.insert(message)
             return true
         } else {
