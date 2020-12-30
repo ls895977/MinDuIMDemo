@@ -33,7 +33,7 @@ object IMDateUtil {
         return SimpleDateFormat(YYYY_MM_DD_HH_MM_SS).format(Date(time))
     }
 
-    private fun format(time: Long, type: String): String {
+    fun format(time: Long, type: String): String {
         return SimpleDateFormat(type, Locale.getDefault()).format(Date(time))
     }
 
