@@ -8,6 +8,8 @@ package com.css.im_kit.imservice.bean
 5	语音消息
 100	客户端收到消息回执
 101	服务端收到消息回执
+102 客服欢迎消息
+103 非营业时间回复消息
  */
 enum class DBMessageType(val value: Int) {
     TEXT(1),
