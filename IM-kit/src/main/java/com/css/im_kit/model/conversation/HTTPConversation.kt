@@ -1,7 +1,6 @@
 package com.css.im_kit.model.conversation
 
 import com.css.im_kit.db.bean.CommodityMessage
-import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.message.*
@@ -162,14 +161,29 @@ class HTTPConversation : Serializable {
                     } else {
                         messageType = MessageType.TEXT
                         TextMessageBody(isRead = true, receivedTime = updated_time
-                                ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
+                                ?: "0", sendTime = created_time
+                                ?: "0", isSelf = false, text = "未知类型")
                     }
-                }catch (e:Exception){
+                } catch (e: Exception) {
                     messageType = MessageType.TEXT
                     TextMessageBody(isRead = true, receivedTime = updated_time
                             ?: "0", sendTime = created_time ?: "0", isSelf = false, text = "未知类型")
                 }
 
+            }
+            DBMessageType.WELCOME.value -> {
+                messageType = MessageType.TEXT
+                val map = gson.fromJson(content, HashMap::class.java)
+                TextMessageBody(isRead = true, receivedTime = updated_time
+                        ?: "0", sendTime = created_time
+                        ?: "0", isSelf = false, text = map["content"].toString())
+            }
+            DBMessageType.NONBUSINESSHOURS.value -> {
+                messageType = MessageType.TEXT
+                val map = gson.fromJson(content, HashMap::class.java)
+                TextMessageBody(isRead = true, receivedTime = updated_time
+                        ?: "0", sendTime = created_time
+                        ?: "0", isSelf = false, text = map["content"].toString())
             }
             else -> {
                 messageType = MessageType.TEXT

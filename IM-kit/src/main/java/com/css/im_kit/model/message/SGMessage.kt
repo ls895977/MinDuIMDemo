@@ -7,7 +7,6 @@ import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
-import java.lang.Exception
 
 /**
  * TEXT 文字类型
@@ -172,10 +171,16 @@ class SGMessage : Serializable, MultiItemEntity {
                                 MessageType.TEXT
                             }
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         MessageType.TEXT
                     }
 
+                }
+                DBMessageType.WELCOME.value -> {
+                    MessageType.TEXT
+                }
+                DBMessageType.NONBUSINESSHOURS.value -> {
+                    MessageType.TEXT
                 }
                 //TODO 下面未实现功能
                 DBMessageType.VIDEO.value -> {
@@ -217,7 +222,7 @@ class SGMessage : Serializable, MultiItemEntity {
             MessageType.COMMODITY -> {
                 if (messageBody?.isSelf == true) 3 else 6
             }
-            MessageType.SHOWCOMMODITY->{
+            MessageType.SHOWCOMMODITY -> {
                 7
             }
             else -> 0

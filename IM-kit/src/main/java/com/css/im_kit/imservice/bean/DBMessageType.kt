@@ -16,5 +16,7 @@ enum class DBMessageType(val value: Int) {
     VIDEO(4),
     VOICE(5),
     CLIENTRECEIPT(100),
-    SERVERRECEIPT(101)
+    SERVERRECEIPT(101),
+    WELCOME (102),//客服欢迎消息
+    NONBUSINESSHOURS(103)//非营业时间回复消息
 }

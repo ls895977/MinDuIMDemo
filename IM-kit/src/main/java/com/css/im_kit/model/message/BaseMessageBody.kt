@@ -46,6 +46,12 @@ open class BaseMessageBody : Serializable {
         fun format(message: Message): BaseMessageBody {
             val baseMessageBody: BaseMessageBody
             baseMessageBody = when (message.message_type) {
+                DBMessageType.WELCOME.value -> {
+                    TextMessageBody(message.message)
+                }
+                DBMessageType.NONBUSINESSHOURS.value -> {
+                    TextMessageBody(message.message)
+                }
                 DBMessageType.TEXT.value -> {
                     TextMessageBody(message.message)
                 }
