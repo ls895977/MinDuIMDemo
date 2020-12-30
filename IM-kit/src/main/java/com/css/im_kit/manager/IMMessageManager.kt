@@ -115,18 +115,19 @@ object IMMessageManager {
     @Synchronized
     private suspend fun saveMessage2DB(message: Message, isSelf: Boolean): SGMessage? {
         message.receive_time = System.currentTimeMillis()
-        MessageRepository.insert(message)
-        val dbMessage = MessageRepository.getLast()
-        dbMessage?.let {
-            val sgMessage = SGMessage.format(it)
-            sgMessage.messageBody = BaseMessageBody.format(it)
-            sgMessage.shopId = message.shop_id
-            val userInfo = UserInfoRepository.loadById(message.send_account)
+        val b = MessageRepository.insert(message)
+        if (b) {
+            val dbMessage = MessageRepository.getLast()
+            dbMessage?.let {
+                val sgMessage = SGMessage.format(it)
+                sgMessage.messageBody = BaseMessageBody.format(it)
+                sgMessage.shopId = message.shop_id
+                val userInfo = UserInfoRepository.loadById(message.send_account)
+                sgMessage.userInfo = SGUserInfo.format(userInfo)
+                sgMessage.messageBody?.isSelf = isSelf
+                return sgMessage
 
-            sgMessage.userInfo = SGUserInfo.format(userInfo)
-            sgMessage.messageBody?.isSelf = isSelf
-            return sgMessage
-
+            }
         }
         return null
     }
