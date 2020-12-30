@@ -69,17 +69,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
      */
     override fun onItemChildClick(adapter: BaseQuickAdapter<*, *>, view: View?, position: Int) {
         //分配客服跳转
-//        val comeFromTag = 0
-//        val shopId = "1"
-//        val productId = "sdsa"
-//        val productImage = "http://testimg.supersg.cn/user/773870855045251072.jpeg"
-//        val productName = "测试商品"
-//        val productPrice = "200"
-//        ConversationActivity.toConversationActivity(this, comeFromTag, shopId, productId, productImage, productName, productPrice)
+        val comeFromTag = 0
+        val shopId = "1"
+        val productId = "sdsa"
+        val productImage = "http://testimg.supersg.cn/user/773870855045251072.jpeg"
+        val productName = "测试商品"
+        val productPrice = "200"
+        ConversationActivity.toConversationActivity(this, comeFromTag, shopId, productId, productImage, productName, productPrice)
         //普通跳转
-        val intent = Intent(this, ConversationActivity::class.java)
-        intent.putExtra("conversation", adapter.data[position] as SGConversation)
-        startActivity(intent)
+//        val intent = Intent(this, ConversationActivity::class.java)
+//        intent.putExtra("conversation", adapter.data[position] as SGConversation)
+//        startActivity(intent)
     }
 
     /**
@@ -97,8 +97,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     private var isConnected = false
     private fun connectionIMService() {
         val url = "ws://devchatws.supersg.cn"
-        val token = "8116f90a21"
-        val userId = "8116f90a21"
+        val token = "183ff3fd37"
+        val userId = "183ff3fd37"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
                 return "27984D5CA668920EC38A4AF2EE2F5404"
