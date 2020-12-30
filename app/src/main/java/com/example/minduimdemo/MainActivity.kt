@@ -101,7 +101,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         val userId = "183ff3fd37"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
-                return "27984D5CA668920EC38A4AF2EE2F5404"
+                return "72B5B3A604C14B1245E4D6FF8E73A863"
             }
 
             override fun getImageBaseUrl(): String {

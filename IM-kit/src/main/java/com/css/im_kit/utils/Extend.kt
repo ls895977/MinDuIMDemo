@@ -6,8 +6,10 @@ import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.bean.HttpMessage
 import com.css.im_kit.http.bean.MessageHistoryItem
+import kotlinx.coroutines.launch
 import java.security.MessageDigest
 import java.util.*
 
@@ -25,7 +27,9 @@ fun String.log() {
 }
 
 fun String.toast() {
-    Toast.makeText(IMManager.context, this, Toast.LENGTH_SHORT).show()
+    uiScope.launch {
+        Toast.makeText(IMManager.context, this@toast, Toast.LENGTH_SHORT).show()
+    }
 }
 
 

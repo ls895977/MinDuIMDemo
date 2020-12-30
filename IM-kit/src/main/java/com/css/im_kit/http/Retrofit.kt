@@ -29,10 +29,7 @@ object Retrofit {
             val original = chain.request()
             val requestBuilder = original.newBuilder()
             //添加Token
-            requestBuilder.header(
-                    if (IMManager.tokenKeyName.isNullOrEmpty()) "token" else IMManager.tokenKeyName
-                            ?: "",
-                    IMManager.getAPPToken())
+            requestBuilder.header(IMManager.tokenKeyName ?: "token", IMManager.getAPPToken())
             val request = requestBuilder.build()
             chain.proceed(request)
         }

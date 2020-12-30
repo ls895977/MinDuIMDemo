@@ -142,7 +142,7 @@ class ConversationAdapter(private var activity: Activity, data: ArrayList<SGMess
         uiScope.launch {
             val bitmap = withContext(Dispatchers.IO) {
                 try {
-                    Glide.with(context).asBitmap().load(url).submit().get()
+                    Glide.with(context).asBitmap().load(IMGlideUtil.getAllUrl(url)).submit().get()
                 } catch (e: Exception) {
                     null
                 }

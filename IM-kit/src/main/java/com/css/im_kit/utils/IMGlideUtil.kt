@@ -9,6 +9,7 @@ import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.RequestOptions
+import com.css.im_kit.IMManager
 import com.css.im_kit.R
 import com.css.im_kit.utils.IMRoundedCornersTransformation
 
@@ -27,28 +28,28 @@ object IMGlideUtil {
 
     //加载圆形头像图片
     fun loadAvatar(context: Context?, url: String?, img: ImageView?) {
-        if (TextUtils.isEmpty(url)) {
+        if (url.isNullOrEmpty()) {
             Glide.with(context!!).load(R.mipmap.im_icon_avatar_default).apply(avatarOptions!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url?.hasHttp()).apply(avatarOptions!!).into(img!!)
+            Glide.with(context!!).load(getAllUrl(url)).apply(avatarOptions!!).into(img!!)
         }
     }
 
     //加载4个角为radius（单位：dp）的圆角图片
     fun loadRound4Img(context: Context?, url: String?, img: ImageView?, radius: Int) {
-        if (TextUtils.isEmpty(url)) {
+        if (url.isNullOrEmpty()) {
             Glide.with(context!!).load(R.color.color_f3f3f3).apply(getRounOptions(radius)!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url?.hasHttp()).apply(getRounOptions(radius)!!).into(img!!)
+            Glide.with(context!!).load(getAllUrl(url)).apply(getRounOptions(radius)!!).into(img!!)
         }
     }
 
     //头部圆角2个角
     fun loadRound2Img(context: Context?, url: String?, img: ImageView?, radius: Int) {
-        if (TextUtils.isEmpty(url)) {
+        if (url.isNullOrEmpty()) {
             Glide.with(context!!).load(R.color.color_f3f3f3).apply(getRounOptions2(radius)!!).into(img!!)
         } else {
-            Glide.with(context!!).load(url?.hasHttp()).apply(getRounOptions2(radius)!!).into(img!!)
+            Glide.with(context!!).load(getAllUrl(url)).apply(getRounOptions2(radius)!!).into(img!!)
         }
     }
 
@@ -112,5 +113,9 @@ object IMGlideUtil {
         val transformation1 = IMRoundedCornersTransformation(radius, 0, IMRoundedCornersTransformation.CornerType.TOP_RIGHT)
         //组合各种Transformation,
         return MultiTransformation(CenterCrop(), transformation, transformation1)
+    }
+
+    fun getAllUrl(url: String): String {
+        return if (url.contains("http")) url else IMManager.getImageBaseUrl() + url
     }
 }
