@@ -97,8 +97,10 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
         conversationListAdapter?.notifyDataSetChanged()
         if (conversationList.isNullOrEmpty()) {
             binding?.ivNoContent?.visibility = View.VISIBLE
+            binding?.tvNoContent?.visibility = View.VISIBLE
         } else {
             binding?.ivNoContent?.visibility = View.GONE
+            binding?.tvNoContent?.visibility = View.GONE
         }
     }
 
