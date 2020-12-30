@@ -15,7 +15,7 @@ import com.css.im_kit.utils.long13
 
 class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
-        if (!IMManager.isBusiness) {
+        if (IMManager.isBusiness) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))
             //用户名
