@@ -22,7 +22,7 @@ interface UserInfoDao {
     suspend fun delete(user: UserInfo)
 
     @Query("DELETE FROM userinfo")
-    fun deleteAll()
+    suspend fun deleteAll()
 
     @Update
     suspend fun update(users: UserInfo)
