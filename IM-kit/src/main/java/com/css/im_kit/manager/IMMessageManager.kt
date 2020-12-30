@@ -2,7 +2,6 @@ package com.css.im_kit.manager
 
 import android.util.Log
 import com.css.im_kit.IMManager
-import com.css.im_kit.IMManager.tokenKeyName
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.RichBean
@@ -283,10 +282,10 @@ object IMMessageManager {
             withContext(Dispatchers.Default) {
                 val body = HashMap<String, String>()
                 // source = "sgim"
-                if (tokenKeyName.isNullOrEmpty()) {
-                    body["source"] = "sgim"
+                if (IMManager.isBusiness) {
+                    body["type"] = "sgim"
                 } else {
-                    body[IMManager.qiNiuTypeKey ?: ""] = "sgim"
+                    body["source"] = "sgim"
                 }
                 Retrofit.api?.getQiuNiuTokenUrl(
                         url = IMManager.qiuNiuTokenUrl,
