@@ -350,7 +350,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                             binding?.rlMessage7?.visibility = View.VISIBLE
                             binding?.tvProductPrice?.text = "￥${productPrice}"
                             binding?.tvProductName?.text = productName
-                            IMGlideUtil.loadRound2Img(activity, productImage, binding?.ivProductImage, IMDensityUtils.dp2px(requireContext(), 8f))
+                            binding?.ivProductImage?.let { IMGlideUtil.loadRound2Img(requireContext(), productImage, it, IMDensityUtils.dp2px(requireContext(), 8f)) }
                         } else {
                             binding?.rlMessage7?.visibility = View.GONE
                         }
