@@ -61,6 +61,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         conversationListFragment?.addOnClickListener(this)
         //item长按
         conversationListFragment?.addOnLongClickListener(this)
+        //重连点击监听
+        conversationListFragment?.addLinkOnClickListener(View.OnClickListener {
+            isConnected = false
+            conversationListFragment?.updateContentShowView(true, "客服系统连接中...")
+            IMManager.retryService()
+        })
     }
     /**
      * 消息点击事件

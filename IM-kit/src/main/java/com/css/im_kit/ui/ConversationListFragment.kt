@@ -111,4 +111,12 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
         IMConversationManager.removeSGConversationListListener(this)
         super.onDestroy()
     }
+
+    /**
+     * 重连点击监听
+     */
+    fun addLinkOnClickListener(clickListener: View.OnClickListener) {
+        binding?.llConnect?.setOnClickListener(clickListener)
+    }
+
 }
