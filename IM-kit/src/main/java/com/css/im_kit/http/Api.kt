@@ -59,4 +59,10 @@ interface Api {
     @POST("/chat/changRead")
     fun changRead(@Body requestBody: RequestBody): Call<BaseData<Any>>
 
+    /**
+     * 把和某人的消息置为已读
+     */
+    @POST("/chat/changReadSomeOne")
+    fun changReadSomeOne(@Body requestBody: RequestBody): Call<BaseData<Any>>
+
 }

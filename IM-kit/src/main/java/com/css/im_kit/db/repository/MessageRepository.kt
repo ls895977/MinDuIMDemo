@@ -127,8 +127,8 @@ object MessageRepository {
      * 设置消息已读
      */
     @Synchronized
-    suspend fun read(messageIds: List<String>) {
-        dao?.read(messageIds, 1)
+    suspend fun read(chat_account: String) {
+        dao?.read(chat_account)
     }
 
     @Synchronized

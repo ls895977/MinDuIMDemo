@@ -26,6 +26,7 @@ object IMChatRoomManager {
     var conversation: SGConversation? = null
     var source: DBMessageSource? = null
     var httpPage = 1
+    var isStart = false
     var time = 0L
 
     //回调列表
@@ -83,7 +84,7 @@ object IMChatRoomManager {
         override fun onReceiveMessage(message: MutableList<SGMessage>) {
             uiScope.launch {
                 conversation?.let {
-                    val ids = arrayListOf<String>()
+//                    val ids = arrayListOf<String>()
                     message.forEach {
                         if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
                             it.userInfo?.user_type = "1"
@@ -91,15 +92,14 @@ object IMChatRoomManager {
                             it.userInfo?.avatar = conversation?.shop?.log
                             it.userInfo?.user_type = "2"
                         }
-                        if (it.messageBody?.isSelf == false) {
-                            ids.add(it.messageId)
-                        }
+//                        if (it.messageBody?.isSelf == false) {
+//                            ids.add(it.messageId)
+//                        }
                     }
                     chatRoomCallback?.onReceiveMessage(message)
-                    if (!ids.isNullOrEmpty()) {
-                        HttpManager.changRead(ids)
-                    }
-
+//                    if (!ids.isNullOrEmpty()) {
+//                        HttpManager.changRead(ids)
+//                    }
                 }
             }
         }
@@ -309,6 +309,7 @@ object IMChatRoomManager {
         getMessageSource()
         IMMessageManager.removeMessageListener(myMessageCallback)
         IMMessageManager.addMessageListener(myMessageCallback)
+        isStart = true
     }
 
     /**
@@ -337,24 +338,28 @@ object IMChatRoomManager {
             ioScope.launch {
                 val task = async {
                     val sgMessages = arrayListOf<SGMessage>()
+
                     conversation?.let { conversation ->
-                        val resultMessage =
-                                if (IMManager.isBusiness) {
-                                    MessageRepository.getMessage(
-                                            conversation.shop_id ?: "",
-                                            lastItemTime = lastItemTime,
-                                            pageSize = pageSize
-                                    )
-                                } else {
-                                    MessageRepository.getMessage4Account(
-                                            chat_account = conversation.chat_account ?: "",
-                                            lastItemTime = lastItemTime,
-                                            pageSize = pageSize
-                                    )
-                                }
-
-
-                        resultMessage.let {
+                        let {
+                            if (isStart) {
+                                isStart = false
+                                HttpManager.changReadSomeOne(IMChatRoomManager.conversation?.chat_account ?: "")
+                            }
+                        }.let {
+                            if (IMManager.isBusiness) {
+                                MessageRepository.getMessage(
+                                        conversation.shop_id ?: "",
+                                        lastItemTime = lastItemTime,
+                                        pageSize = pageSize
+                                )
+                            } else {
+                                MessageRepository.getMessage4Account(
+                                        chat_account = conversation.chat_account ?: "",
+                                        lastItemTime = lastItemTime,
+                                        pageSize = pageSize
+                                )
+                            }
+                        }.let { resultMessage ->
                             //获取历史记录
                             if (resultMessage.isNullOrEmpty()) {
                                 if (httpPage == 1) {
@@ -369,7 +374,7 @@ object IMChatRoomManager {
                                 if (!resultMessage.isNullOrEmpty()) httpPage++
                                 return@let messages
                             } else {
-                                return@let it
+                                return@let resultMessage
                             }
                         }?.forEach { message ->
                             val sgMessage = SGMessage.format(message)
@@ -384,21 +389,21 @@ object IMChatRoomManager {
                             sgMessages.add(sgMessage)
                         }
                     }
-                    val noReadMessageId = arrayListOf<String>()
-                    sgMessages.filter {
-                        it.messageBody?.isRead == false && it.messageBody?.isSelf != true
-                    }.forEach {
-                        noReadMessageId.add(it.messageId)
-                    }
-                    if (!noReadMessageId.isNullOrEmpty()) {
-                        HttpManager.changRead(noReadMessageId)
-                        IMMessageManager.unreadMessageNumCount(
-                                conversation?.shop_id ?: "",
-                                conversation?.account ?: "",
-                                conversation?.chat_account ?: "",
-                                false,
-                                noReadMessageId.size)
-                    }
+//                    val noReadMessageId = arrayListOf<String>()
+//                    sgMessages.filter {
+//                        it.messageBody?.isRead == false && it.messageBody?.isSelf != true
+//                    }.forEach {
+//                        noReadMessageId.add(it.messageId)
+//                    }
+//                    if (!noReadMessageId.isNullOrEmpty()) {
+//                        HttpManager.changRead(noReadMessageId)
+//                        IMMessageManager.unreadMessageNumCount(
+//                                conversation?.shop_id ?: "",
+//                                conversation?.account ?: "",
+//                                conversation?.chat_account ?: "",
+//                                false,
+//                                noReadMessageId.size)
+//                    }
                     sgMessages.forEach {
                         it.messageBody?.isRead = true
                     }

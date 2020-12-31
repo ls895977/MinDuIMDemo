@@ -3,6 +3,7 @@ package com.css.im_kit.manager
 import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.gson
+import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
@@ -173,27 +174,60 @@ object HttpManager {
      */
     @Synchronized
     suspend fun changRead(m_ids: List<String>) {
-        withContext(Dispatchers.Default) {
-            val nonceStr = System.currentTimeMillis().toString().md5()
-            val map = HashMap<String, String>()
-            map["app_id"] = IMManager.app_id ?: ""
-            map["nonce_str"] = nonceStr
-            val body = HashMap<String, Any>()
-            body["app_id"] = IMManager.app_id ?: ""
-            body["m_ids"] = m_ids
-            body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
-            body["nonce_str"] = nonceStr
+        ioScope.launch {
+            withContext(Dispatchers.Default) {
+                val nonceStr = System.currentTimeMillis().toString().md5()
+                val map = HashMap<String, String>()
+                map["app_id"] = IMManager.app_id ?: ""
+                map["nonce_str"] = nonceStr
+                val body = HashMap<String, Any>()
+                body["app_id"] = IMManager.app_id ?: ""
+                body["m_ids"] = m_ids
+                body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+                body["nonce_str"] = nonceStr
 
-            Retrofit.api?.changRead(
-                    requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
-            )?.awaitResponse()?.let {
-                if (it.isSuccessful) {
-                    if (it.body()?.code == "20000") {
-                        MessageRepository.read(m_ids)
+                Retrofit.api?.changRead(
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                )?.awaitResponse()?.let {
+                    if (it.isSuccessful) {
+                        if (it.body()?.code == "20000") {
+//                        MessageRepository.read(m_ids)
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 把消息置为已读
+     */
+    @Synchronized
+    suspend fun changReadSomeOne(chat_account: String) {
+            withContext(Dispatchers.Default) {
+                val nonceStr = System.currentTimeMillis().toString().md5()
+                val map = HashMap<String, String>()
+                map["app_id"] = IMManager.app_id ?: ""
+                map["account"] = IMManager.account ?: ""
+                map["chat_account"] = chat_account
+                map["nonce_str"] = nonceStr
+                val body = HashMap<String, Any>()
+                body["app_id"] = IMManager.app_id ?: ""
+                body["account"] = IMManager.account ?: ""
+                body["chat_account"] = chat_account
+                body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+                body["nonce_str"] = nonceStr
+
+                Retrofit.api?.changReadSomeOne(
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                )?.awaitResponse()?.let {
+                    if (it.isSuccessful) {
+                        if (it.body()?.code == "20000") {
+                            MessageRepository.read(chat_account)
+                        }
+                    }
+                }
+            }
     }
 }
 
