@@ -1,4 +1,5 @@
 package com.css.im_kit.imservice
+
 import android.util.Log
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
 import com.css.im_kit.imservice.coom.ServiceType
@@ -25,6 +26,7 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
      * @param message
      */
     override fun onMessage(message: String) {
+        Log.e("aa", "---------------------onMessage====" + message)
         socketListener?.onBackSocketStatus(ServiceType.collectMessageStats, message)
     }
 
@@ -32,7 +34,8 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
      * 在websocket连接关闭后调用
      */
     override fun onClose(code: Int, reason: String, remote: Boolean) {
-        if(code==1000){//过滤掉重链的问题
+        Log.e("aa", "---------------------onClose====" + code)
+        if (code == 1000) {//过滤掉重链的问题
             return
         }
         socketListener?.onBackSocketStatus(ServiceType.closeMessageStats, reason)

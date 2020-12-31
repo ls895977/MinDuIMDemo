@@ -62,8 +62,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
         //item长按
         conversationListFragment?.addOnLongClickListener(this)
     }
-
-
     /**
      * 消息点击事件
      */
@@ -97,8 +95,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     private var isConnected = false
     private fun connectionIMService() {
         val url = "ws://devchatws.supersg.cn"
-        val token = "183ff3fd37"
-        val userId = "183ff3fd37"
+        val token = "d18430b5b4"
+        val userId = "d18430b5b4"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
                 return "A7771CC3D1286E7EE3483AE4AA0E5681"

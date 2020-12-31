@@ -46,7 +46,7 @@ class IMService : Service(), ServiceListener {
     override fun onBind(intent: Intent): IBinder? {
         this.serViceUrl = intent.getStringExtra("serViceUrl").toString()
         startStatus = true
-        startTimeSocket()
+        initSocket()
         return myBinder
     }
 
@@ -78,15 +78,36 @@ class IMService : Service(), ServiceListener {
     }
 
     /**
-     * 倒计时重连socket确宝链接状态
+     * 心跳中
      */
     private fun startTimeSocket() {
-
-        CycleTimeUtils.startTimer(10, object : CycleTimeUtils.onBackTimer {
+        CycleTimeUtils.startTimer(8, object : CycleTimeUtils.onBackTimer {
             override fun backRunTimer() {
-                socketRun()
+                sendPing()
             }
         })
+    }
+
+    /**
+     * 因网络原因导致socket断开循环重试5次链接处理
+     */
+    private fun runSocket5() {
+        CycleTimeUtils.onStartTimeSeconds(5, object : CycleTimeUtils.OnCountDownCallBack {
+            override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
+                Log.e("aa", "---------------倒计时链接5次===" + second)
+            }
+
+            override fun onFinish() {
+                Log.e("aa", "---------------onFinish===")
+            }
+        })
+    }
+
+    /**
+     * 链接5次自动取消关闭
+     */
+    private fun colsSocket5() {
+        CycleTimeUtils.onDestroy()
     }
 
     /**
@@ -100,21 +121,11 @@ class IMService : Service(), ServiceListener {
         }.start()
     }
 
-    //TODO 网络断开时回调
-    @NetworkMonitor(monitorFilter = [NetworkState.NONE])
-    fun onNetWorkStateChangeNONE(networkState: NetworkState) {
-        if (client != null && serViceUrl.isEmpty() && socketStatus != 3 && socketStatus != 4) {
-            CycleTimeUtils.canCelTimer()
-            onLinkStatus?.onLinkedClose()
-            socketStatus = 3
-        }
-    }
-
     // TODO 连接上WIFI或蜂窝网络的时候回调
     @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
     fun onNetWorkStateChange2(networkState: NetworkState) {
-        if (client != null && serViceUrl.isEmpty() && socketStatus != 1 && socketStatus != 2) {
-            startTimeSocket()
+        if (serViceUrl.isEmpty() && socketStatus != 1 && socketStatus != 2) {
+            initSocket()
         }
     }
 
@@ -129,11 +140,18 @@ class IMService : Service(), ServiceListener {
             client?.setSocketListener(this)
             client?.connectBlocking()
         } else {
-            try {
-                client?.reconnectBlocking()
-            } catch (e: InterruptedException) {
-                e.printStackTrace();
-            }
+            client?.reconnectBlocking()
+        }
+    }
+
+    /**
+     * 发送心跳
+     */
+    private fun sendPing() {
+        try {
+            client?.sendPing()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
     }
 
@@ -153,13 +171,10 @@ class IMService : Service(), ServiceListener {
      * 必须建立在已链接基础上否则无效
      */
     fun retryIMService() {
-        if (client == null) {
-            return
-        }
         if (TextUtils.isEmpty(serViceUrl)) {
             return
         }
-        startTimeSocket()
+        socketRun()
     }
 
     /**
@@ -173,6 +188,7 @@ class IMService : Service(), ServiceListener {
                 retryIndex = 0//重置链接次数为零
             }
             ServiceType.collectMessageStats -> {//链接收到消息
+
                 imServiceStatus = true
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0") {//通过数据反馈链接成功
@@ -183,22 +199,20 @@ class IMService : Service(), ServiceListener {
                 } else {
                     onResultMessage?.onMessage(msg)
                 }
+                startTimeSocket()//执行心跳
+                colsSocket5()//执行5次链接取消
             }
             ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
                 imServiceStatus = false
                 //网络链接判断处理
 //                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
-                if (retryIndex >= 5) {//链接重试五次后不在重连
-                    CycleTimeUtils.canCelTimer()
-                    closeSocket()
-                } else {//反馈最终链接还是断开问题
-                    if (socketStatus != 3 && socketStatus != 4) {
-                        onLinkStatus?.onLinkedClose()
-                        socketStatus = event
-                    }
+                if (socketStatus != 3 && socketStatus != 4) {
+                    onLinkStatus?.onLinkedClose()
+                    socketStatus = event
                 }
                 retryIndex++
-
+//                runSocket5()//执行5次链接
+                CycleTimeUtils.canCelTimer()//执行心跳关闭
             }
         }
     }
