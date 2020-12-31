@@ -92,15 +92,15 @@ object IMConversationManager {
         }
 
         @Synchronized
-        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isAdd: Boolean, num: Int) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean) {
             uiScope.launch {
                 sgConversations.find {
                     it.shop_id == shop_id && it.account == account && chat_account == chat_account
                 }?.let {
-                    it.unread_account = if (isAdd) {
-                        it.unread_account + num
+                    it.unread_account = if (isClear) {
+                        0
                     } else {
-                        it.unread_account - num
+                        it.unread_account
                     }
                     sgConversationCallbacks.forEach { callback ->
                         callback.onConversationList(sgConversations)

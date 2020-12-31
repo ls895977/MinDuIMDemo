@@ -137,7 +137,7 @@ object IMChatRoomManager {
             }
         }
 
-        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isAdd: Boolean, num: Int) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean) {
 
         }
 
@@ -343,7 +343,16 @@ object IMChatRoomManager {
                         let {
                             if (isStart) {
                                 isStart = false
-                                HttpManager.changReadSomeOne(IMChatRoomManager.conversation?.chat_account ?: "")
+                                val b = HttpManager.changReadSomeOne(
+                                        IMChatRoomManager.conversation?.chat_account ?: ""
+                                )
+                                if (b) {
+                                    IMMessageManager.unreadMessageNumCount(
+                                            conversation.shop_id ?: "",
+                                            conversation.account ?: "",
+                                            conversation.chat_account ?: "",
+                                            true)
+                                }
                             }
                         }.let {
                             if (IMManager.isBusiness) {

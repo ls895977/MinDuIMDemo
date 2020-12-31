@@ -203,7 +203,7 @@ object HttpManager {
      * 把消息置为已读
      */
     @Synchronized
-    suspend fun changReadSomeOne(chat_account: String) {
+    suspend fun changReadSomeOne(chat_account: String): Boolean =
             withContext(Dispatchers.Default) {
                 val nonceStr = System.currentTimeMillis().toString().md5()
                 val map = HashMap<String, String>()
@@ -224,11 +224,13 @@ object HttpManager {
                     if (it.isSuccessful) {
                         if (it.body()?.code == "20000") {
                             MessageRepository.read(chat_account)
+                            return@withContext true
                         }
                     }
                 }
+                return@withContext false
             }
-    }
+
 }
 
 
