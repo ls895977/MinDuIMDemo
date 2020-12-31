@@ -97,8 +97,8 @@ fun MessageHistoryItem.toMessage(): Message {
             message_type = message.type,
             read_status = this.read_status,
             send_status = SendType.SUCCESS.text,
-            send_time = message.time.long13(),
-            receive_time = message.time.long13(),
+            send_time = this.created_time.toLong().long13(),
+            receive_time = this.created_time.toLong().long13(),
             message = message.content,
             extend = gson.toJson(message.extend)
     )
@@ -106,14 +106,14 @@ fun MessageHistoryItem.toMessage(): Message {
 
 fun Long.long10(): Long {
     return if (this.toString().length == 13)
-        this.div(1000)
+        this.toString().substring(0, 10).toLong()
     else
         this
 }
 
 fun Long.long13(): Long {
     return if (this.toString().length == 10)
-        this.times(1000)
+        (this.toString() + "000").toLong()
     else
         this
 }

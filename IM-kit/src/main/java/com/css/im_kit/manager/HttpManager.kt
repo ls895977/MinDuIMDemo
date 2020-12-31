@@ -130,7 +130,7 @@ object HttpManager {
         }
         map["page"] = page
         map["size"] = pageSize.toString()
-        map["time"] = time.long10().plus(1).toString()
+        map["time"] = time.long10().minus(1).toString()
         map["flag"] = flag
         map["nonce_str"] = nonceStr
         val body = HashMap<String, Any>()
@@ -142,7 +142,7 @@ object HttpManager {
         }
         body["page"] = page
         body["size"] = pageSize.toString()
-        body["time"] = time.long10().plus(1).toString()
+        body["time"] = time.long10().minus(1).toString()
         body["flag"] = flag
         body["account"] = IMManager.account ?: ""
         body["sign"] = map.generateSignature(IMManager.app_secret ?: "")

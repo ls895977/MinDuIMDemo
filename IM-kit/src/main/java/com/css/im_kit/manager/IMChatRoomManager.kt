@@ -112,15 +112,13 @@ object IMChatRoomManager {
                         val message = MessageRepository.getMessage4messageId(messageID)
                         message?.let {
                             val sgMessage = SGMessage.format(message)
-
-                            val user = UserInfoRepository.loadById(
+                            UserInfoRepository.loadById(
                                     if (message.send_account == IMManager.account)
                                         message.send_account
                                     else
                                         message.receive_account
-                            )
-                            user?.let {
-                                if (conversation?.shop == null || user.account == IMManager.account) {
+                            )?.let {
+                                if (conversation?.shop == null || it.account == IMManager.account) {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
                                 } else {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation?.shop?.log)
@@ -226,10 +224,9 @@ object IMChatRoomManager {
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
             var time = System.currentTimeMillis()
-            val imgMessages = arrayListOf<Message>()
-            imgs.forEachIndexed { index, s ->
+            imgs.mapIndexed { index, s ->
                 time += index
-                imgMessages.add(Message(
+                return@mapIndexed Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
                         send_account = IMManager.account!!,
                         receive_account = conversation.chat_account ?: "",
@@ -242,9 +239,10 @@ object IMChatRoomManager {
                         message = s,
                         source = source!!.value,
                         extend = gson.toJson(extend)
-                ))
+                )
+            }.also {
+                IMMessageManager.sendImages(it as MutableList<Message>)
             }
-            IMMessageManager.sendImages(imgMessages)
         }
     }
 
@@ -277,12 +275,11 @@ object IMChatRoomManager {
             var time = System.currentTimeMillis()
             val extend = hashMapOf<Any, Any>()
             extend["shop_id"] = conversation.shop_id.toString()
-            val imgMessages = arrayListOf<Message>()
             commodityMessages.map {
                 return@map RichBean("commodity", it)
-            }.forEachIndexed { index, commodityMessageBean ->
+            }.mapIndexed { index, commodityMessageBean ->
                 time += index
-                imgMessages.add(Message(
+                Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
                         send_account = IMManager.account!!,
                         receive_account = conversation.chat_account ?: "",
@@ -295,9 +292,11 @@ object IMChatRoomManager {
                         message = commodityMessageBean.toJsonString(),
                         source = source?.value ?: 1,
                         extend = gson.toJson(extend)
-                ))
+                )
+            }.let {
+                IMMessageManager.saveMessages(it, true)
             }
-            IMMessageManager.saveMessages(imgMessages, true)
+
         }
     }
 
@@ -336,16 +335,16 @@ object IMChatRoomManager {
             return
         } else {
             ioScope.launch {
-                val task = async {
-                    val sgMessages = arrayListOf<SGMessage>()
-
+                async {
                     conversation?.let { conversation ->
-                        let {
+                        //把和某人的消息置为已读
+                        return@async also {
                             if (isStart) {
                                 isStart = false
                                 val b = HttpManager.changReadSomeOne(
                                         IMChatRoomManager.conversation?.chat_account ?: ""
                                 )
+                                //通知会话列表清空未读消息数
                                 if (b) {
                                     IMMessageManager.unreadMessageNumCount(
                                             conversation.shop_id ?: "",
@@ -355,6 +354,7 @@ object IMChatRoomManager {
                                 }
                             }
                         }.let {
+                            //获取数据库聊天消息 isBusiness 是否是商戶端
                             if (IMManager.isBusiness) {
                                 MessageRepository.getMessage(
                                         conversation.shop_id ?: "",
@@ -368,9 +368,9 @@ object IMChatRoomManager {
                                         pageSize = pageSize
                                 )
                             }
-                        }.let { resultMessage ->
+                        }.let {
                             //获取历史记录
-                            if (resultMessage.isNullOrEmpty()) {
+                            if (it.isNullOrEmpty()) {
                                 if (httpPage == 1) {
                                     time = lastItemTime
                                 }
@@ -380,14 +380,15 @@ object IMChatRoomManager {
                                         page = httpPage.toString(),
                                         receive_account = conversation.chat_account ?: ""
                                 )
-                                if (!resultMessage.isNullOrEmpty()) httpPage++
+                                if (!it.isNullOrEmpty()) httpPage++
                                 return@let messages
-                            } else {
-                                return@let resultMessage
+                            }else{
+                                return@let it
                             }
-                        }?.forEach { message ->
-                            val sgMessage = SGMessage.format(message)
-                            val user = UserInfoRepository.loadById(message.send_account)
+                        }?.map {
+                            //组装user
+                            val sgMessage = SGMessage.format(it)
+                            val user = UserInfoRepository.loadById(it.send_account)
                             user?.let {
                                 if (!IMManager.isBusiness && it.account == IMManager.account) {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
@@ -395,7 +396,10 @@ object IMChatRoomManager {
                                     sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation.shop?.log)
                                 }
                             }
-                            sgMessages.add(sgMessage)
+                            return@map sgMessage
+                        }?.map { sgMessage ->
+                            sgMessage.messageBody?.isRead = true
+                            return@map sgMessage
                         }
                     }
 //                    val noReadMessageId = arrayListOf<String>()
@@ -413,14 +417,10 @@ object IMChatRoomManager {
 //                                false,
 //                                noReadMessageId.size)
 //                    }
-                    sgMessages.forEach {
-                        it.messageBody?.isRead = true
+                }.await()?.apply {
+                    uiScope.launch {
+                        chatRoomCallback?.onMessages(lastItemTime, this@apply)
                     }
-                    return@async sgMessages
-                }
-                val result = task.await()
-                uiScope.launch {
-                    chatRoomCallback?.onMessages(lastItemTime, result)
                 }
             }
         }
