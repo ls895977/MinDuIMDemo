@@ -33,7 +33,6 @@ import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDensityUtils
 import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
-import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -332,9 +331,8 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     override fun onReceiveMessage(message: List<SGMessage>) {
                         //发送成功，接收到消息，插入当前返回的这一条Message
                         message.forEach {
-                            adapter?.addData(0,it)
+                            adapter?.addData(0, it)
                         }
-                        adapter?.notifyDataSetChanged()
                         binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                     }
 
@@ -363,7 +361,8 @@ class ConversationFragment(private var conversation: SGConversation, private var
                         //消息发送进度
                         adapter?.data?.forEachIndexed { index, sgMessage ->
                             if (sgMessage.messageId == message.messageId) {
-                                sgMessage.messageBody = message.messageBody
+                                sgMessage.messageBody?.sendType = message.messageBody?.sendType
+                                        ?: SendType.FAIL
                                 adapter?.refreshNotifyItemChanged(index)
                                 return@forEachIndexed
                             }

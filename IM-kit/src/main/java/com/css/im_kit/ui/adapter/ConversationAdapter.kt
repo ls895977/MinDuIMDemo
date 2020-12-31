@@ -142,7 +142,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
         uiScope.launch {
             val bitmap = withContext(Dispatchers.IO) {
                 try {
-                    Glide.with(context).asBitmap().load(IMGlideUtil.getAllUrl(url)).submit().get()
+                    Glide.with(context).asBitmap().load(if (url.contains("sgim"))IMGlideUtil.getAllUrl(url) else url).submit().get()
                 } catch (e: Exception) {
                     null
                 }
@@ -157,7 +157,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
                 }
                 IMGlideUtil.loadRound4Img(context, bitmap, img, IMDensityUtils.dp2px(context, 8f))
             } else {
-                IMGlideUtil.loadRound4Img(context, url, img, IMDensityUtils.dp2px(context, 8f))
+                IMGlideUtil.loadRound4Img(context, if (url.contains("sgim"))IMGlideUtil.getAllUrl(url) else url, img, IMDensityUtils.dp2px(context, 8f))
             }
         }
     }

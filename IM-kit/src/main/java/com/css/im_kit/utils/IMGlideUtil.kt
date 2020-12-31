@@ -40,7 +40,7 @@ object IMGlideUtil {
         if (url.isNullOrEmpty()) {
             Glide.with(context!!).load(R.color.color_f3f3f3).apply(getRounOptions(radius)!!).into(img!!)
         } else {
-            Glide.with(context!!).load(getAllUrl(url)).apply(getRounOptions(radius)!!).into(img!!)
+            Glide.with(context!!).load(url).apply(getRounOptions(radius)!!).into(img!!)
         }
     }
 
