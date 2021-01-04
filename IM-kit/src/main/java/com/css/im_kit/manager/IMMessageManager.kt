@@ -57,10 +57,13 @@ object IMMessageManager {
                         ioScope.launch {
                             async {
                                 saveMessage(message, false)
-                                message.message_type = DBMessageType.CLIENTRECEIPT.value
-                                message.send_account = IMManager.account ?: ""
-                                message.receive_time = 0
-                                MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+                                receiveMessage.also {
+                                    it.type = DBMessageType.CLIENTRECEIPT.value
+                                    it.send_account = IMManager.account ?: ""
+                                    it.receive_account = 0.toString()
+                                    MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+                                }
+
                             }
                         }
                     }
