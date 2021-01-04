@@ -45,28 +45,32 @@ object IMMessageManager {
             @Synchronized
             override fun onMessage(context: String) {
                 Log.e("收到一条消息", context)
-                val receiveMessage = gson.fromJson(context, ReceiveMessageBean::class.java)
-                //系统返回消息回执
-                when (receiveMessage.type) {
-                    DBMessageType.SERVERRECEIPT.value -> {
-                        changeMessageStatus(receiveMessage)
+                (gson.fromJson(context, ReceiveMessageBean::class.java) ?: null)?.also {
+                    if (it.type != DBMessageType.SERVERRECEIPT.value) {
+                        it.type = DBMessageType.CLIENTRECEIPT.value
+                        it.send_account = IMManager.account ?: ""
+                        it.receive_account = 0.toString()
+                        "收到消息回执:${it.toJsonString()}".log()
+                        MessageServiceUtils.sendNewMsg(it.toJsonString())
                     }
-                    //新消息
-                    else -> {
-                        val message = receiveMessage.toDBMessage()
-                        message.read_status = 1
-                        ioScope.launch {
-                            async {
-                                saveMessage(message, false)
-                                receiveMessage.also {
-                                    it.type = DBMessageType.CLIENTRECEIPT.value
-                                    it.send_account = IMManager.account ?: ""
-                                    it.receive_account = 0.toString()
-                                    "收到消息回执:${it.toJsonString()}".log()
-                                    MessageServiceUtils.sendNewMsg(it.toJsonString())
-                                }
-
-                            }
+                }?.let { receiveMessage ->
+                    //系统返回消息回执
+                    when (receiveMessage.type) {
+                        DBMessageType.SERVERRECEIPT.value -> {
+                            changeMessageStatus(receiveMessage)
+                            return@let null
+                        }
+                        //新消息
+                        else -> {
+                            val message = receiveMessage.toDBMessage()
+                            message.read_status = 1
+                            return@let message
+                        }
+                    }
+                }?.let {
+                    ioScope.launch {
+                        async {
+                            saveMessage(it, false)
                         }
                     }
                 }
@@ -90,10 +94,14 @@ object IMMessageManager {
     @Synchronized
     private fun changeMessageStatus(message: ReceiveMessageBean) {
         ioScope.launch {
-            if (message.code == 20000) {
-                MessageRepository.changeMessageSendType(SendType.SUCCESS, message.m_id)
-            } else {
-                MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
+            let {
+                return@let if (message.code == 20000) {
+                    SendType.SUCCESS
+                } else {
+                    SendType.FAIL
+                }
+            }.let {
+                MessageRepository.changeMessageSendType(it, message.m_id)
             }
             messageCallback.forEach {
                 it.onSendMessageReturn(message.extend?.get("shop_id") ?: "", message.m_id)
@@ -122,18 +130,20 @@ object IMMessageManager {
      */
     @Synchronized
     private suspend fun saveMessage2DB(message: Message, isSelf: Boolean): SGMessage? {
-        message.receive_time = System.currentTimeMillis()
-        val b = MessageRepository.insert(message)
-        if (b) {
-            val dbMessage = MessageRepository.getLast()
-            dbMessage?.let {
-                val sgMessage = SGMessage.format(it)
-                sgMessage.messageBody = BaseMessageBody.format(it)
-                sgMessage.shopId = message.shop_id
-                val userInfo = UserInfoRepository.loadById(message.send_account)
-                sgMessage.userInfo = SGUserInfo.format(userInfo)
-                return sgMessage
-
+        message.apply {
+            receive_time = System.currentTimeMillis()
+        }.let {
+            return@let MessageRepository.insert(message)
+        }.let { b ->
+            if (b) {
+                MessageRepository.getLast()?.let {
+                    val sgMessage = SGMessage.format(it)
+                    sgMessage.messageBody = BaseMessageBody.format(it)
+                    sgMessage.shopId = message.shop_id
+                    val userInfo = UserInfoRepository.loadById(message.send_account)
+                    sgMessage.userInfo = SGUserInfo.format(userInfo)
+                    return sgMessage
+                }
             }
         }
         return null
@@ -145,11 +155,9 @@ object IMMessageManager {
     @Synchronized
     fun saveMessage(message: Message, isSelf: Boolean) {
         ioScope.launch {
-            val task = async {
+            async {
                 return@async saveMessage2DB(message, isSelf)
-            }
-            val result = task.await()
-            result?.let { msg ->
+            }.await()?.let { msg ->
                 messageCallback.forEach {
                     it.onReceiveMessage(arrayListOf(msg))
                 }
@@ -186,7 +194,7 @@ object IMMessageManager {
     @Synchronized
     fun saveMessages(messages: List<Message>, isSelf: Boolean, send: Boolean) {
         ioScope.launch {
-            val task = async {
+            async {
                 val sgMessages = arrayListOf<SGMessage>()
                 messages.forEach {
                     saveMessage2DB(it, isSelf)?.let { it1 ->
@@ -194,9 +202,7 @@ object IMMessageManager {
                     }
                 }
                 return@async sgMessages
-            }
-            val result = task.await()
-            result.let { msg ->
+            }.await().let { msg ->
                 messageCallback.forEach {
                     it.onReceiveMessage(msg)
                 }
@@ -235,25 +241,22 @@ object IMMessageManager {
     fun messageReplay(messageId: String) {
         uiScope.launch {
             withContext(Dispatchers.Default) {
-                val dbMessage = MessageRepository.getMessage4messageId(messageId)
-
-                dbMessage?.let { message ->
+                MessageRepository.getMessage4messageId(messageId)?.let { message ->
                     message.send_time = System.currentTimeMillis()
                     message.receive_time = System.currentTimeMillis()
                     message.send_status = SendType.SENDING.text
-                    MessageRepository.update(dbMessage)
+                    MessageRepository.update(message)
                     Log.e("发送消息", message.toSendMessageBean().toJsonString())
                     MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
 
                     delay(10000)
-                    val dbMessage1 = MessageRepository.getMessage4messageId(message.m_id)
-                    dbMessage1?.let {
-                        if (dbMessage1.send_status == SendType.SENDING.text) {
-                            MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
-                            val extend = gson.fromJson(message.extend, HashMap::class.java)
-                            messageCallback.forEach {
-                                it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
-                            }
+                    return@let MessageRepository.getMessage4messageId(message.m_id)
+                }?.let { message ->
+                    if (message.send_status == SendType.SENDING.text) {
+                        MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
+                        val extend = gson.fromJson(message.extend, HashMap::class.java)
+                        messageCallback.forEach {
+                            it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
                         }
                     }
                 }
@@ -268,15 +271,16 @@ object IMMessageManager {
     fun produceShow2Send(messageId: String) {
         uiScope.launch {
             withContext(Dispatchers.Default) {
-                val dbMessage = MessageRepository.getMessage4messageId(messageId)
-                dbMessage?.let { message ->
+                MessageRepository.getMessage4messageId(messageId)?.also { message ->
                     MessageRepository.delete(message)
-                    message.send_time = System.currentTimeMillis()
-                    message.receive_time = System.currentTimeMillis()
-                    message.send_status = SendType.SENDING.text
-                    val produce = gson.fromJson(message.message, RichBean::class.java)
+                }?.apply {
+                    send_time = System.currentTimeMillis()
+                    receive_time = System.currentTimeMillis()
+                    send_status = SendType.SENDING.text
+                    val produce = gson.fromJson(message, RichBean::class.java)
                     produce.type = "commodity"
-                    message.message = gson.toJson(produce)
+                    message = gson.toJson(produce)
+                }?.let { message ->
                     saveMessage(message, true)
                 }
             }
@@ -371,12 +375,12 @@ object IMMessageManager {
     private fun upLoadImages(pathData: List<Message>,
                              token: String?,
                              fileName: String?) {
-        val configuration = Configuration.Builder()
-                .connectTimeout(20) // 链接超时。默认10秒
-                .responseTimeout(20) // 服务器响应超时。默认60秒
-                .build()
-        val uploadManager = UploadManager(configuration)
         GlobalScope.launch {
+            val configuration = Configuration.Builder()
+                    .connectTimeout(20) // 链接超时。默认10秒
+                    .responseTimeout(20) // 服务器响应超时。默认60秒
+                    .build()
+            val uploadManager = UploadManager(configuration)
             pathData.asFlow().collect { message ->
                 val endexFix: String = getExtendS(message.message) ?: ""
                 val fileUrl = fileName + System.currentTimeMillis() + endexFix
