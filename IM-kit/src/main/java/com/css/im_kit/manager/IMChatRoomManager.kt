@@ -340,9 +340,10 @@ object IMChatRoomManager {
                         //把和某人的消息置为已读
                         return@async also {
                             if (isStart) {
+                                if (conversation.unread_account == 0) return@also
                                 isStart = false
                                 val b = HttpManager.changReadSomeOne(
-                                        IMChatRoomManager.conversation?.chat_account ?: ""
+                                        conversation.chat_account ?: ""
                                 )
                                 //通知会话列表清空未读消息数
                                 if (b) {
