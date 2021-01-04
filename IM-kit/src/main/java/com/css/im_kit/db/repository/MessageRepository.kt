@@ -34,8 +34,8 @@ object MessageRepository {
     }
 
     @Synchronized
-    suspend fun getMessage4Account(chat_account: String, lastItemTime: Long, pageSize: Int): MutableList<Message> {
-        return dao?.getMessages4Account(chat_account = chat_account, lastItemTime = lastItemTime, pageSize = pageSize)
+    suspend fun getMessage4Account(shop_id: String, chat_account: String, lastItemTime: Long, pageSize: Int): MutableList<Message> {
+        return dao?.getMessages4Account(shop_id = shop_id, chat_account = chat_account, lastItemTime = lastItemTime, pageSize = pageSize)
                 ?: arrayListOf()
     }
 

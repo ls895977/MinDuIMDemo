@@ -18,8 +18,8 @@ interface MessageDao {
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND receive_time <:lastItemTime ORDER BY receive_time DESC LIMIT :pageSize")
     suspend fun getMessages(shop_id: String, lastItemTime: Long, pageSize: Int): MutableList<Message>
 
-    @Query("SELECT  * FROM message WHERE (send_account = (:chat_account) OR receive_account = (:chat_account)) AND receive_time <:lastItemTime ORDER BY receive_time DESC LIMIT :pageSize")
-    suspend fun getMessages4Account(chat_account: String, lastItemTime: Long, pageSize: Int): MutableList<Message>
+    @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND (send_account = (:chat_account) OR receive_account = (:chat_account)) AND receive_time <:lastItemTime ORDER BY receive_time DESC LIMIT :pageSize")
+    suspend fun getMessages4Account(shop_id: String, chat_account: String, lastItemTime: Long, pageSize: Int): MutableList<Message>
 
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id)  ORDER BY receive_time DESC LIMIT 1")
     suspend fun getLast(shop_id: String): Message
