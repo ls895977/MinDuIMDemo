@@ -356,15 +356,14 @@ object IMChatRoomManager {
                         }.let {
                             //获取数据库聊天消息 isBusiness 是否是商戶端
                             if (IMManager.isBusiness) {
-                                MessageRepository.getMessage(
-                                        conversation.shop_id ?: "",
+                                MessageRepository.getMessage4Account(
+                                        chat_account = conversation.chat_account ?: "",
                                         lastItemTime = lastItemTime,
                                         pageSize = pageSize
                                 )
                             } else {
-                                MessageRepository.getMessage4Account(
+                                MessageRepository.getMessage(
                                         conversation.shop_id ?: "",
-                                        chat_account = IMManager.account ?: "",
                                         lastItemTime = lastItemTime,
                                         pageSize = pageSize
                                 )
@@ -383,7 +382,7 @@ object IMChatRoomManager {
                                 )
                                 if (!it.isNullOrEmpty()) httpPage++
                                 return@let messages
-                            }else{
+                            } else {
                                 return@let it
                             }
                         }?.map {
