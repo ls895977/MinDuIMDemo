@@ -47,7 +47,7 @@ object IMMessageManager {
                 val receiveMessage = gson.fromJson(context, ReceiveMessageBean::class.java)
                 //系统返回消息回执
                 when (receiveMessage.type) {
-                    DBMessageType.CLIENTRECEIPT.value, DBMessageType.SERVERRECEIPT.value -> {
+                    DBMessageType.SERVERRECEIPT.value -> {
                         changeMessageStatus(receiveMessage)
                     }
                     //新消息
@@ -57,6 +57,10 @@ object IMMessageManager {
                         ioScope.launch {
                             async {
                                 saveMessage(message, false)
+                                message.message_type = DBMessageType.CLIENTRECEIPT.value
+                                message.send_account = IMManager.account ?: ""
+                                message.receive_time = 0
+                                MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
                             }
                         }
                     }

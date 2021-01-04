@@ -70,7 +70,6 @@ object IMConversationManager {
                 sgConversations.forEach {
                     messages.forEachIndexed { index, message ->
                         if (message.shopId == it.shop_id) {
-
                             if (IMManager.isBusiness &&
                                     ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
                                             (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
