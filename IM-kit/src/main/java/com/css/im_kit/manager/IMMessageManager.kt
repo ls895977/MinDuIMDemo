@@ -61,7 +61,7 @@ object IMMessageManager {
                                     it.type = DBMessageType.CLIENTRECEIPT.value
                                     it.send_account = IMManager.account ?: ""
                                     it.receive_account = 0.toString()
-                                    MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+                                    MessageServiceUtils.sendNewMsg(it.toJsonString())
                                 }
 
                             }
