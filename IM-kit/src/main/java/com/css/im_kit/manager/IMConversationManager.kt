@@ -70,7 +70,9 @@ object IMConversationManager {
                 sgConversations.forEach {
                     messages.forEachIndexed { index, message ->
                         if (message.shopId == it.shop_id) {
-                            if (((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
+
+                            if (IMManager.isBusiness &&
+                                    ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
                                             (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
                                 if (message.messageBody?.isSelf == false) {
                                     it.unread_account = it.unread_account + 1
@@ -79,7 +81,6 @@ object IMConversationManager {
                                 sgConversationCallbacks.forEach { callback ->
                                     callback.onConversationList(sgConversations)
                                 }
-                                return@forEachIndexed
                             }
                         }
                     }
