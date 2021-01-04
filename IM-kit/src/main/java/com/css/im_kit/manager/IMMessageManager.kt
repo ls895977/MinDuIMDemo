@@ -20,6 +20,7 @@ import com.css.im_kit.model.message.BaseMessageBody
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.getExtendS
+import com.css.im_kit.utils.log
 import com.css.im_kit.utils.toast
 import com.qiniu.android.storage.Configuration
 import com.qiniu.android.storage.UploadManager
@@ -61,7 +62,7 @@ object IMMessageManager {
                                     it.type = DBMessageType.CLIENTRECEIPT.value
                                     it.send_account = IMManager.account ?: ""
                                     it.receive_account = 0.toString()
-                                    "收到消息回执:${it.toJsonString()}".toast()
+                                    "收到消息回执:${it.toJsonString()}".log()
                                     MessageServiceUtils.sendNewMsg(it.toJsonString())
                                 }
 
