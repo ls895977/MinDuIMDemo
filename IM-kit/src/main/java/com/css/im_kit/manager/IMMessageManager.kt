@@ -61,6 +61,7 @@ object IMMessageManager {
                                     it.type = DBMessageType.CLIENTRECEIPT.value
                                     it.send_account = IMManager.account ?: ""
                                     it.receive_account = 0.toString()
+                                    "收到消息回执:${it.toJsonString()}".toast()
                                     MessageServiceUtils.sendNewMsg(it.toJsonString())
                                 }
 
