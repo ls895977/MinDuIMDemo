@@ -13,7 +13,7 @@ interface MessageDao {
     suspend fun getMessage4MessageId(messageId: String): List<Message>
 
     @Query("SELECT  * FROM message WHERE m_id = (:messageId) LIMIT 1")
-    suspend fun getMessage4MessageId2(messageId: String): Message
+    suspend fun getMessage4MessageId2(messageId: String): List<Message>
 
     @Query("SELECT  * FROM message WHERE shop_id = (:shop_id) AND receive_time <:lastItemTime ORDER BY receive_time DESC LIMIT :pageSize")
     suspend fun getMessages(shop_id: String, lastItemTime: Long, pageSize: Int): MutableList<Message>

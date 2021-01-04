@@ -84,7 +84,7 @@ object MessageRepository {
     @Synchronized
     suspend fun insertDatas(messages: List<Message>) {
         messages.filter {
-            dao?.getMessage4MessageId2(it.m_id) == null
+            dao?.getMessage4MessageId2(it.m_id).isNullOrEmpty()
         }.let {
             dao?.insertDatas(it)
         }
