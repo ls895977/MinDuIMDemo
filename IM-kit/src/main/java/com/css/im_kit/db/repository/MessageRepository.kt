@@ -83,7 +83,11 @@ object MessageRepository {
 
     @Synchronized
     suspend fun insertDatas(messages: List<Message>) {
-        dao?.insertDatas(messages)
+        messages.filter {
+            dao?.getMessage4MessageId2(it.m_id) == null
+        }.let {
+            dao?.insertDatas(it)
+        }
     }
 
     /**
