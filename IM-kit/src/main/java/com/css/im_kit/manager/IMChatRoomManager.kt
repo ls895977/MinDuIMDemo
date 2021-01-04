@@ -84,7 +84,7 @@ object IMChatRoomManager {
         override fun onReceiveMessage(message: MutableList<SGMessage>) {
             uiScope.launch {
                 conversation?.let {
-//                    val ids = arrayListOf<String>()
+                    val ids = arrayListOf<String>()
                     message.forEach {
                         if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
                             it.userInfo?.user_type = "1"
@@ -92,14 +92,15 @@ object IMChatRoomManager {
                             it.userInfo?.avatar = conversation?.shop?.log
                             it.userInfo?.user_type = "2"
                         }
-//                        if (it.messageBody?.isSelf == false) {
-//                            ids.add(it.messageId)
-//                        }
+                        if (it.messageBody?.isSelf == false && it.messageBody?.isRead == false) {
+                            ids.add(it.messageId)
+                        }
                     }
                     chatRoomCallback?.onReceiveMessage(message)
-//                    if (!ids.isNullOrEmpty()) {
-//                        HttpManager.changRead(ids)
-//                    }
+
+                    if (!ids.isNullOrEmpty()) {
+                        HttpManager.changRead(ids)
+                    }
                 }
             }
         }
