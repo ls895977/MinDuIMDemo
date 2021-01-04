@@ -363,7 +363,7 @@ object IMChatRoomManager {
                                 )
                             } else {
                                 MessageRepository.getMessage4Account(
-                                        chat_account = conversation.chat_account ?: "",
+                                        chat_account = IMManager.account ?: "",
                                         lastItemTime = lastItemTime,
                                         pageSize = pageSize
                                 )
