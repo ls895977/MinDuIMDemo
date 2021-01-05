@@ -70,10 +70,10 @@ object IMConversationManager {
             uiScope.launch {
                 var hasNewConversationCount = 0
                 messages.forEachIndexed { index, message ->
-                    hasNewConversationCount++
                     if (message.type != MessageType.WELCOME) {
                         sgConversations.forEach {
                             if (message.shopId == it.shop_id) {
+                                hasNewConversationCount++
                                 if (!IMManager.isBusiness ||
                                         ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
                                                 (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
