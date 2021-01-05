@@ -8,6 +8,7 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.SGConversation
+import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
@@ -70,17 +71,19 @@ object IMConversationManager {
                 var hasNewConversationCount = 0
                 messages.forEachIndexed { index, message ->
                     hasNewConversationCount++
-                    sgConversations.forEach {
-                        if (message.shopId == it.shop_id) {
-                            if (!IMManager.isBusiness ||
-                                    ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
-                                            (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
-                                if (message.messageBody?.isSelf == false) {
-                                    it.unread_account = it.unread_account + 1
-                                }
-                                it.newMessage = message
-                                sgConversationCallbacks.forEach { callback ->
-                                    callback.onConversationList(sgConversations)
+                    if (message.type != MessageType.WELCOME) {
+                        sgConversations.forEach {
+                            if (message.shopId == it.shop_id) {
+                                if (!IMManager.isBusiness ||
+                                        ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
+                                                (it.account == message.messageBody?.receiveAccount && it.chat_account == message.messageBody?.sendAccount))) {
+                                    if (message.messageBody?.isSelf == false) {
+                                        it.unread_account = it.unread_account + 1
+                                    }
+                                    it.newMessage = message
+                                    sgConversationCallbacks.forEach { callback ->
+                                        callback.onConversationList(sgConversations)
+                                    }
                                 }
                             }
                         }

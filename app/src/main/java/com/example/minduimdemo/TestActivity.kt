@@ -42,7 +42,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
                 val userInfo = UserInfo("100001", "2", "昵称1", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo1 = UserInfo("100002", "2", "昵称2", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 val userInfo2 = UserInfo("100003", "2", "昵称3", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
-                val userInfo3 = UserInfo("100004", "2", "昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
+                val userInfo3 = UserInfo("204566509993779201", "2", "昵称4", "http://testimg.supersg.cn/user/773870855045251072.jpeg")
                 list.add(userInfo)
                 list.add(userInfo1)
                 list.add(userInfo2)

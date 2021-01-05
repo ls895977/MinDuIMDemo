@@ -341,6 +341,26 @@ object IMChatRoomManager {
                         //把和某人的消息置为已读
                         return@async also {
                             if (isStart) {
+                                if (!IMManager.isBusiness) {
+                                    IMChatRoomManager.conversation?.apply {
+                                        val extend = hashMapOf<Any, Any>()
+                                        extend["shop_id"] = shop_id.toString()
+                                        IMMessageManager.send101And102Message(Message(
+                                                m_id = (IMManager.account + time).md5().substring(16, 32),
+                                                send_account = IMManager.account!!,
+                                                receive_account = chat_account ?: "",
+                                                shop_id = shop_id ?: "",
+                                                message_type = DBMessageType.TEXT.value,
+                                                read_status = 0,
+                                                send_status = SendType.SENDING.text,
+                                                send_time = time,
+                                                receive_time = time,
+                                                message = "1111",
+                                                source = 1,
+                                                extend = gson.toJson(extend)
+                                        ))
+                                    }
+                                }
                                 if (conversation.unread_account == 0) return@also
                                 isStart = false
                                 val b = HttpManager.changReadSomeOne(

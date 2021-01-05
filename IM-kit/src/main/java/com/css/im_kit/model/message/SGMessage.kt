@@ -15,6 +15,7 @@ import java.io.Serializable
  * COMMODITY 商品
  */
 enum class MessageType(var str: String) {
+    WELCOME("WELCOME"),
     TEXT("TEXT"),
     IMAGE("IMAGE"),
     COMMODITY("COMMODITY"),
@@ -94,10 +95,10 @@ class SGMessage : Serializable, MultiItemEntity {
                     }
                 }
                 DBMessageType.WELCOME.value -> {
-                    MessageType.TEXT
+                    MessageType.WELCOME
                 }
                 DBMessageType.NONBUSINESSHOURS.value -> {
-                    MessageType.TEXT
+                    MessageType.WELCOME
                 }
                 //TODO 下面未实现功能
                 DBMessageType.VIDEO.value -> {
@@ -130,6 +131,7 @@ class SGMessage : Serializable, MultiItemEntity {
      */
     override fun getItemType(): Int {
         return when (type) {
+            MessageType.WELCOME,
             MessageType.TEXT -> {
                 if (messageBody?.isSelf == true) 1 else 4
             }

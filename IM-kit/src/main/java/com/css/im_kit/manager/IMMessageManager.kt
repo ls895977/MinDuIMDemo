@@ -53,6 +53,12 @@ object IMMessageManager {
                                     changeMessageStatus(receiveMessage)
                                     return@let null
                                 }
+                                DBMessageType.WELCOME.value,
+                                DBMessageType.NONBUSINESSHOURS.value -> {
+                                    val message = receiveMessage.toDBMessage()
+                                    message.read_status = 1
+                                    newMessageNoSave(message)
+                                }
                                 //新消息
                                 else -> {
                                     val message = receiveMessage.toDBMessage()
@@ -76,6 +82,25 @@ object IMMessageManager {
             }
         })
     }
+
+    /**
+     * 分发不存数据库的消息
+     */
+    fun newMessageNoSave(message: Message) {
+        ioScope.launch {
+            if (!IMManager.isBusiness) {
+                val sgMessage = SGMessage.format(message)
+                sgMessage.messageBody = BaseMessageBody.format(message)
+                sgMessage.shopId = message.shop_id
+                val userInfo = UserInfoRepository.loadById(message.send_account)
+                sgMessage.userInfo = SGUserInfo.format(userInfo)
+                messageCallback.forEach {
+                    it.onReceiveMessage(arrayListOf(sgMessage))
+                }
+            }
+        }
+    }
+
 
     /**
      * 未读消失数量增加或减少
@@ -114,6 +139,22 @@ object IMMessageManager {
     @Synchronized
     fun addMessageListener(listener: MessageCallback) {
         messageCallback.add(listener)
+    }
+
+    /**
+     * 添加消息监听
+     */
+    @Synchronized
+    fun send101And102Message(message: Message) {
+        ioScope.launch {
+            delay(500)
+            message.message_type = DBMessageType.WELCOME.value
+            "发送WELCOME消息：${message.toSendMessageBean().toJsonString()}".log()
+            MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+            message.message_type = DBMessageType.NONBUSINESSHOURS.value
+            "发送NONBUSINESSHOURS消息：${message.toSendMessageBean().toJsonString()}".log()
+            MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
+        }
     }
 
     /**
