@@ -79,12 +79,18 @@ class SGMessage : Serializable, MultiItemEntity {
                         val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
                         when (commodityMessage.type) {
                             "commodity" -> {
-                                gson.fromJson(message.message, CommodityMessage::class.java)
-                                MessageType.COMMODITY
+                                val data = gson.fromJson(message.message, CommodityMessage::class.java)
+                                if (data.imgUrl == null)
+                                    MessageType.TEXT
+                                else
+                                    MessageType.COMMODITY
                             }
                             "showCommodity" -> {
-                                gson.fromJson(message.message, CommodityMessage::class.java)
-                                MessageType.SHOWCOMMODITY
+                                val data = gson.fromJson(message.message, CommodityMessage::class.java)
+                                if (data.imgUrl == null)
+                                    MessageType.TEXT
+                                else
+                                    MessageType.SHOWCOMMODITY
                             }
                             else -> {
                                 MessageType.TEXT
