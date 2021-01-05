@@ -1,6 +1,7 @@
 package com.css.im_kit.model.message
 
 import com.chad.library.adapter.base.entity.MultiItemEntity
+import com.css.im_kit.db.bean.CommodityMessage
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.RichBean
 import com.css.im_kit.db.gson
@@ -78,9 +79,11 @@ class SGMessage : Serializable, MultiItemEntity {
                         val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
                         when (commodityMessage.type) {
                             "commodity" -> {
+                                gson.fromJson(message.message, CommodityMessage::class.java)
                                 MessageType.COMMODITY
                             }
                             "showCommodity" -> {
+                                gson.fromJson(message.message, CommodityMessage::class.java)
                                 MessageType.SHOWCOMMODITY
                             }
                             else -> {
@@ -90,7 +93,6 @@ class SGMessage : Serializable, MultiItemEntity {
                     } catch (e: Exception) {
                         MessageType.TEXT
                     }
-
                 }
                 DBMessageType.WELCOME.value -> {
                     MessageType.TEXT
