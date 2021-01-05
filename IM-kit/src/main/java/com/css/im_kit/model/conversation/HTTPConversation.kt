@@ -162,19 +162,32 @@ class HTTPConversation : Serializable {
                     val bean = gson.fromJson(content, HashMap::class.java)
                     val messageBean = gson.fromJson(bean["content"].toString(), HashMap::class.java)
                     if (messageBean["type"] == "commodity") {
-                        messageType = MessageType.COMMODITY
+
                         val commodity = gson.fromJson(gson.toJson(messageBean["body"]), CommodityMessage::class.java)
-                        CommodityMessageBody(
-                                sendAccount = bean["send_account"].toString(),
-                                receiveAccount = bean["receive_account"].toString(),
-                                isRead = true,
-                                receivedTime = updated_time ?: "0",
-                                sendTime = created_time ?: "0",
-                                commodityId = commodity.productId,
-                                commodityImage = commodity.imgUrl,
-                                commodityName = commodity.productName,
-                                commodityPrice = commodity.salePrice
-                        )
+                        if (commodity.imgUrl == null) {
+                            messageType = MessageType.TEXT
+                            TextMessageBody(
+                                    sendAccount = bean["send_account"].toString(),
+                                    receiveAccount = bean["receive_account"].toString(),
+                                    isRead = true,
+                                    receivedTime = updated_time ?: "0",
+                                    sendTime = created_time ?: "0",
+                                    text = "未知消息类型"
+                            )
+                        } else {
+                            messageType = MessageType.COMMODITY
+                            CommodityMessageBody(
+                                    sendAccount = bean["send_account"].toString(),
+                                    receiveAccount = bean["receive_account"].toString(),
+                                    isRead = true,
+                                    receivedTime = updated_time ?: "0",
+                                    sendTime = created_time ?: "0",
+                                    commodityId = commodity.productId,
+                                    commodityImage = commodity.imgUrl,
+                                    commodityName = commodity.productName,
+                                    commodityPrice = commodity.salePrice
+                            )
+                        }
                     } else {
                         messageType = MessageType.TEXT
                         TextMessageBody(
