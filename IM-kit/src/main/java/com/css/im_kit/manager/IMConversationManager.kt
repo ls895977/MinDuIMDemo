@@ -67,8 +67,10 @@ object IMConversationManager {
         @Synchronized
         override fun onReceiveMessage(messages: MutableList<SGMessage>) {
             uiScope.launch {
-                sgConversations.forEach {
-                    messages.forEachIndexed { index, message ->
+                var hasNewConversationCount = 0
+                messages.forEachIndexed { index, message ->
+                    hasNewConversationCount++
+                    sgConversations.forEach {
                         if (message.shopId == it.shop_id) {
                             if (!IMManager.isBusiness ||
                                     ((it.account == message.messageBody?.sendAccount && it.chat_account == message.messageBody?.receiveAccount) ||
@@ -83,6 +85,9 @@ object IMConversationManager {
                             }
                         }
                     }
+                }
+                if (hasNewConversationCount != messages.size) {
+                    integrationConversation()
                 }
             }
         }
