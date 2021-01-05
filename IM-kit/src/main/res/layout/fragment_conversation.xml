@@ -190,7 +190,7 @@
         <FrameLayout
             android:id="@+id/ll_emoji_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_284"
+            android:layout_height="@dimen/dp_295"
             android:background="@color/color_f6f6f6"
             android:gravity="center_horizontal"
             android:visibility="gone">
@@ -230,7 +230,7 @@
         <LinearLayout
             android:id="@+id/ll_pic_view"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_284"
+            android:layout_height="@dimen/dp_295"
             android:background="@color/color_f6f6f6"
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/dp_40"
