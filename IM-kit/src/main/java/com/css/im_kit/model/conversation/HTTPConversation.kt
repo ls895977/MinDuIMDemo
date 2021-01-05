@@ -163,8 +163,8 @@ class HTTPConversation : Serializable {
                     val messageBean = gson.fromJson(bean["content"].toString(), HashMap::class.java)
                     if (messageBean["type"] == "commodity") {
 
-                        val commodity = gson.fromJson(gson.toJson(messageBean["body"]), CommodityMessage::class.java)
-                        if (commodity.imgUrl == null) {
+                        val commodity = gson.fromJson(gson.toJson(messageBean["content"]), CommodityMessage::class.java)
+                        if (commodity.imgUrl.isNullOrEmpty()) {
                             messageType = MessageType.TEXT
                             TextMessageBody(
                                     sendAccount = bean["send_account"].toString(),

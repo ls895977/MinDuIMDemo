@@ -78,15 +78,18 @@ open class BaseMessageBody : Serializable {
                 DBMessageType.RICH.value -> {
                     try {
                         val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
-                        when (commodityMessage.type) {
-                            "commodity",
-                            "content" -> {
-                                val commodity = gson.fromJson(gson.toJson(commodityMessage.body), CommodityMessage::class.java)
-                                CommodityMessageBody.toCommodityMessageBody(commodity)
+                        val commodity = gson.fromJson(gson.toJson(commodityMessage.content), CommodityMessage::class.java)
+                        if (!commodity.imgUrl.isNullOrEmpty()) {
+                            when (commodityMessage.type) {
+                                "commodity"-> {
+                                    CommodityMessageBody.toCommodityMessageBody(commodity)
+                                }
+                                else -> {
+                                    TextMessageBody("其他消息类型")
+                                }
                             }
-                            else -> {
-                                TextMessageBody("其他消息类型")
-                            }
+                        } else {
+                            TextMessageBody("其他消息类型")
                         }
                     } catch (e: Exception) {
                         TextMessageBody("其他消息类型")

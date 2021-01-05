@@ -7,7 +7,7 @@ import com.css.im_kit.db.gson
  */
 data class RichBean<T>(
         var type: String,
-        val body: T
+        val content: T
 ) {
     fun toJsonString(): String {
         return gson.toJson(this)

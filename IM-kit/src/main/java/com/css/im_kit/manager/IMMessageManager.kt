@@ -45,35 +45,34 @@ object IMMessageManager {
             @Synchronized
             override fun onMessage(context: String) {
                 Log.e("收到一条消息", context)
-                (gson.fromJson(context, ReceiveMessageBean::class.java) ?: null)?.also {
-                    if (it.type != DBMessageType.SERVERRECEIPT.value) {
-                        it.type = DBMessageType.CLIENTRECEIPT.value
-                        it.send_account = IMManager.account ?: ""
-                        it.receive_account = 0.toString()
-                        "收到消息回执:${it.toJsonString()}".log()
-                        MessageServiceUtils.sendNewMsg(it.toJsonString())
-                    }
-                }?.let { receiveMessage ->
-                    //系统返回消息回执
-                    when (receiveMessage.type) {
-                        DBMessageType.SERVERRECEIPT.value -> {
-                            changeMessageStatus(receiveMessage)
-                            return@let null
+                (gson.fromJson(context, ReceiveMessageBean::class.java) ?: null)
+                        ?.let { receiveMessage ->
+                            //系统返回消息回执
+                            when (receiveMessage.type) {
+                                DBMessageType.SERVERRECEIPT.value -> {
+                                    changeMessageStatus(receiveMessage)
+                                    return@let null
+                                }
+                                //新消息
+                                else -> {
+                                    val message = receiveMessage.toDBMessage()
+                                    message.read_status = 1
+                                    ioScope.launch {
+                                        async {
+                                            saveMessage(message, false)
+                                        }
+                                    }
+                                    if (receiveMessage.type != DBMessageType.SERVERRECEIPT.value) {
+                                        receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
+                                        receiveMessage.send_account = IMManager.account ?: ""
+                                        receiveMessage.receive_account = 0.toString()
+                                        "收到消息回执:${receiveMessage.toJsonString()}".log()
+                                        MessageServiceUtils.sendNewMsg(receiveMessage.toJsonString())
+                                    }
+                                    return@let message
+                                }
+                            }
                         }
-                        //新消息
-                        else -> {
-                            val message = receiveMessage.toDBMessage()
-                            message.read_status = 1
-                            return@let message
-                        }
-                    }
-                }?.let {
-                    ioScope.launch {
-                        async {
-                            saveMessage(it, false)
-                        }
-                    }
-                }
             }
         })
     }

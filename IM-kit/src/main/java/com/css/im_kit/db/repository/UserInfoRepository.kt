@@ -39,6 +39,9 @@ object UserInfoRepository {
                 }
             }
             return@filter true
+        }?.map {
+            it.id = 0
+            return@map it
         }?.let {
             noDbUsers.addAll(it)
         }
