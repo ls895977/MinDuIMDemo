@@ -6,13 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.css.im_kit.db.ioScope
-import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
 import com.css.im_kit.imservice.service.IMService
 import com.css.im_kit.imservice.service.IMService.IMServiceBinder
-import kotlinx.coroutines.launch
+import java.lang.Exception
 
 object MessageServiceUtils {
     private var onResultMessage: onResultMessage? = null
@@ -21,14 +19,12 @@ object MessageServiceUtils {
     fun init(application: Application) {
         mApplication = application
     }
-
     /**
      * 反馈当前链接状态
      */
-    fun isServiceStatus(): Boolean {
+    fun isServiceStatus():Boolean{
         return myBindService?.imServiceStatus!!
     }
-
     /**
      * CHAT_SERVER_URL 聊天服务地址
      * onLinkStatus 链接状态反馈
@@ -37,9 +33,7 @@ object MessageServiceUtils {
         this.onLinkStatus = onLinkStatus
         val intent = Intent(mApplication, IMService::class.java)
         intent.putExtra("serViceUrl", CHAT_SERVER_URL)
-        ioScope.launch {
-            mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
-        }
+        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
 
     /**
@@ -48,11 +42,9 @@ object MessageServiceUtils {
      * onLinkStatus 链接状态反馈
      */
     fun initService(CHAT_SERVER_URL: String?) {
-        ioScope.launch {
-            val intent = Intent(mApplication, IMService::class.java)
-            intent.putExtra("serViceUrl", CHAT_SERVER_URL)
-            mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
-        }
+        val intent = Intent(mApplication, IMService::class.java)
+        intent.putExtra("serViceUrl", CHAT_SERVER_URL)
+        mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)
     }
 
     /**
@@ -60,9 +52,7 @@ object MessageServiceUtils {
      * 必须建立在服务开启的状态下
      */
     fun retryService() {
-        ioScope.launch {
-            myBindService?.retryIMService()
-        }
+        myBindService?.retryIMService()
     }
 
     /**
@@ -70,9 +60,7 @@ object MessageServiceUtils {
      */
     fun closeConnect() {
         try {
-            ioScope.launch {
-                mApplication?.unbindService(imServiceConn)
-            }
+            mApplication?.unbindService(imServiceConn)
         } catch (e: Exception) {
         }
     }
@@ -109,23 +97,17 @@ object MessageServiceUtils {
             myBindService = binder.service
             myBindService?.setOnLinkStatus(object : onLinkStatus {
                 override fun onLinkedSuccess() {
-                    uiScope.launch {
-                        onLinkStatus?.onLinkedSuccess()
-                    }
+                    onLinkStatus?.onLinkedSuccess()
                 }
 
                 override fun onLinkedClose() {
-                    uiScope.launch {
-                        onLinkStatus?.onLinkedClose()
-                    }
+                    onLinkStatus?.onLinkedClose()
                 }
             })
             myBindService?.setOnResultMessage(object : onResultMessage {
                 @Synchronized
                 override fun onMessage(context: String) {
-                    uiScope.launch {
-                        onResultMessage?.onMessage(context)
-                    }
+                    onResultMessage?.onMessage(context)
                 }
             })
         }
