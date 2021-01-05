@@ -15,17 +15,17 @@ data class RichBean<T>(
 }
 
 class CommodityMessage {
-    var commodityId: String? = null
-    var commodityName: String? = null
-    var commodityImage: String? = null
-    var commodityPrice: String? = null
+    var productId: String? = null
+    var productName: String? = null
+    var imgUrl: String? = null
+    var salePrice: String? = null
 
     constructor() : super()
-    constructor(commodityId: String?, commodityName: String?, commodityImage: String?, commodityPrice: String?) {
-        this.commodityId = commodityId
-        this.commodityName = commodityName
-        this.commodityImage = commodityImage
-        this.commodityPrice = commodityPrice
+    constructor(productId: String?, productName: String?, imgUrl: String?, salePrice: String?) {
+        this.productId = productId
+        this.productName = productName
+        this.imgUrl = imgUrl
+        this.salePrice = salePrice
     }
 
 

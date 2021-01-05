@@ -29,7 +29,7 @@ class CommodityMessageBody : BaseMessageBody {
 
     companion object {
         fun toCommodityMessageBody(message: CommodityMessage): CommodityMessageBody {
-            return CommodityMessageBody(message.commodityId, message.commodityName, message.commodityImage, message.commodityPrice)
+            return CommodityMessageBody(message.productId, message.productName, message.imgUrl, message.salePrice)
         }
     }
 }

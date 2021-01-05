@@ -80,7 +80,7 @@ open class BaseMessageBody : Serializable {
                         val commodityMessage = gson.fromJson(message.message, RichBean::class.java)
                         when (commodityMessage.type) {
                             "commodity",
-                            "showCommodity" -> {
+                            "content" -> {
                                 val commodity = gson.fromJson(gson.toJson(commodityMessage.body), CommodityMessage::class.java)
                                 CommodityMessageBody.toCommodityMessageBody(commodity)
                             }

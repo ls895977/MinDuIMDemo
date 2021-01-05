@@ -170,10 +170,10 @@ class HTTPConversation : Serializable {
                                 isRead = true,
                                 receivedTime = updated_time ?: "0",
                                 sendTime = created_time ?: "0",
-                                commodityId = commodity.commodityId,
-                                commodityImage = commodity.commodityImage,
-                                commodityName = commodity.commodityName,
-                                commodityPrice = commodity.commodityPrice
+                                commodityId = commodity.productId,
+                                commodityImage = commodity.imgUrl,
+                                commodityName = commodity.productName,
+                                commodityPrice = commodity.salePrice
                         )
                     } else {
                         messageType = MessageType.TEXT
