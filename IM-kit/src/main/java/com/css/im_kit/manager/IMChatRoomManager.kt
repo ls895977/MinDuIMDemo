@@ -412,10 +412,10 @@ object IMChatRoomManager {
                             val sgMessage = SGMessage.format(it)
                             val user = UserInfoRepository.loadById(it.send_account)
                             user?.let {
-                                if (!IMManager.isBusiness && it.account == IMManager.account) {
-                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "1", it.avatar)
+                                if (IMManager.isBusiness) {
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, it.avatar)
                                 } else {
-                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, "2", conversation.shop?.log)
+                                    sgMessage.userInfo = SGUserInfo(it.account, it.nickname, it.user_type, if (it.user_type == "2") conversation.shop?.log else it.avatar)
                                 }
                             }
                             return@map sgMessage
