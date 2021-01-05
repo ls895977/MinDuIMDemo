@@ -31,18 +31,19 @@ object UserInfoRepository {
     suspend fun insertDatas(users: List<UserInfo>) {
         val dbUsers = arrayListOf<UserInfo>()
         val noDbUsers = arrayListOf<UserInfo>()
-        dao?.getAll()?.filter { t1 ->
-            users.forEach { t2 ->
+        val myDbUser = dao?.getAll()
+        users.filter { t1 ->
+            myDbUser?.forEach { t2 ->
                 if (t1.account == t2.account) {
                     dbUsers.add(t2)
                     return@filter false
                 }
             }
             return@filter true
-        }?.map {
+        }.map {
             it.id = 0
             return@map it
-        }?.let {
+        }.let {
             noDbUsers.addAll(it)
         }
         dao?.update(dbUsers)
