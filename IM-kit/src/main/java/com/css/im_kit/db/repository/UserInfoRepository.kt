@@ -29,7 +29,21 @@ object UserInfoRepository {
 
     @Synchronized
     suspend fun insertDatas(users: List<UserInfo>) {
-        dao?.insertDatas(users)
+        val dbUsers = arrayListOf<UserInfo>()
+        val noDbUsers = arrayListOf<UserInfo>()
+        dao?.getAll()?.filter { t1 ->
+            users.forEach { t2 ->
+                if (t1.account == t2.account) {
+                    dbUsers.add(t2)
+                    return@filter false
+                }
+            }
+            return@filter true
+        }?.let {
+            noDbUsers.addAll(it)
+        }
+        dao?.update(dbUsers)
+        dao?.insertDatas(noDbUsers)
     }
 
     @Synchronized

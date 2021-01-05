@@ -2,9 +2,11 @@ package com.css.im_kit.manager
 
 import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.bean.UserInfo
 import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
+import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.Shop
@@ -155,6 +157,17 @@ object HttpManager {
                 }
             }
             return@let null
+        }?.also {//查看历史记录中用户资料
+            val userInfos = arrayListOf<UserInfo>()
+            it.forEach { item ->
+                if (!userInfos.contains(item.send_account_info)) {
+                    userInfos.add(item.send_account_info)
+                }
+                if (!userInfos.contains(item.receive_account_info)) {
+                    userInfos.add(item.receive_account_info)
+                }
+            }
+            UserInfoRepository.insertDatas(userInfos)
         }?.let {
             val messages = arrayListOf<Message>()
             it.forEach {

@@ -2,7 +2,6 @@ package com.css.im_kit.db.dao
 
 import androidx.room.*
 import com.css.im_kit.db.bean.UserInfo
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserInfoDao {
@@ -26,6 +25,9 @@ interface UserInfoDao {
 
     @Update
     suspend fun update(users: UserInfo)
+
+    @Update
+    suspend fun update(users: List<UserInfo>)
 
     /**
      * 修改昵称
