@@ -134,7 +134,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                 R.id.iv_content -> {//图片，看大图
                     ((adapter.data[position] as SGMessage).messageBody as ImageMessageBody).imageUrl?.let {
                         val mIntent = Intent(requireContext(), BigPicActivity::class.java)
-                        mIntent.putExtra("imageUrl", it)
+                        mIntent.putExtra("imageUrl", if (it.contains("sgim")) IMGlideUtil.getAllUrl(it) else it)
                         val compat: ActivityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), view, getString(R.string.big_image))
                         ActivityCompat.startActivity(requireContext(), mIntent, compat.toBundle())
                     }
