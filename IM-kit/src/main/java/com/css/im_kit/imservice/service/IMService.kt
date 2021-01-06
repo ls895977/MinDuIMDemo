@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
 import android.util.Log
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
@@ -17,6 +18,7 @@ import com.google.gson.Gson
 import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
+import kotlinx.coroutines.launch
 import java.net.URI
 
 /**
@@ -29,7 +31,6 @@ class IMService : Service(), ServiceListener {
     private var serViceUrl = ""
     private val myBinder = IMServiceBinder()
     private var startStatus = false//判断是否是第一次启动好用于启动倒计时操作
-    private var retryIndex = 0//重连次数控制
     private var socketStatus = 0//当前socket状态变化0无状态1,2已链接3,4未链接
     var imServiceStatus = false//当前链接状态
 
@@ -95,10 +96,11 @@ class IMService : Service(), ServiceListener {
         CycleTimeUtils.onStartTimeSeconds(5, object : CycleTimeUtils.OnCountDownCallBack {
             override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
                 Log.e("aa", "---------------倒计时链接5次===" + second)
+                initSocket()
             }
-
             override fun onFinish() {
                 Log.e("aa", "---------------onFinish===")
+                onLinkStatus?.onLinkedClose()
             }
         })
     }
@@ -183,12 +185,8 @@ class IMService : Service(), ServiceListener {
     override fun onBackSocketStatus(event: Int, msg: String) {
         when (event) {
             ServiceType.openMessageStats -> {//已链接
-                //TODO 解决重复消息问题
-//                CycleTimeUtils.canCelTimer()
-                retryIndex = 0//重置链接次数为零
             }
             ServiceType.collectMessageStats -> {//链接收到消息
-
                 imServiceStatus = true
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0") {//通过数据反馈链接成功
@@ -205,13 +203,13 @@ class IMService : Service(), ServiceListener {
             ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
                 imServiceStatus = false
                 //网络链接判断处理
-//                val netStatus: Boolean = NetworkStateUtils.hasNetworkCapability(this)
                 if (socketStatus != 3 && socketStatus != 4) {
+                    uiScope.launch {
+                        runSocket5()//执行5次链接
+                    }
                     onLinkStatus?.onLinkedClose()
                     socketStatus = event
                 }
-                retryIndex++
-//                runSocket5()//执行5次链接
                 CycleTimeUtils.canCelTimer()//执行心跳关闭
             }
         }

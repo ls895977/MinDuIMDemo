@@ -50,10 +50,7 @@ object CycleTimeUtils {
 
     private var mTimer: CountDownTimer? = null
 
-    private const val interval = 1000
-
-    fun CountDownUtil() {}
-
+    private const val interval = 6000
 
     /**
      * 开始倒计时
@@ -181,7 +178,7 @@ object CycleTimeUtils {
      * seconds 毫秒
      */
     fun onStartTimeSeconds(seconds: Long, callBack: OnCountDownCallBack?) {
-        val endTime = System.currentTimeMillis() + (seconds*1000)
+        val endTime = System.currentTimeMillis() + (seconds*6000)
         val curTime = System.currentTimeMillis()
         if (endTime - curTime < 0) {
             return
