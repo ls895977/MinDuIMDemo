@@ -96,7 +96,7 @@ object IMChatRoomManager {
                             }
                         }
                         return@filter false
-                    }.forEach {
+                    }.map {
                         if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
                             it.userInfo?.user_type = "1"
                         } else {
@@ -106,9 +106,10 @@ object IMChatRoomManager {
                         if (it.messageBody?.isSelf == false) {
                             ids.add(it.messageId)
                         }
+                        return@map it
+                    }.let {
+                        chatRoomCallback?.onReceiveMessage(it)
                     }
-
-                    chatRoomCallback?.onReceiveMessage(message)
 
                     if (!ids.isNullOrEmpty()) {
                         HttpManager.changRead(ids)

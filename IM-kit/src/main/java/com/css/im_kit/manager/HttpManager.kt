@@ -177,7 +177,11 @@ object HttpManager {
         }?.let {
             if (it.isNullOrEmpty()) return@withContext arrayListOf<Message>()
             MessageRepository.insertDatas(it)
-            return@withContext MessageRepository.getMessage(shop_id = shopId, pageSize = pageSize, lastItemTime = time)
+            if (IMManager.isBusiness){
+                return@withContext MessageRepository.getMessage4Account(chat_account = receive_account, pageSize = pageSize, lastItemTime = time)
+            }else {
+                return@withContext MessageRepository.getMessage(shop_id = shopId, pageSize = pageSize, lastItemTime = time)
+            }
         }
     }
 
