@@ -135,6 +135,14 @@ object MessageRepository {
         dao?.read(chat_account)
     }
 
+    /**
+     * 设置消息已读
+     */
+    @Synchronized
+    suspend fun read(mids: List<String>) {
+        dao?.read(mids)
+    }
+
     @Synchronized
     suspend fun getNoReadData(shop_id: String, send_account: String): Int {
         return dao?.getNoReadData(shop_id, 0, send_account = send_account)?.size ?: 0

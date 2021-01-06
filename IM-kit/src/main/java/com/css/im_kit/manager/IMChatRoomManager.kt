@@ -92,7 +92,7 @@ object IMChatRoomManager {
                             it.userInfo?.avatar = conversation?.shop?.log
                             it.userInfo?.user_type = "2"
                         }
-                        if (it.messageBody?.isSelf == false && it.messageBody?.isRead == false) {
+                        if (it.messageBody?.isSelf == false) {
                             ids.add(it.messageId)
                         }
                     }

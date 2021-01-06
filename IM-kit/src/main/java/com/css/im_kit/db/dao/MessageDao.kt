@@ -68,4 +68,10 @@ interface MessageDao {
      */
     @Query("UPDATE message SET read_status = 1 WHERE read_status = 0 AND (send_account = (:chat_account) OR receive_account = (:chat_account))")
     suspend fun read(chat_account: String)
+
+    /**
+     * 设置消息已读
+     */
+    @Query("UPDATE message SET read_status = 1 WHERE read_status = 0 AND m_id in(:mids)")
+    suspend fun read(mids: List<String>)
 }

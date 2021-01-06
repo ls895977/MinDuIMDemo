@@ -204,7 +204,7 @@ object HttpManager {
                 )?.awaitResponse()?.let {
                     if (it.isSuccessful) {
                         if (it.body()?.code == "20000") {
-//                        MessageRepository.read(m_ids)
+                        MessageRepository.read(m_ids)
                         }
                     }
                 }
