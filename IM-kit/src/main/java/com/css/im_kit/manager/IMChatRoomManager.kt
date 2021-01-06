@@ -85,7 +85,18 @@ object IMChatRoomManager {
             uiScope.launch {
                 conversation?.let {
                     val ids = arrayListOf<String>()
-                    message.forEach {
+                    message.filter { item ->
+                        if (IMManager.isBusiness) {
+                            if (item.messageBody?.sendAccount == it.chat_account || item.messageBody?.receiveAccount == it.chat_account) {
+                                return@filter true
+                            }
+                        } else {
+                            if (it.shop_id == item.shopId) {
+                                return@filter true
+                            }
+                        }
+                        return@filter false
+                    }.forEach {
                         if (conversation?.shop == null || it.userInfo?.account == IMManager.account) {
                             it.userInfo?.user_type = "1"
                         } else {
@@ -96,6 +107,7 @@ object IMChatRoomManager {
                             ids.add(it.messageId)
                         }
                     }
+
                     chatRoomCallback?.onReceiveMessage(message)
 
                     if (!ids.isNullOrEmpty()) {
