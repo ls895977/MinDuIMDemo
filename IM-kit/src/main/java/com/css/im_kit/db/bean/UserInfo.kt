@@ -2,6 +2,7 @@ package com.css.im_kit.db.bean
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 /**
  * 用户资料
@@ -12,7 +13,7 @@ data class UserInfo(
         var user_type: String,
         var nickname: String,
         var avatar: String
-) {
+) : Serializable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 }

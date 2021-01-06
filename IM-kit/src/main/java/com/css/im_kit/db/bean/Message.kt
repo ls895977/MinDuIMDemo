@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.css.im_kit.db.gson
 import com.css.im_kit.imservice.bean.SendMessageBean
 import com.css.im_kit.utils.long10
+import java.io.Serializable
 
 /**
  * 消息
@@ -24,7 +25,7 @@ data class Message(
         var message: String,//消息内容
         var extend: String//扩展消息
 
-) {
+) : Serializable {
     @PrimaryKey(autoGenerate = true)
     var id = 0//id
 

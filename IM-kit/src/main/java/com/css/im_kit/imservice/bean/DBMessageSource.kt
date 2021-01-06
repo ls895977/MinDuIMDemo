@@ -1,5 +1,7 @@
 package com.css.im_kit.imservice.bean
 
+import java.io.Serializable
+
 /**
 1	用户->客服
 2	用户->用户
@@ -7,7 +9,7 @@ package com.css.im_kit.imservice.bean
 4	系统->用户
 5	系统->客服
  */
-enum class DBMessageSource(val value: Int) {
+enum class DBMessageSource(val value: Int) : Serializable {
     USER2SERVICE(1),
     USER2USER(2),
     SERVICE2USER(3),

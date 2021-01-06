@@ -4,6 +4,7 @@ import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
 import com.css.im_kit.db.gson
 import com.css.im_kit.utils.long13
+import java.io.Serializable
 
 data class ReceiveMessageBean(
         /**
@@ -27,7 +28,7 @@ data class ReceiveMessageBean(
         var time: Long,
         var extend: HashMap<String, String>?
 
-) {
+): Serializable {
 
     /**
     var m_id: String,//消息id

@@ -1,6 +1,7 @@
 package com.css.im_kit.http.bean
 
 import com.css.im_kit.model.conversation.Shop
+import java.io.Serializable
 
 data class AssignCustomerBack(
         var id: String,
@@ -10,4 +11,4 @@ data class AssignCustomerBack(
         var avatar: String,
         var shop_id: String,
         var chat_shop: Shop? = null
-)
+) : Serializable

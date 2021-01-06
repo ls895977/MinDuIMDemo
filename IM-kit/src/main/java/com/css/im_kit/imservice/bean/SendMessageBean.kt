@@ -1,6 +1,7 @@
 package com.css.im_kit.imservice.bean
 
 import com.css.im_kit.db.gson
+import java.io.Serializable
 
 class SendMessageBean(
         var m_id: String,
@@ -12,7 +13,7 @@ class SendMessageBean(
         var time: Long,
         var extend: HashMap<String,String>
 
-) {
+) : Serializable {
     fun toJsonString(): String {
         return gson.toJson(this)
     }

@@ -14,7 +14,7 @@ import java.io.Serializable
  * IMAGE 图片类型
  * COMMODITY 商品
  */
-enum class MessageType(var str: String) {
+enum class MessageType(var str: String) : Serializable {
     WELCOME("WELCOME"),
     TEXT("TEXT"),
     IMAGE("IMAGE"),

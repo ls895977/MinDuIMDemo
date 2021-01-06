@@ -1,5 +1,7 @@
 package com.css.im_kit.imservice.bean
 
+import java.io.Serializable
+
 /**
 1	文本消息
 2	富文本消息
@@ -11,7 +13,7 @@ package com.css.im_kit.imservice.bean
 102 客服欢迎消息
 103 非营业时间回复消息
  */
-enum class DBMessageType(val value: Int) {
+enum class DBMessageType(val value: Int): Serializable {
     TEXT(1),
     RICH(2),
     IMAGE(3),
