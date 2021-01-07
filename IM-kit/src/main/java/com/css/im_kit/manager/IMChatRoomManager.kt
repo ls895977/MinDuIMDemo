@@ -117,7 +117,7 @@ object IMChatRoomManager {
                     }
 
                     if (!ids.isNullOrEmpty()) {
-//                        HttpManager.changRead(conversation!!, ids)
+                        HttpManager.changRead(conversation!!, ids)
                     }
                 }
             }
