@@ -11,7 +11,6 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.conversation.Shop
-import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -79,7 +78,7 @@ object HttpManager {
             withContext(Dispatchers.Default) {
                 val nonceStr = System.currentTimeMillis().toString().md5()
                 val map = HashMap<String, String>()
-                map["account"] = IMManager.account ?: ""
+                map["account"] = sgUserInfo.account ?: ""
                 map["app_id"] = IMManager.app_id ?: ""
                 map["nickname"] = sgUserInfo.nickname ?: ""
                 map["avatar"] = sgUserInfo.avatar ?: ""
@@ -89,7 +88,7 @@ object HttpManager {
                         app_id = IMManager.app_id ?: "",
                         nickname = sgUserInfo.nickname ?: "",
                         avatar = sgUserInfo.avatar ?: "",
-                        account = IMManager.account ?: "",
+                        account = sgUserInfo.account ?: "",
                         sign = map.generateSignature(IMManager.app_secret ?: "")
                 )?.awaitResponse()?.let {
                     if (it.isSuccessful) {
