@@ -159,6 +159,47 @@ object IMChatRoomManager {
 
     }
 
+
+    @Synchronized
+    private fun getMessageSource() {
+        ioScope.launch {
+            source = if (IMManager.isBusiness) {
+                DBMessageSource.SERVICE2USER
+            } else {
+                DBMessageSource.USER2SERVICE
+            }
+//            val userInfo = UserInfoRepository.loadById(IMManager.account!!)
+//            val chatUserInfo = UserInfoRepository.loadById(conversation?.chat_account!!)
+//            if (userInfo != null && chatUserInfo != null) {
+//                source = when (userInfo.user_type) {
+//                    "1" -> {
+//                        when (chatUserInfo.user_type) {
+//                            "1" -> {
+//                                DBMessageSource.USER2USER
+//                            }
+//                            else -> DBMessageSource.USER2SERVICE
+//                        }
+//                    }
+//                    "2" -> {
+//                        when (chatUserInfo.user_type) {
+//                            else -> {
+//                                DBMessageSource.SERVICE2USER
+//                            }
+//                        }
+//                    }
+//                    else -> {
+//                        when (chatUserInfo.user_type) {
+//                            "1" -> {
+//                                DBMessageSource.SYSTEM2USER
+//                            }
+//                            else -> DBMessageSource.SYSTEM2SERVICE
+//                        }
+//                    }
+//                }
+//            }
+        }
+    }
+
     /**
      * 发送文字消息
      *
@@ -198,38 +239,37 @@ object IMChatRoomManager {
 
     }
 
+    /**
+     * 发送商品消息
+     */
     @Synchronized
-    private fun getMessageSource() {
-        ioScope.launch {
-            val userInfo = UserInfoRepository.loadById(IMManager.account!!)
-            val chatUserInfo = UserInfoRepository.loadById(conversation?.chat_account!!)
-            if (userInfo != null && chatUserInfo != null) {
-                source = when (userInfo.user_type) {
-                    "1" -> {
-                        when (chatUserInfo.user_type) {
-                            "1" -> {
-                                DBMessageSource.USER2USER
-                            }
-                            else -> DBMessageSource.USER2SERVICE
-                        }
-                    }
-                    "2" -> {
-                        when (chatUserInfo.user_type) {
-                            else -> {
-                                DBMessageSource.SERVICE2USER
-                            }
-                        }
-                    }
-                    else -> {
-                        when (chatUserInfo.user_type) {
-                            "1" -> {
-                                DBMessageSource.SYSTEM2USER
-                            }
-                            else -> DBMessageSource.SYSTEM2SERVICE
-                        }
-                    }
-                }
+    fun sendCommodityMessage(commodityMessages: List<CommodityMessage>) {
+        conversation?.let { conversation ->
+            var time = System.currentTimeMillis()
+            val extend = hashMapOf<Any, Any>()
+            extend["shop_id"] = conversation.shop_id.toString()
+            commodityMessages.map {
+                return@map RichBean("commodity", it)
+            }.mapIndexed { index, commodityMessageBean ->
+                time += index
+                Message(
+                        m_id = (IMManager.account + time).md5().substring(16, 32),
+                        send_account = IMManager.account!!,
+                        receive_account = conversation.chat_account ?: "",
+                        shop_id = conversation.shop_id ?: "",
+                        message_type = DBMessageType.RICH.value,
+                        read_status = 0,
+                        send_status = SendType.SENDING.text,
+                        send_time = time,
+                        receive_time = time,
+                        message = commodityMessageBean.toJsonString(),
+                        source = source!!.value,
+                        extend = gson.toJson(extend)
+                )
+            }.let {
+                IMMessageManager.saveMessages(it, true)
             }
+
         }
     }
 
@@ -283,40 +323,6 @@ object IMChatRoomManager {
         }
     }
 
-
-    /**
-     * 发送商品消息
-     */
-    @Synchronized
-    fun sendCommodityMessage(commodityMessages: List<CommodityMessage>) {
-        conversation?.let { conversation ->
-            var time = System.currentTimeMillis()
-            val extend = hashMapOf<Any, Any>()
-            extend["shop_id"] = conversation.shop_id.toString()
-            commodityMessages.map {
-                return@map RichBean("commodity", it)
-            }.mapIndexed { index, commodityMessageBean ->
-                time += index
-                Message(
-                        m_id = (IMManager.account + time).md5().substring(16, 32),
-                        send_account = IMManager.account!!,
-                        receive_account = conversation.chat_account ?: "",
-                        shop_id = conversation.shop_id ?: "",
-                        message_type = DBMessageType.RICH.value,
-                        read_status = 0,
-                        send_status = SendType.SENDING.text,
-                        send_time = time,
-                        receive_time = time,
-                        message = commodityMessageBean.toJsonString(),
-                        source = source?.value ?: 1,
-                        extend = gson.toJson(extend)
-                )
-            }.let {
-                IMMessageManager.saveMessages(it, true)
-            }
-
-        }
-    }
 
     /**
      * 构建
