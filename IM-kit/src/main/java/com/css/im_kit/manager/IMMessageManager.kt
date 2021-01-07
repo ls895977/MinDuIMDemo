@@ -176,7 +176,7 @@ object IMMessageManager {
             return@let MessageRepository.insert(message)
         }.let { b ->
             if (b) {
-                MessageRepository.getLast()?.let {
+                MessageRepository.getMessage4messageId(messageId = message.m_id)?.let {
                     val sgMessage = SGMessage.format(it)
                     sgMessage.messageBody = BaseMessageBody.format(it)
                     sgMessage.shopId = message.shop_id
