@@ -9,7 +9,9 @@ import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
+import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.conversation.Shop
+import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import com.css.im_kit.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -177,9 +179,9 @@ object HttpManager {
         }?.let {
             if (it.isNullOrEmpty()) return@withContext arrayListOf<Message>()
             MessageRepository.insertDatas(it)
-            if (IMManager.isBusiness){
+            if (IMManager.isBusiness) {
                 return@withContext MessageRepository.getMessage4Account(chat_account = receive_account, pageSize = pageSize, lastItemTime = time)
-            }else {
+            } else {
                 return@withContext MessageRepository.getMessage(shop_id = shopId, pageSize = pageSize, lastItemTime = time)
             }
         }
@@ -190,9 +192,10 @@ object HttpManager {
      * 把消息置为已读
      */
     @Synchronized
-    suspend fun changRead(m_ids: List<String>) {
+    suspend fun changRead(conversation: SGConversation, m_ids: MutableList<String>) {
         ioScope.launch {
             withContext(Dispatchers.Default) {
+
                 val nonceStr = System.currentTimeMillis().toString().md5()
                 val map = HashMap<String, String>()
                 map["app_id"] = IMManager.app_id ?: ""
@@ -208,7 +211,14 @@ object HttpManager {
                 )?.awaitResponse()?.let {
                     if (it.isSuccessful) {
                         if (it.body()?.code == "20000") {
-                        MessageRepository.read(m_ids)
+                            MessageRepository.read(m_ids)
+                            IMMessageManager.unreadMessageNumCount(
+                                    conversation.shop_id ?: "",
+                                    conversation.account ?: "",
+                                    conversation.chat_account ?: "",
+                                    m_ids.size,
+                                    false)
+
                         }
                     }
                 }

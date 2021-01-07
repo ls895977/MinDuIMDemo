@@ -17,5 +17,5 @@ interface MessageCallback {
     /**
      * 未读数量计算
      */
-    fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean)
+    fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean)
 }

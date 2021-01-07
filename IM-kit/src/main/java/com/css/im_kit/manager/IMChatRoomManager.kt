@@ -112,7 +112,7 @@ object IMChatRoomManager {
                     }
 
                     if (!ids.isNullOrEmpty()) {
-                        HttpManager.changRead(ids)
+                        HttpManager.changRead(conversation!!,ids)
                     }
                 }
             }
@@ -149,7 +149,7 @@ object IMChatRoomManager {
             }
         }
 
-        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
 
         }
 
@@ -385,6 +385,7 @@ object IMChatRoomManager {
                                             conversation.shop_id ?: "",
                                             conversation.account ?: "",
                                             conversation.chat_account ?: "",
+                                            0,
                                             true)
                                 }
                             }

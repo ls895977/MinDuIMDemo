@@ -106,9 +106,9 @@ object IMMessageManager {
      * 未读消失数量增加或减少
      */
     @Synchronized
-    fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean) {
+    fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
         messageCallback.forEach {
-            it.unreadMessageNumCount(shop_id, account, chat_account, isClear)
+            it.unreadMessageNumCount(shop_id, account, chat_account,size, isClear)
         }
     }
 

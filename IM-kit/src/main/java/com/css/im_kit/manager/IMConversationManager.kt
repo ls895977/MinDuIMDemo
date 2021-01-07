@@ -112,11 +112,11 @@ object IMConversationManager {
         }
 
         @Synchronized
-        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, isClear: Boolean) {
+        override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
             uiScope.launch {
                 sgConversations.map {
-                    if (IMManager.isBusiness){
-                        if (it.account == account && chat_account == chat_account){
+                    if (IMManager.isBusiness) {
+                        if (it.account == account && chat_account == chat_account) {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
@@ -124,8 +124,8 @@ object IMConversationManager {
                             }
                         }
 
-                    }else{
-                        if (it.shop_id == shop_id){
+                    } else {
+                        if (it.shop_id == shop_id) {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
