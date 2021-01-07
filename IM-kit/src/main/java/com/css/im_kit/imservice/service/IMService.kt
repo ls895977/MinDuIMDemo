@@ -1,11 +1,9 @@
 package com.css.im_kit.imservice.service
-
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
-import android.util.Log
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
@@ -19,6 +17,7 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
 import kotlinx.coroutines.launch
+import org.java_websocket.enums.ReadyState
 import java.net.URI
 
 /**
@@ -95,11 +94,12 @@ class IMService : Service(), ServiceListener {
     private fun runSocket5() {
         CycleTimeUtils.onStartTimeSeconds(5, object : CycleTimeUtils.OnCountDownCallBack {
             override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
-                Log.e("aa", "---------------倒计时链接5次===" + second)
+//                Log.e("aa", "---------------倒计时链接5次===" + second)
                 initSocket()
             }
+
             override fun onFinish() {
-                Log.e("aa", "---------------onFinish===")
+//                Log.e("aa", "---------------onFinish===")
                 onLinkStatus?.onLinkedClose()
             }
         })
@@ -146,16 +146,6 @@ class IMService : Service(), ServiceListener {
         }
     }
 
-    /**
-     * 发送心跳
-     */
-    private fun sendPing() {
-        try {
-            client?.sendPing()
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-    }
 
     /**
      * 发送新消息
@@ -163,8 +153,27 @@ class IMService : Service(), ServiceListener {
      * message 消息内容
      */
     fun sendNewMsg(message: String) {
+        if (client?.readyState != ReadyState.OPEN) {
+            return
+        }
         if (client != null && client?.isOpen!!) {
+            try {
             client?.send(message)
+            } catch (e: java.lang.Exception) {
+            }
+        }
+    }
+
+    /**
+     * 发送心跳
+     */
+    private fun sendPing() {
+        if (client?.readyState != ReadyState.OPEN) {
+            return
+        }
+        try {
+            client?.sendPing()
+        } catch (e: java.lang.Exception) {
         }
     }
 
@@ -228,5 +237,12 @@ class IMService : Service(), ServiceListener {
      */
     fun setOnLinkStatus(onLinkStatus: onLinkStatus) {
         this.onLinkStatus = onLinkStatus
+    }
+
+    /**
+     * 异常导致断开Service处理
+     */
+    fun disconnectionService() {
+        client?.close();
     }
 }
