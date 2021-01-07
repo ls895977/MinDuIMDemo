@@ -13,6 +13,7 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
+import com.css.im_kit.http.bean.ChangeServiceAccountBean
 import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.model.conversation.SGConversation
@@ -155,6 +156,24 @@ object IMChatRoomManager {
 
         override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
 
+        }
+
+        override fun on201Message(message: Message) {
+            try {
+                val bean = gson.fromJson(message.extend, ChangeServiceAccountBean::class.java)
+                conversation?.let {
+                    if (it.shop_id == bean.shop_id.toString()) {
+                        it.chat_account = bean.account
+                        it.chat_account_info?.user_type = bean.user_type.toString()
+                        it.chat_account_info?.avatar = bean.avatar
+                        it.chat_account_info?.nickname = bean.nickname
+                        it.chat_account_info?.account = bean.account
+                        it.chat_account_info?.toDBUserInfo()?.let { it1 -> IMUserInfoManager.insertOrUpdateUser(it1) }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
     }

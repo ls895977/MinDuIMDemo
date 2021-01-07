@@ -3,10 +3,13 @@ package com.css.im_kit.manager
 import com.css.im_kit.IMManager
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
+import com.css.im_kit.db.bean.Message
+import com.css.im_kit.db.gson
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
+import com.css.im_kit.http.bean.ChangeServiceAccountBean
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
@@ -138,6 +141,24 @@ object IMConversationManager {
                     sgConversationCallbacks.forEach { callback ->
                         callback.onConversationList(it)
                     }
+                }
+            }
+        }
+
+        override fun on201Message(message: Message) {
+            val bean = gson.fromJson(message.extend, ChangeServiceAccountBean::class.java)
+            sgConversations.map {
+                if (it.shop_id == bean.shop_id.toString()) {
+                    it.chat_account = bean.account
+                    it.chat_account_info?.user_type = bean.user_type.toString()
+                    it.chat_account_info?.avatar = bean.avatar
+                    it.chat_account_info?.nickname = bean.nickname
+                    it.chat_account_info?.account = bean.account
+                }
+                return@map it
+            }.let {
+                sgConversationCallbacks.forEach { callback ->
+                    callback.onConversationList(it)
                 }
             }
         }

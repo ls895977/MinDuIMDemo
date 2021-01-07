@@ -22,5 +22,6 @@ enum class DBMessageType(val value: Int): Serializable {
     CLIENTRECEIPT(100),
     SERVERRECEIPT(101),
     WELCOME (102),//客服欢迎消息
-    NONBUSINESSHOURS(103)//非营业时间回复消息
+    NONBUSINESSHOURS(103),//非营业时间回复消息
+    REASSIGNCCUSTOMERSERVICE(201)//重新分配客服
 }

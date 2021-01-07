@@ -2,6 +2,9 @@ package com.css.im_kit.http.bean
 
 import com.css.im_kit.db.bean.UserInfo
 import java.io.Serializable
+import androidx.annotation.Keep
+import com.css.im_kit.model.conversation.Shop
+
 
 data class MessageHistoryBack(
         var current_page: String,//当前页
@@ -40,3 +43,14 @@ data class HttpMessage(
 data class Extend(
         val shop_id: String
 ) : Serializable
+
+@Keep
+data class ChangeServiceAccountBean(
+    val account: String,
+    val avatar: String,
+    val chat_shop: Shop,
+    val id: Int,
+    val nickname: String,
+    val shop_id: Int,
+    val user_type: Int
+)

@@ -53,6 +53,11 @@ object IMMessageManager {
                                     changeMessageStatus(receiveMessage)
                                     return@let null
                                 }
+                                DBMessageType.REASSIGNCCUSTOMERSERVICE.value -> {
+                                    messageCallback.forEach {
+                                        it.on201Message(receiveMessage.toDBMessage())
+                                    }
+                                }
                                 DBMessageType.WELCOME.value,
                                 DBMessageType.NONBUSINESSHOURS.value -> {
                                     val message = receiveMessage.toDBMessage()
@@ -108,7 +113,7 @@ object IMMessageManager {
     @Synchronized
     fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
         messageCallback.forEach {
-            it.unreadMessageNumCount(shop_id, account, chat_account,size, isClear)
+            it.unreadMessageNumCount(shop_id, account, chat_account, size, isClear)
         }
     }
 

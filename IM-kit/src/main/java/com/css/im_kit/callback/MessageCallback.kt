@@ -1,5 +1,6 @@
 package com.css.im_kit.callback
 
+import com.css.im_kit.db.bean.Message
 import com.css.im_kit.model.message.SGMessage
 
 interface MessageCallback {
@@ -18,4 +19,9 @@ interface MessageCallback {
      * 未读数量计算
      */
     fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean)
+
+    /**
+     * 重新分配客服
+     */
+    fun on201Message(message: Message)
 }
