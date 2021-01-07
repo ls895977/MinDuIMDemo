@@ -102,6 +102,10 @@ object IMChatRoomManager {
                         } else {
                             it.userInfo?.avatar = conversation?.shop?.log
                             it.userInfo?.user_type = "2"
+                            if (it.userInfo?.nickname.isNullOrEmpty()) {
+                                it.userInfo?.nickname = conversation?.shop?.shop_name
+                            }
+
                         }
                         if (it.messageBody?.isSelf == false) {
                             ids.add(it.messageId)
@@ -112,7 +116,7 @@ object IMChatRoomManager {
                     }
 
                     if (!ids.isNullOrEmpty()) {
-                        HttpManager.changRead(conversation!!,ids)
+                        HttpManager.changRead(conversation!!, ids)
                     }
                 }
             }

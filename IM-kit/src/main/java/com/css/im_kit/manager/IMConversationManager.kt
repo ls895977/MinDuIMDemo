@@ -120,7 +120,7 @@ object IMConversationManager {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
-                                it.unread_account
+                                it.unread_account - size
                             }
                         }
 
@@ -129,7 +129,7 @@ object IMConversationManager {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
-                                it.unread_account
+                                it.unread_account - size
                             }
                         }
                     }
