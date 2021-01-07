@@ -77,8 +77,8 @@ object IMMessageManager {
                                         receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
                                         receiveMessage.send_account = IMManager.account ?: ""
                                         receiveMessage.receive_account = 0.toString()
-                                        "收到消息回执:${receiveMessage.toJsonString()}".log()
-                                        MessageServiceUtils.sendNewMsg(receiveMessage.toJsonString())
+                                        "收到消息回执:${receiveMessage.toSendMessageBean().toJsonString()}".log()
+                                        MessageServiceUtils.sendNewMsg(receiveMessage.toSendMessageBean().toJsonString())
                                     }
                                     return@let message
                                 }

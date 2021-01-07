@@ -28,7 +28,7 @@ data class ReceiveMessageBean(
         var time: Long,
         var extend: HashMap<String, String>?
 
-): Serializable {
+) : Serializable {
 
     /**
     var m_id: String,//消息id
@@ -58,6 +58,29 @@ data class ReceiveMessageBean(
                 receive_time = System.currentTimeMillis(),
                 message = content,
                 extend = gson.toJson(extend)
+        )
+    }
+
+    /**
+     *    var m_id: String,
+    var type: Int,
+    var source: Int,
+    var receive_account: String,
+    var send_account: String,
+    var content: String,
+    var time: Long,
+    var extend: HashMap<String,String>
+     */
+    fun toSendMessageBean(): SendMessageBean {
+        return SendMessageBean(
+                m_id = m_id,
+                type = type,
+                source = source,
+                send_account = send_account,
+                receive_account = receive_account,
+                content = content,
+                time = time,
+                extend = extend ?: hashMapOf()
         )
     }
 
