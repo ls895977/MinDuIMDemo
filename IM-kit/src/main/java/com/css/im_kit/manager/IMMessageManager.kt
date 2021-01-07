@@ -234,15 +234,15 @@ object IMMessageManager {
     @Synchronized
     fun saveMessages(messages: List<Message>, isSelf: Boolean, send: Boolean) {
         ioScope.launch {
-            async {
+            let {
                 val sgMessages = arrayListOf<SGMessage>()
                 messages.forEach {
                     saveMessage2DB(it, isSelf)?.let { it1 ->
                         sgMessages.add(it1)
                     }
                 }
-                return@async sgMessages
-            }.await().let { msg ->
+                return@let sgMessages
+            }.let { msg ->
                 messageCallback.forEach {
                     it.onReceiveMessage(msg)
                 }
