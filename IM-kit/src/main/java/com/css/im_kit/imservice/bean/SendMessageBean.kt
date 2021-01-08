@@ -11,7 +11,7 @@ class SendMessageBean(
         var send_account: String,
         var content: String,
         var time: Long,
-        var extend: HashMap<String,String>
+        var extend: HashMap<String,Any>
 
 ) : Serializable {
     fun toJsonString(): String {

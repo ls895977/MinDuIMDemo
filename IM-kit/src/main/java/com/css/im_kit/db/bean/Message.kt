@@ -50,7 +50,7 @@ data class Message(
                 send_account,
                 message,
                 send_time.long10(),
-                extend as HashMap<String, String>)
+                extend as HashMap<String, Any>)
     }
 }
 

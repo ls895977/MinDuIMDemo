@@ -26,7 +26,7 @@ data class ReceiveMessageBean(
         var send_account: String,
         var content: String,
         var time: Long,
-        var extend: HashMap<String, String>?
+        var extend: HashMap<String, Any>?
 
 ) : Serializable {
 
@@ -49,7 +49,7 @@ data class ReceiveMessageBean(
                 m_id = m_id,
                 send_account = send_account,
                 receive_account = receive_account,
-                shop_id = extend?.get("shop_id") ?: "",
+                shop_id = extend?.get("shop_id").toString(),
                 source = source,
                 message_type = type,
                 read_status = 1,

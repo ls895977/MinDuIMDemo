@@ -134,7 +134,7 @@ object IMMessageManager {
                 MessageRepository.changeMessageSendType(it, message.m_id)
             }
             messageCallback.forEach {
-                it.onSendMessageReturn(message.extend?.get("shop_id") ?: "", message.m_id)
+                it.onSendMessageReturn(message.extend?.get("shop_id").toString(), message.m_id)
             }
         }
     }
