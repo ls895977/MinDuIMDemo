@@ -118,11 +118,8 @@ class IMService : Service(), ServiceListener {
      * 创建init
      */
     private fun initSocket() {
-        Thread {
-            kotlin.run {
-                socketRun()
-            }
-        }.start()
+
+        socketRun()
     }
 
     // TODO 连接上WIFI或蜂窝网络的时候回调
@@ -132,19 +129,26 @@ class IMService : Service(), ServiceListener {
             initSocket()
         }
     }
-
     /**
      *链接socket
      */
     private fun socketRun() {
-        if (client == null) {
-            val uri: URI = URI.create(serViceUrl)
-            client = JWebSClient(uri)
-            client?.connectionLostTimeout = 6
-            client?.setSocketListener(this)
-            client?.connectBlocking()
-        } else {
-            client?.reconnectBlocking()
+        try {
+            if (client == null) {
+                if (TextUtils.isEmpty(serViceUrl)) {
+                    return
+                }
+                val uri: URI = URI.create(serViceUrl)
+                client = JWebSClient(uri)
+                client?.connectionLostTimeout = 6
+                client?.setSocketListener(this)
+                client?.connectBlocking()
+            } else {
+                client?.reconnectBlocking()
+            }
+        } catch (e: java.lang.Exception) {
+            onLinkStatus?.onLinkedSuccess()
+            socketStatus = 3
         }
     }
 
@@ -176,6 +180,8 @@ class IMService : Service(), ServiceListener {
         try {
             client?.sendPing()
         } catch (e: java.lang.Exception) {
+            onLinkStatus?.onLinkedSuccess()
+            socketStatus = 3
         }
     }
 
