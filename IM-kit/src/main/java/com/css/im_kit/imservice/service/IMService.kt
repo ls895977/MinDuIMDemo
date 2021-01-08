@@ -1,4 +1,5 @@
 package com.css.im_kit.imservice.service
+
 import android.app.Service
 import android.content.Intent
 import android.os.Binder
@@ -6,11 +7,12 @@ import android.os.IBinder
 import android.text.TextUtils
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
+import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
+import com.css.im_kit.imservice.coom.ServiceType
 import com.css.im_kit.imservice.interfacelinsterner.ServiceListener
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
-import com.css.im_kit.imservice.coom.ServiceType
 import com.css.im_kit.imservice.tool.CycleTimeUtils
 import com.google.gson.Gson
 import com.kongqw.network.monitor.NetworkMonitorManager
@@ -158,7 +160,7 @@ class IMService : Service(), ServiceListener {
         }
         if (client != null && client?.isOpen!!) {
             try {
-            client?.send(message)
+                client?.send(message)
             } catch (e: java.lang.Exception) {
             }
         }
@@ -198,7 +200,7 @@ class IMService : Service(), ServiceListener {
             ServiceType.collectMessageStats -> {//链接收到消息
                 imServiceStatus = true
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
-                if (msgBean.m_id == "0") {//通过数据反馈链接成功
+                if (msgBean.m_id == "0" && msgBean.type != DBMessageType.REASSIGNCCUSTOMERSERVICE.value) {//通过数据反馈链接成功
                     if (socketStatus != 1 && socketStatus != 2) {
                         onLinkStatus?.onLinkedSuccess()
                         socketStatus = event
