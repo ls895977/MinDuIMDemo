@@ -97,8 +97,6 @@ object HttpManager {
                         } else {
                             it.body()?.msg?.toast()
                         }
-                    } else {
-                        "用户信息修改失败".toast()
                     }
                     return@let null
                 }.let {
