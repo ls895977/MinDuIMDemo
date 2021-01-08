@@ -90,6 +90,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"
         android:layout_below="@+id/user_avatar"
-        android:background="@color/color_f3f3f3" />
+        android:background="@color/color_eeeeee" />
 
 </RelativeLayout>
