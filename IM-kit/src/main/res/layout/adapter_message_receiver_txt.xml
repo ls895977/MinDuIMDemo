@@ -49,6 +49,7 @@
             android:includeFontPadding="false"
             android:maxLength="10"
             android:singleLine="true"
+            android:paddingTop="@dimen/dp_5"
             android:text="sdasdsdadsda"
             android:textColor="@color/color_333333"
             android:textSize="@dimen/sp_12"
