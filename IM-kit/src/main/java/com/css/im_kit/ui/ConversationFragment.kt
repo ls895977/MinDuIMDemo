@@ -110,6 +110,8 @@ class ConversationFragment(private var conversation: SGConversation, private var
                 binding?.llPicView?.visibility = View.GONE
                 //滚动到底部
                 binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
+                //发送按钮展示与否
+                hideSendText()
             }
 
             override fun keyBoardHide(height: Int) {
@@ -125,6 +127,8 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     //滚动到底部
                     binding?.rvConversationList?.layoutManager?.scrollToPosition(0)
                 }
+                //发送按钮展示与否
+                hideSendText()
             }
         })
         //点击事件
@@ -161,14 +165,9 @@ class ConversationFragment(private var conversation: SGConversation, private var
 //            return@setOnItemLongClickListener false
 //        }
 
-        //输入区
+        //输入区（发送按钮展示与否）
         binding!!.etContent.addTextChangedListener {
-            val str = binding?.etContent?.text.toString()
-            if (str.trim().isNotEmpty()) {
-                binding?.tvTextSend?.visibility = View.VISIBLE
-            } else {
-                binding?.tvTextSend?.visibility = View.GONE
-            }
+            hideSendText()
         }
 
         //表情点击事件
@@ -350,7 +349,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                             binding?.rlMessage7?.visibility = View.VISIBLE
                             binding?.tvProductPrice?.text = "￥${productPrice}"
                             binding?.tvProductName?.text = productName
-                            binding?.ivProductImage?.let { IMGlideUtil.loadRound2Img(requireContext(), productImage, it, IMDensityUtils.dp2px(requireContext(), 8f)) }
+                            binding?.ivProductImage?.let { IMGlideUtil.loadRound4Img(requireContext(), productImage, it, IMDensityUtils.dp2px(requireContext(), 4f)) }
                         } else {
                             binding?.rlMessage7?.visibility = View.GONE
                         }
@@ -387,8 +386,18 @@ class ConversationFragment(private var conversation: SGConversation, private var
         picTag = false
         binding?.ivPic2?.setImageResource(R.mipmap.im_icon_send3)
         binding?.llPicView?.visibility = View.GONE
-        //隐藏发送按钮
-        binding?.tvTextSend?.visibility = View.GONE
+    }
+
+    /**
+     * 控制发送按钮展示与否
+     */
+    private fun hideSendText() {
+        val str = binding?.etContent?.text.toString()
+        if (str.trim().isNotEmpty()) {
+            binding?.tvTextSend?.visibility = View.VISIBLE
+        } else {
+            binding?.tvTextSend?.visibility = View.GONE
+        }
     }
 
     /**

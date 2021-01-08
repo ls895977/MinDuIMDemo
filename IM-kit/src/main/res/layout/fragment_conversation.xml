@@ -96,6 +96,8 @@
 
                 <TextView
                     android:id="@+id/tv_product_price"
+                    style="@style/DINAlternate"
+                    android:textStyle="bold"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/dp_30"
                     android:layout_marginRight="@dimen/dp_20"
@@ -105,14 +107,13 @@
                     android:singleLine="true"
                     android:text="¥499"
                     android:textColor="@color/color_f54f76"
-                    android:textSize="@dimen/sp_18"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/sp_18" />
 
                 <TextView
                     android:id="@+id/tv_product_send"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:background="@drawable/im_shape_f54f76_15dp"
+                    android:background="@drawable/shape_f54f76_ff5858_20dp"
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:paddingHorizontal="@dimen/dp_10"

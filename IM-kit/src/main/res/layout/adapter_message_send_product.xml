@@ -91,6 +91,7 @@
 
                 <TextView
                     android:id="@+id/tv_product_price"
+                    style="@style/DINAlternate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_8"
@@ -99,8 +100,7 @@
                     android:singleLine="true"
                     android:text="¥499"
                     android:textColor="@color/color_f54f76"
-                    android:textSize="@dimen/sp_18"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/sp_18" />
 
                 <TextView
                     android:id="@+id/tv_product_name"
