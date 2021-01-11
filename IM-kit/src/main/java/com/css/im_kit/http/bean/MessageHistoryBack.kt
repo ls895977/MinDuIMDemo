@@ -25,8 +25,8 @@ data class MessageHistoryItem(
         val updated_time: String,
         val data_state: String,
         val message: String,
-        val send_account_info: UserInfo,
-        val receive_account_info: UserInfo
+        val send_account_info: UserInfo?,
+        val receive_account_info: UserInfo?
 ) : Serializable
 
 data class HttpMessage(

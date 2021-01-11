@@ -160,10 +160,10 @@ object HttpManager {
             val userInfos = arrayListOf<UserInfo>()
             it.forEach { item ->
                 if (!userInfos.contains(item.send_account_info)) {
-                    userInfos.add(item.send_account_info)
+                    item.send_account_info?.let { it1 -> userInfos.add(it1) }
                 }
                 if (!userInfos.contains(item.receive_account_info)) {
-                    userInfos.add(item.receive_account_info)
+                    item.receive_account_info?.let { it1 -> userInfos.add(it1) }
                 }
             }
             UserInfoRepository.insertDatas(userInfos)
