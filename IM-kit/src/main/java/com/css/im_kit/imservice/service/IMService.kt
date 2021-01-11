@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
+import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
 import com.css.im_kit.imservice.bean.DBMessageType
@@ -118,8 +119,9 @@ class IMService : Service(), ServiceListener {
      * 创建init
      */
     private fun initSocket() {
-
-        socketRun()
+        ioScope.launch {
+            socketRun()
+        }
     }
 
     // TODO 连接上WIFI或蜂窝网络的时候回调
@@ -129,6 +131,7 @@ class IMService : Service(), ServiceListener {
             initSocket()
         }
     }
+
     /**
      *链接socket
      */
