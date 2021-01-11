@@ -12,6 +12,7 @@ import java.io.Serializable
 101	服务端收到消息回执
 102 客服欢迎消息
 103 非营业时间回复消息
+201 重新分配客服
  */
 enum class DBMessageType(val value: Int): Serializable {
     TEXT(1),
