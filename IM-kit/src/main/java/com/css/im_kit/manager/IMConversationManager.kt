@@ -102,6 +102,8 @@ object IMConversationManager {
                                 }
                             }
                         }
+                    }else{
+                        hasNewConversationCount++
                     }
                 }
                 if (hasNewConversationCount != messages.size) {
