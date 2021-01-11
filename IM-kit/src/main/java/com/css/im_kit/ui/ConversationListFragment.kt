@@ -91,7 +91,6 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     /**
      * 拿到数据了
      */
-    @Synchronized
     override fun onConversationList(sgConversation: List<SGConversation>) {
         this.conversationList.clear()
         this.conversationList.addAll(sgConversation)
