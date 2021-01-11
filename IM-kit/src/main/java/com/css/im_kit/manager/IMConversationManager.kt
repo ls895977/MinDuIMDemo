@@ -102,7 +102,7 @@ object IMConversationManager {
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         hasNewConversationCount++
                     }
                 }
@@ -197,12 +197,9 @@ object IMConversationManager {
                         }
                         sgConversations.add(sgConversation)
                     }
-                    uiScope.launch {
-                        sgConversationCallbacks.forEach { callback ->
-                            callback.onConversationList(sgConversations)
-                        }
+                    sgConversationCallbacks.forEach { callback ->
+                        callback.onConversationList(sgConversations)
                     }
-
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

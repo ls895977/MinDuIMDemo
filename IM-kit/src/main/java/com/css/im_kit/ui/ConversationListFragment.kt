@@ -5,11 +5,13 @@ import com.chad.library.adapter.base.BaseQuickAdapter
 import com.css.im_kit.R
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.databinding.FragmentConversationListBinding
+import com.css.im_kit.db.uiScope
 import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
+import kotlinx.coroutines.launch
 
 class ConversationListFragment(private var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
@@ -92,15 +94,17 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * 拿到数据了
      */
     override fun onConversationList(sgConversation: List<SGConversation>) {
-        this.conversationList.clear()
-        this.conversationList.addAll(sgConversation)
-        conversationListAdapter?.notifyDataSetChanged()
-        if (conversationList.isNullOrEmpty()) {
-            binding?.ivNoContent?.visibility = View.VISIBLE
-            binding?.tvNoContent?.visibility = View.VISIBLE
-        } else {
-            binding?.ivNoContent?.visibility = View.GONE
-            binding?.tvNoContent?.visibility = View.GONE
+        uiScope.launch {
+            conversationList.clear()
+            conversationList.addAll(sgConversation)
+            conversationListAdapter?.notifyDataSetChanged()
+            if (conversationList.isNullOrEmpty()) {
+                binding?.ivNoContent?.visibility = View.VISIBLE
+                binding?.tvNoContent?.visibility = View.VISIBLE
+            } else {
+                binding?.ivNoContent?.visibility = View.GONE
+                binding?.tvNoContent?.visibility = View.GONE
+            }
         }
     }
 
