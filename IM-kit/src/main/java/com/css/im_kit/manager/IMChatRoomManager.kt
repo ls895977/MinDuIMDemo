@@ -367,7 +367,7 @@ object IMChatRoomManager {
                         send_time = time,
                         receive_time = time,
                         message = "1111",
-                        source = 1,
+                        source = 6,
                         extend = gson.toJson(extend)
                 ))
             }
