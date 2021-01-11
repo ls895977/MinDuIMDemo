@@ -20,6 +20,7 @@ import com.google.gson.Gson
 import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.java_websocket.enums.ReadyState
 import java.net.URI
@@ -146,7 +147,11 @@ class IMService : Service(), ServiceListener {
                 client?.setSocketListener(this)
                 client?.connectBlocking()
             } else {
-                client?.reconnectBlocking()
+                ioScope.launch {
+                    async {
+                        client?.reconnectBlocking()
+                    }
+                }
             }
         } catch (e: java.lang.Exception) {
             onLinkStatus?.onLinkedSuccess()
