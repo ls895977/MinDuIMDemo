@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.text.TextUtils
+import android.util.Log
 import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.imservice.JWebSClient
@@ -97,12 +98,10 @@ class IMService : Service(), ServiceListener {
     private fun runSocket5() {
         CycleTimeUtils.onStartTimeSeconds(5, object : CycleTimeUtils.OnCountDownCallBack {
             override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
-//                Log.e("aa", "---------------倒计时链接5次===" + second)
                 initSocket()
             }
 
             override fun onFinish() {
-//                Log.e("aa", "---------------onFinish===")
                 onLinkStatus?.onLinkedClose()
             }
         })
@@ -181,7 +180,9 @@ class IMService : Service(), ServiceListener {
             return
         }
         try {
-            client?.sendPing()
+            ioScope.launch {
+                client?.sendPing()
+            }
         } catch (e: java.lang.Exception) {
             onLinkStatus?.onLinkedSuccess()
             socketStatus = 3
