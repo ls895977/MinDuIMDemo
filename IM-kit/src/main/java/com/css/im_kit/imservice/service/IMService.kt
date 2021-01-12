@@ -21,11 +21,9 @@ import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
 import kotlinx.coroutines.launch
-import org.java_websocket.WebSocket
-import org.java_websocket.WebSocketListener
 import org.java_websocket.enums.ReadyState
-import org.java_websocket.framing.Framedata
 import java.net.URI
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -89,24 +87,19 @@ class IMService : Service(), ServiceListener {
      * 心跳中
      */
     private fun startTimeSocket() {
-        CycleTimeUtils.startTimer(8, object : CycleTimeUtils.onBackTimer {
-            override fun backRunTimer() {
-                sendPing()
-            }
-        })
+
     }
 
-    /**
-     * 因网络原因导致socket断开循环重试3次链接处理
-     */
-    private fun runSocket5() {
-        CycleTimeUtils.onStartTimeSeconds(3, object : CycleTimeUtils.OnCountDownCallBack {
-            override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
-                initSocket()
-            }
+    var runSocketNum = 0
 
-            override fun onFinish() {
-                onLinkStatus?.onLinkedClose()
+    /**
+     * 因网络原因导致socket断开循环链接
+     */
+    private fun runSocket() {
+        CycleTimeUtils.startTimer(8, object : CycleTimeUtils.onBackTimer {
+            override fun backRunTimer() {
+                Log.e("aa", "-----------重连")
+                initSocket()
             }
         })
     }
@@ -118,6 +111,15 @@ class IMService : Service(), ServiceListener {
         CycleTimeUtils.onDestroy()
     }
 
+
+    // TODO 连接上WIFI或蜂窝网络的时候回调
+    @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
+    fun onNetWorkStateChange2(networkState: NetworkState) {
+        if (serViceUrl.isNotEmpty() && socketStatus != 1 && socketStatus != 2) {
+            initSocket()
+        }
+    }
+
     /**
      * 创建init
      */
@@ -127,54 +129,50 @@ class IMService : Service(), ServiceListener {
         }
     }
 
-    // TODO 连接上WIFI或蜂窝网络的时候回调
-    @NetworkMonitor(monitorFilter = [NetworkState.WIFI, NetworkState.CELLULAR])
-    fun onNetWorkStateChange2(networkState: NetworkState) {
-        if (serViceUrl.isEmpty() && socketStatus != 1 && socketStatus != 2) {
-            initSocket()
-        }
-    }
-
     /**
      *链接socket
      */
     private fun socketRun() {
-        try {
-            if (client == null) {
-                if (TextUtils.isEmpty(serViceUrl)) {
-                    return
-                }
+        if (client == null) {
+            if (TextUtils.isEmpty(serViceUrl)) {
+                return
+            }
+            try {
                 val uri: URI = URI.create(serViceUrl)
                 client = JWebSClient(uri)
-                client?.connectionLostTimeout = 6
                 client?.setSocketListener(this)
-                client?.connectBlocking()
-            } else {
-                if (client?.isOpen == false) {
-                    if (client?.readyState?.equals(ReadyState.NOT_YET_CONNECTED)!!) {
-                        try {
-                            client?.connectBlocking()
-                        } catch (e: Exception) {
-                            onLinkStatus?.onLinkedSuccess()
-                            socketStatus = 3
-                        }
-                    } else if (client?.readyState?.equals(ReadyState.CLOSING)!! || client?.readyState?.equals(ReadyState.CLOSED)!!) {
-                        try {
-                            client?.reconnectBlocking()
-                        } catch (e: InterruptedException) {
-                            e.printStackTrace()
-                            onLinkStatus?.onLinkedSuccess()
-                            socketStatus = 3
-                        }
-                    }
-                }
+                client?.connectBlocking(6, TimeUnit.SECONDS)
+            } catch (e: InterruptedException) {
+                onLinkStatus?.onLinkedClose()
+                socketStatus = 3
             }
-        } catch (e: java.lang.Exception) {
-            onLinkStatus?.onLinkedSuccess()
-            socketStatus = 3
+        } else {
+            try {
+                client?.reconnect()
+            } catch (e: InterruptedException) {
+                onLinkStatus?.onLinkedClose()
+                socketStatus = 3
+            }
+//                if (client?.isOpen == false) {
+//                    if (client?.readyState?.equals(ReadyState.NOT_YET_CONNECTED)!!) {
+//                        try {
+//                            client?.connectBlocking()
+//                        } catch (e: Exception) {
+//                            onLinkStatus?.onLinkedClose()
+//                            socketStatus = 3
+//                        }
+//                    } else if (client?.readyState?.equals(ReadyState.CLOSING)!! || client?.readyState?.equals(ReadyState.CLOSED)!!) {
+//                        try {
+//                            client?.reconnectBlocking()
+//                        } catch (e: InterruptedException) {
+//                            e.printStackTrace()
+//                            onLinkStatus?.onLinkedClose()
+//                            socketStatus = 3
+//                        }
+//                    }
+//                }
         }
     }
-
 
     /**
      * 发送新消息
@@ -183,7 +181,7 @@ class IMService : Service(), ServiceListener {
      */
     fun sendNewMsg(message: String) {
         if (client?.readyState != ReadyState.OPEN) {
-            onLinkStatus?.onLinkedSuccess()
+            onLinkStatus?.onLinkedClose()
             socketStatus = 3
             return
         }
@@ -191,37 +189,36 @@ class IMService : Service(), ServiceListener {
             try {
                 client?.send(message)
             } catch (e: java.lang.Exception) {
-                onLinkStatus?.onLinkedSuccess()
+                onLinkStatus?.onLinkedClose()
                 socketStatus = 3
             }
         }
     }
 
-    var pongStats = true//心跳开关
-
-    /**
-     * 发送心跳
-     */
-    private fun sendPing() {
-        if (client?.readyState != ReadyState.OPEN) {
-            return
-        }
-        if (!pongStats) {
-            onLinkStatus?.onLinkedSuccess()
-            socketStatus = 3
-//            CycleTimeUtils.canCelTimer()//执行心跳关闭
-            return
-        }
-        try {
-            ioScope.launch {
-                client?.sendPing()
-                pongStats = false
-            }
-        } catch (e: java.lang.Exception) {
-            onLinkStatus?.onLinkedSuccess()
-            socketStatus = 3
-        }
-    }
+//    var pongStats = true//心跳开关
+//    /**
+//     * 发送心跳
+//     */
+//    private fun sendPing() {
+//        if (client?.readyState != ReadyState.OPEN) {
+//            return
+//        }
+//        if (!pongStats) {
+//            onLinkStatus?.onLinkedSuccess()
+//            socketStatus = 3
+////            CycleTimeUtils.canCelTimer()//执行心跳关闭
+//            return
+//        }
+//        try {
+//            ioScope.launch {
+//                client?.sendPing()
+//                pongStats = false
+//            }
+//        } catch (e: java.lang.Exception) {
+//            onLinkStatus?.onLinkedSuccess()
+//            socketStatus = 3
+//        }
+//    }
 
     /**
      * 重新链接
@@ -231,6 +228,7 @@ class IMService : Service(), ServiceListener {
         if (TextUtils.isEmpty(serViceUrl)) {
             return
         }
+        runSocketNum=0
         socketRun()
     }
 
@@ -242,6 +240,7 @@ class IMService : Service(), ServiceListener {
             ServiceType.openMessageStats -> {//已链接
             }
             ServiceType.collectMessageStats -> {//链接收到消息
+                runSocketNum = 0
                 imServiceStatus = true
                 val msgBean = Gson().fromJson(msg, ReceiveMessageBean::class.java)
                 if (msgBean.m_id == "0" && msgBean.type != DBMessageType.REASSIGNCCUSTOMERSERVICE.value) {//通过数据反馈链接成功
@@ -252,25 +251,24 @@ class IMService : Service(), ServiceListener {
                 } else {
                     onResultMessage?.onMessage(msg)
                 }
-//                startTimeSocket()//执行心跳
-                colsSocket5()//执行5次链接取消
+                CycleTimeUtils.canCelTimer()//执行重连关闭
             }
             ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
                 imServiceStatus = false
                 //网络链接判断处理
                 if (socketStatus != 3 && socketStatus != 4) {
                     uiScope.launch {
-                        runSocket5()//执行5次链接
+                        runSocket()//执行5次链接
                     }
                     onLinkStatus?.onLinkedClose()
                     socketStatus = event
+                    Log.e("aa", "-----------链接关闭或者链接发生错误---")
                 }
-//                CycleTimeUtils.canCelTimer()//执行心跳关闭
+                if (runSocketNum == 3) {
+                    onLinkStatus?.onLinkedClose()
+                }
+                runSocketNum++
             }
-//            ServiceType.websocketPongStats -> {//收到服务器Pong
-//                pongStats = true
-//                Log.e("aa", "------------收到服务回应==WebsocketPong=="+msg)
-//            }
         }
     }
 
@@ -289,10 +287,4 @@ class IMService : Service(), ServiceListener {
         this.onLinkStatus = onLinkStatus
     }
 
-    /**
-     * 异常导致断开Service处理
-     */
-    fun disconnectionService() {
-        client?.close();
-    }
 }
