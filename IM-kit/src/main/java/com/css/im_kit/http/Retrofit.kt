@@ -14,10 +14,9 @@ object Retrofit {
     var retrofit: Retrofit? = null
     var api: Api? = null
     fun initRetrofit() {
-        val okHttpClient = getOkHttpClient()
         retrofit = Retrofit.Builder()
                 .baseUrl(IMManager.baseUrl)
-                .client(okHttpClient)
+                .client(getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         api = retrofit?.create(Api::class.java)
@@ -35,28 +34,35 @@ object Retrofit {
         }
     }
 
+    var httpClient: OkHttpClient? = null
+
     private fun getOkHttpClient(): OkHttpClient {
-        return if (BuildConfig.DEBUG) {
-            OkHttpClient().newBuilder()
-                    .readTimeout(20000, TimeUnit.MILLISECONDS)
-                    .connectTimeout(20000, TimeUnit.MILLISECONDS)
-                    .writeTimeout(20000, TimeUnit.MILLISECONDS)
-                    .retryOnConnectionFailure(true)
-                    //设置Header
-                    .addInterceptor(getInterceptor())
-                    .addInterceptor(getHeaderInterceptor())
-                    .build()
+        if (httpClient == null) {
+            return if (BuildConfig.DEBUG) {
+                OkHttpClient().newBuilder()
+                        .readTimeout(20000, TimeUnit.MILLISECONDS)
+                        .connectTimeout(20000, TimeUnit.MILLISECONDS)
+                        .writeTimeout(20000, TimeUnit.MILLISECONDS)
+                        .retryOnConnectionFailure(true)
+                        //设置Header
+                        .addInterceptor(getInterceptor())
+                        .addInterceptor(getHeaderInterceptor())
+                        .build()
+            } else {
+                OkHttpClient().newBuilder()
+                        .readTimeout(20000, TimeUnit.MILLISECONDS)
+                        .connectTimeout(20000, TimeUnit.MILLISECONDS)
+                        .writeTimeout(20000, TimeUnit.MILLISECONDS)
+                        .retryOnConnectionFailure(true)
+                        .addInterceptor(getInterceptor())
+                        .addInterceptor(getHeaderInterceptor())
+                        //设置Header
+                        .build()
+            }.also { httpClient = it }
         } else {
-            OkHttpClient().newBuilder()
-                    .readTimeout(20000, TimeUnit.MILLISECONDS)
-                    .connectTimeout(20000, TimeUnit.MILLISECONDS)
-                    .writeTimeout(20000, TimeUnit.MILLISECONDS)
-                    .retryOnConnectionFailure(true)
-                    .addInterceptor(getHeaderInterceptor())
-                    .addInterceptor(getInterceptor())
-                    //设置Header
-                    .build()
+            return httpClient!!
         }
+
     }
 
     /**
