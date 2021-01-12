@@ -91,21 +91,21 @@ object IMConversationManager {
                 var hasNewConversationCount = 0
                 messages.forEachIndexed { index, message ->
                     if (message.type != MessageType.WELCOME) {
-                        sgConversations.forEach {
-                            if (messageHasConversation(it, message)) {
+                        sgConversations.map { sgConversation ->
+                            if (messageHasConversation(sgConversation, message)) {
                                 hasNewConversationCount++
                                 if (message.messageBody?.isSelf == false) {
-                                    it.unread_account = it.unread_account + 1
+                                    sgConversation.unread_account = sgConversation.unread_account.plus(1)
                                 }
-                                it.newMessage = message
-                                sgConversationCallbacks.forEach { callback ->
-                                    callback.onConversationList(sgConversations)
-                                }
+                                sgConversation.newMessage = message
                             }
                         }
                     } else {
                         hasNewConversationCount++
                     }
+                }
+                sgConversationCallbacks.map { callback ->
+                    callback.onConversationList(sgConversations)
                 }
                 if (hasNewConversationCount != messages.size) {
                     integrationConversation()
