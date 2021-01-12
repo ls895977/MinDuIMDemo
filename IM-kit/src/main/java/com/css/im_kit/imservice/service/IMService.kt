@@ -150,7 +150,6 @@ class IMService : Service(), ServiceListener {
             try {
                 client?.reconnect()
             } catch (e: InterruptedException) {
-                e.printStackTrace()
                 onLinkStatus?.onLinkedClose()
                 socketStatus = 3
             }
