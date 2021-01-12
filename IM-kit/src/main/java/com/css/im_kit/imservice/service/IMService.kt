@@ -20,10 +20,13 @@ import com.google.gson.Gson
 import com.kongqw.network.monitor.NetworkMonitorManager
 import com.kongqw.network.monitor.enums.NetworkState
 import com.kongqw.network.monitor.interfaces.NetworkMonitor
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.java_websocket.WebSocket
+import org.java_websocket.WebSocketListener
 import org.java_websocket.enums.ReadyState
+import org.java_websocket.framing.Framedata
 import java.net.URI
+
 
 /**
  * socket后台服务
@@ -190,6 +193,8 @@ class IMService : Service(), ServiceListener {
         }
     }
 
+    var pongStats = true//心跳开关
+
     /**
      * 发送心跳
      */
@@ -197,9 +202,18 @@ class IMService : Service(), ServiceListener {
         if (client?.readyState != ReadyState.OPEN) {
             return
         }
+        if (!pongStats) {
+            onLinkStatus?.onLinkedSuccess()
+            socketStatus = 3
+            CycleTimeUtils.canCelTimer()//执行心跳关闭
+//            Log.e("aa", "------------已断开Ping==")
+            return
+        }
         try {
             ioScope.launch {
                 client?.sendPing()
+                pongStats = false
+//                Log.e("aa", "------------发送给服务Ping==")
             }
         } catch (e: java.lang.Exception) {
             onLinkStatus?.onLinkedSuccess()
@@ -250,6 +264,10 @@ class IMService : Service(), ServiceListener {
                     socketStatus = event
                 }
                 CycleTimeUtils.canCelTimer()//执行心跳关闭
+            }
+            ServiceType.websocketPongStats -> {//收到服务器Pong
+                pongStats = true
+//                Log.e("aa", "------------收到服务回应==WebsocketPong")
             }
         }
     }
