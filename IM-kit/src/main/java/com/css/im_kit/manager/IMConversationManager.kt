@@ -88,9 +88,9 @@ object IMConversationManager {
         override fun onReceiveMessage(messages: MutableList<SGMessage>) {
             uiScope.launch {
                 var hasNewConversationCount = 0
-                messages.forEachIndexed { index, message ->
-                    if (message.type != MessageType.WELCOME) {
-                        sgConversations.forEach {
+                sgConversations.map {
+                    messages.forEachIndexed { index, message ->
+                        if (message.type != MessageType.WELCOME) {
                             if (messageHasConversation(it, message)) {
                                 hasNewConversationCount++
                                 if (message.messageBody?.isSelf == false) {
@@ -98,14 +98,19 @@ object IMConversationManager {
                                 }
                                 it.newMessage = message
                             }
+                        } else {
+                            hasNewConversationCount++
                         }
-                    } else {
-                        hasNewConversationCount++
+                    }
+                    return@map it
+                }.let {
+                    sgConversations.clear()
+                    sgConversations.addAll(it)
+                    sgConversationCallbacks.forEach { callback ->
+                        callback.onConversationList(sgConversations)
                     }
                 }
-                sgConversationCallbacks.forEach { callback ->
-                    callback.onConversationList(sgConversations)
-                }
+
                 if (hasNewConversationCount != messages.size) {
                     integrationConversation()
                 }
