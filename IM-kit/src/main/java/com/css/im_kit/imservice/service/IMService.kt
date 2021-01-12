@@ -71,15 +71,16 @@ class IMService : Service(), ServiceListener {
      * 断开链接
      */
     private fun closeSocket() {
-        try {
-            if (null != client) {
-                client?.closeBlocking()
-                client?.close()
+        ioScope.launch {
+            try {
+                if (null != client) {
+                    client?.closeBlocking()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                client = null
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            client = null
         }
     }
 
