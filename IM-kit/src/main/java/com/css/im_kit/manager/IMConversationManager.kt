@@ -93,7 +93,7 @@ object IMConversationManager {
                     if (message.type != MessageType.WELCOME) {
                         sgConversations.map { sgConversation ->
                             if (messageHasConversation(sgConversation, message)) {
-                                hasNewConversationCount++
+                                hasNewConversationCount = hasNewConversationCount.plus(1)
                                 if (message.messageBody?.isSelf == false) {
                                     sgConversation.unread_account = sgConversation.unread_account.plus(1)
                                 }
@@ -101,7 +101,7 @@ object IMConversationManager {
                             }
                         }
                     } else {
-                        hasNewConversationCount++
+                        hasNewConversationCount = hasNewConversationCount.plus(1)
                     }
                 }
                 sgConversationCallbacks.map { callback ->
