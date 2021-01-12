@@ -66,6 +66,7 @@ object IMConversationManager {
     /**
      * 判断新信息是否有会话
      */
+    @Synchronized
     private fun messageHasConversation(conversation: SGConversation, message: SGMessage): Boolean {
         if (IMManager.isBusiness) {
             if ((conversation.account == message.messageBody?.sendAccount && conversation.chat_account == message.messageBody?.receiveAccount) ||
