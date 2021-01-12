@@ -147,9 +147,22 @@ class IMService : Service(), ServiceListener {
                 client?.setSocketListener(this)
                 client?.connectBlocking()
             } else {
-                ioScope.launch {
-                    async {
-                        client?.reconnectBlocking()
+                if (client?.isOpen == false) {
+                    if (client?.readyState?.equals(ReadyState.NOT_YET_CONNECTED)!!) {
+                        try {
+                            client?.connectBlocking()
+                        } catch (e: Exception) {
+                            onLinkStatus?.onLinkedSuccess()
+                            socketStatus = 3
+                        }
+                    } else if (client?.readyState?.equals(ReadyState.CLOSING)!! || client?.readyState?.equals(ReadyState.CLOSED)!!) {
+                        try {
+                            client?.reconnectBlocking()
+                        } catch (e: InterruptedException) {
+                            e.printStackTrace()
+                            onLinkStatus?.onLinkedSuccess()
+                            socketStatus = 3
+                        }
                     }
                 }
             }
