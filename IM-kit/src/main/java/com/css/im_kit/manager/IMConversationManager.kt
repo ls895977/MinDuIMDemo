@@ -16,6 +16,7 @@ import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
@@ -108,6 +109,7 @@ object IMConversationManager {
                     callback.onConversationList(sgConversations)
                 }
                 if (hasNewConversationCount != messages.size) {
+                    delay(1000)
                     integrationConversation()
                 }
             }
