@@ -94,8 +94,6 @@ object HttpManager {
                     if (it.isSuccessful) {
                         if (it.body()?.code == "20000") {
                             return@let sgUserInfo
-                        } else {
-                            it.body()?.msg?.toast()
                         }
                     }
                     return@let null

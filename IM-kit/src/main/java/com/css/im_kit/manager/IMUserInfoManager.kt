@@ -29,19 +29,7 @@ object IMUserInfoManager {
     fun changeName(userName: String) {
         ioScope.launch {
             IMManager.account?.let {
-                val userInfo = UserInfoRepository.loadById(it)
-                userInfo?.let { user ->
-                    user.nickname = userName
-                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
-                        override fun success(sgUserInfo: SGUserInfo) {
-                            changeName(sgUserInfo.nickname ?: "", it)
-                        }
-
-                        override fun fail() {
-
-                        }
-                    })
-                }
+                changeName(userName, it)
             }
         }
     }
@@ -64,19 +52,7 @@ object IMUserInfoManager {
     fun changeAvatar(avatar: String) {
         ioScope.launch {
             IMManager.account?.let {
-                val userInfo = UserInfoRepository.loadById(it)
-                userInfo?.let { user ->
-                    user.avatar = avatar
-                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
-                        override fun success(sgUserInfo: SGUserInfo) {
-                            changeAvatar(sgUserInfo.avatar ?: "", it)
-                        }
-
-                        override fun fail() {
-
-                        }
-                    })
-                }
+                changeAvatar(avatar ?: "", it)
             }
         }
     }
@@ -133,15 +109,7 @@ object IMUserInfoManager {
                         return@let user
                     }
                 }?.let { user ->
-                    HttpManager.modifyUserInfo(SGUserInfo.format(user), object : HttpModifyUserInfoCallBack {
-                        override fun success(sgUserInfo: SGUserInfo) {
-                            insertOrUpdateUser(sgUserInfo.toDBUserInfo())
-                        }
-
-                        override fun fail() {
-
-                        }
-                    })
+                    insertOrUpdateUser(user)
                 }
             }
         }
