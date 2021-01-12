@@ -183,12 +183,16 @@ class IMService : Service(), ServiceListener {
      */
     fun sendNewMsg(message: String) {
         if (client?.readyState != ReadyState.OPEN) {
+            onLinkStatus?.onLinkedSuccess()
+            socketStatus = 3
             return
         }
         if (client != null && client?.isOpen!!) {
             try {
                 client?.send(message)
             } catch (e: java.lang.Exception) {
+                onLinkStatus?.onLinkedSuccess()
+                socketStatus = 3
             }
         }
     }
@@ -206,14 +210,14 @@ class IMService : Service(), ServiceListener {
             onLinkStatus?.onLinkedSuccess()
             socketStatus = 3
             CycleTimeUtils.canCelTimer()//执行心跳关闭
-//            Log.e("aa", "------------已断开Ping==")
+            Log.e("aa", "------------已断开Ping==")
             return
         }
         try {
             ioScope.launch {
                 client?.sendPing()
                 pongStats = false
-//                Log.e("aa", "------------发送给服务Ping==")
+                Log.e("aa", "------------发送给服务Ping==")
             }
         } catch (e: java.lang.Exception) {
             onLinkStatus?.onLinkedSuccess()
@@ -267,7 +271,7 @@ class IMService : Service(), ServiceListener {
             }
             ServiceType.websocketPongStats -> {//收到服务器Pong
                 pongStats = true
-//                Log.e("aa", "------------收到服务回应==WebsocketPong")
+                Log.e("aa", "------------收到服务回应==WebsocketPong")
             }
         }
     }
