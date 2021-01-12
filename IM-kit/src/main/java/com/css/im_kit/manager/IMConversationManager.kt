@@ -88,27 +88,27 @@ object IMConversationManager {
     private var myMessageCallback = object : MessageCallback {
         @Synchronized
         override fun onReceiveMessage(messages: MutableList<SGMessage>) {
-            uiScope.launch {
-                var hasNewConversationCount = 0
-                messages.forEachIndexed { index, message ->
-                    if (message.type != MessageType.WELCOME) {
-                        sgConversations.map { sgConversation ->
-                            if (messageHasConversation(sgConversation, message)) {
-                                hasNewConversationCount = hasNewConversationCount.plus(1)
-                                if (message.messageBody?.isSelf == false) {
-                                    sgConversation.unread_account = sgConversation.unread_account.plus(1)
-                                }
-                                sgConversation.newMessage = message
+            var hasNewConversationCount = 0
+            messages.forEachIndexed { index, message ->
+                if (message.type != MessageType.WELCOME) {
+                    sgConversations.map { sgConversation ->
+                        if (messageHasConversation(sgConversation, message)) {
+                            hasNewConversationCount = hasNewConversationCount.plus(1)
+                            if (message.messageBody?.isSelf == false) {
+                                sgConversation.unread_account = sgConversation.unread_account.plus(1)
                             }
+                            sgConversation.newMessage = message
                         }
-                    } else {
-                        hasNewConversationCount = hasNewConversationCount.plus(1)
                     }
+                } else {
+                    hasNewConversationCount = hasNewConversationCount.plus(1)
                 }
-                sgConversationCallbacks.map { callback ->
-                    callback.onConversationList(sgConversations)
-                }
-                if (hasNewConversationCount != messages.size) {
+            }
+            sgConversationCallbacks.map { callback ->
+                callback.onConversationList(sgConversations)
+            }
+            if (hasNewConversationCount != messages.size) {
+                ioScope.launch {
                     delay(1000)
                     integrationConversation()
                 }
