@@ -6,6 +6,7 @@ import org.java_websocket.WebSocket
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.drafts.Draft_6455
 import org.java_websocket.framing.Framedata
+import org.java_websocket.framing.PingFrame
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 
@@ -48,8 +49,8 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
     override fun onError(ex: Exception) {
         socketListener?.onBackSocketStatus(ServiceType.errorMessageStats, ex.toString())
     }
-    override fun onWebsocketPong(conn: WebSocket?, f: Framedata?) {
-        super.onWebsocketPong(conn, f)
-        socketListener?.onBackSocketStatus(ServiceType.websocketPongStats, "")
-    }
+//    override fun onWebsocketPong(conn: WebSocket?, f: Framedata?) {
+//        super.onWebsocketPong(conn, f)
+//        socketListener?.onBackSocketStatus(ServiceType.websocketPongStats, "")
+//    }
 }

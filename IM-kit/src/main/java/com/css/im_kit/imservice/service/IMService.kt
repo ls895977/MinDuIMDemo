@@ -59,7 +59,7 @@ class IMService : Service(), ServiceListener {
     }
 
     override fun onUnbind(intent: Intent): Boolean {
-        CycleTimeUtils.canCelTimer()
+//        CycleTimeUtils.canCelTimer()
         closeSocket()
         return super.onUnbind(intent)
     }
@@ -97,10 +97,10 @@ class IMService : Service(), ServiceListener {
     }
 
     /**
-     * 因网络原因导致socket断开循环重试5次链接处理
+     * 因网络原因导致socket断开循环重试3次链接处理
      */
     private fun runSocket5() {
-        CycleTimeUtils.onStartTimeSeconds(5, object : CycleTimeUtils.OnCountDownCallBack {
+        CycleTimeUtils.onStartTimeSeconds(3, object : CycleTimeUtils.OnCountDownCallBack {
             override fun onProcess(day: Int, hour: Int, minute: Int, second: Int) {
                 initSocket()
             }
@@ -209,15 +209,13 @@ class IMService : Service(), ServiceListener {
         if (!pongStats) {
             onLinkStatus?.onLinkedSuccess()
             socketStatus = 3
-            CycleTimeUtils.canCelTimer()//执行心跳关闭
-            Log.e("aa", "------------已断开Ping==")
+//            CycleTimeUtils.canCelTimer()//执行心跳关闭
             return
         }
         try {
             ioScope.launch {
                 client?.sendPing()
                 pongStats = false
-                Log.e("aa", "------------发送给服务Ping==")
             }
         } catch (e: java.lang.Exception) {
             onLinkStatus?.onLinkedSuccess()
@@ -254,7 +252,7 @@ class IMService : Service(), ServiceListener {
                 } else {
                     onResultMessage?.onMessage(msg)
                 }
-                startTimeSocket()//执行心跳
+//                startTimeSocket()//执行心跳
                 colsSocket5()//执行5次链接取消
             }
             ServiceType.closeMessageStats, ServiceType.errorMessageStats -> {//链接关闭或者链接发生错误
@@ -267,12 +265,12 @@ class IMService : Service(), ServiceListener {
                     onLinkStatus?.onLinkedClose()
                     socketStatus = event
                 }
-                CycleTimeUtils.canCelTimer()//执行心跳关闭
+//                CycleTimeUtils.canCelTimer()//执行心跳关闭
             }
-            ServiceType.websocketPongStats -> {//收到服务器Pong
-                pongStats = true
-                Log.e("aa", "------------收到服务回应==WebsocketPong")
-            }
+//            ServiceType.websocketPongStats -> {//收到服务器Pong
+//                pongStats = true
+//                Log.e("aa", "------------收到服务回应==WebsocketPong=="+msg)
+//            }
         }
     }
 
