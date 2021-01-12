@@ -90,25 +90,23 @@ object IMConversationManager {
             uiScope.launch {
                 var hasNewConversationCount = 0
                 messages.forEachIndexed { index, message ->
-                    sgConversations.forEach {
-                        if (message.type != MessageType.WELCOME) {
+                    if (message.type != MessageType.WELCOME) {
+                        sgConversations.forEach {
                             if (messageHasConversation(it, message)) {
                                 hasNewConversationCount++
                                 if (message.messageBody?.isSelf == false) {
                                     it.unread_account = it.unread_account + 1
                                 }
                                 it.newMessage = message
+                                sgConversationCallbacks.forEach { callback ->
+                                    callback.onConversationList(sgConversations)
+                                }
                             }
-                        } else {
-                            hasNewConversationCount++
                         }
-                    }
-                }.let {
-                    sgConversationCallbacks.forEach { callback ->
-                        callback.onConversationList(sgConversations)
+                    } else {
+                        hasNewConversationCount++
                     }
                 }
-
                 if (hasNewConversationCount != messages.size) {
                     integrationConversation()
                 }
