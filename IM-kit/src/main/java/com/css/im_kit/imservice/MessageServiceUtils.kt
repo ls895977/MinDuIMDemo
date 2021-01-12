@@ -31,6 +31,7 @@ object MessageServiceUtils {
      */
     fun initService(CHAT_SERVER_URL: String?, onLinkStatus: onLinkStatus?) {
         this.onLinkStatus = onLinkStatus
+        closeConnect()
         val intent = Intent(mApplication, IMService::class.java)
         intent.putExtra("serViceUrl", CHAT_SERVER_URL)
         mApplication?.bindService(intent, imServiceConn, Context.BIND_AUTO_CREATE)

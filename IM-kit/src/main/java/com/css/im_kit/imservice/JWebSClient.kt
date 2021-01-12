@@ -28,7 +28,7 @@ class JWebSClient(serverUri: URI?) : WebSocketClient(serverUri, Draft_6455()) {
      * @param message
      */
     override fun onMessage(message: String) {
-//        Log.e("aa", "---------------------onMessage====" + message)
+        Log.e("aa", "---------------------onMessage====" + message)
         socketListener?.onBackSocketStatus(ServiceType.collectMessageStats, message)
     }
 
