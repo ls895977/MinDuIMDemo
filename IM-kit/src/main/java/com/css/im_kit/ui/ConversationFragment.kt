@@ -417,6 +417,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
     override fun onDestroy() {
         IMChatRoomManager.dismissSgMessageCallback()
         hideSoftKeyboard(binding?.etContent)
+        forceHideSoftKeyboard()
         super.onDestroy()
     }
 
