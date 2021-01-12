@@ -7,11 +7,13 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.css.im_kit.IMManager
 import com.css.im_kit.R
 import com.css.im_kit.callback.ChatRoomCallback
 import com.css.im_kit.databinding.FragmentConversationBinding
@@ -29,10 +31,7 @@ import com.css.im_kit.ui.adapter.EmojiAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.bean.EmojiBean
 import com.css.im_kit.ui.listener.IMListener
-import com.css.im_kit.utils.FaceTextUtil
-import com.css.im_kit.utils.IMDensityUtils
-import com.css.im_kit.utils.IMGlideUtil
-import com.css.im_kit.utils.IMSoftKeyBoardListenerUtil
+import com.css.im_kit.utils.*
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -147,10 +146,15 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     setClickProductListener.onGoProductDetail((adapter.data[position] as SGMessage).messageBody as CommodityMessageBody)
                 }
                 R.id.loading_image -> {//消息发送失败》重发!!!!!(只有自己的消息可以重发)
-                    (adapter.data[position] as SGMessage).let {
-                        it.messageBody?.sendType = SendType.SENDING
-                        adapter.notifyItemChanged(position)
-                        IMChatRoomManager.messageReplay(it.messageId)
+                    if (IMManager.isServiceStatus()) {
+                        (adapter.data[position] as SGMessage).let {
+                            it.messageBody?.sendType = SendType.SENDING
+                            adapter.notifyItemChanged(position)
+                            IMChatRoomManager.messageReplay(it.messageId)
+                        }
+                    } else {
+                        "服务器连接中，请稍后重试！".toast()
+                        IMManager.retryService()
                     }
                 }
                 //整个item
@@ -292,12 +296,18 @@ class ConversationFragment(private var conversation: SGConversation, private var
         }
         //发送消息
         binding!!.tvTextSend.setOnClickListener {
-            val sendText = binding?.etContent?.text.toString()
-            if (sendText.isEmpty()) {
-                return@setOnClickListener
+            if (IMManager.isServiceStatus()) {
+                val sendText = binding?.etContent?.text.toString()
+                if (sendText.isEmpty()) {
+                    return@setOnClickListener
+                }
+                IMChatRoomManager.sendTextMessage(sendText)
+                binding?.etContent?.setText("")
+            } else {
+                "服务器连接中，请稍后重试！".toast()
+                IMManager.retryService()
             }
-            IMChatRoomManager.sendTextMessage(sendText)
-            binding?.etContent?.setText("")
+
         }
         //关闭发送商品消息（type=7）
         binding!!.ivClose.setOnClickListener {
