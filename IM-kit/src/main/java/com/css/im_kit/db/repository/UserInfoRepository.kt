@@ -34,7 +34,7 @@ object UserInfoRepository {
         val myDbUser = dao?.getAll()
         users.filter { t1 ->
             myDbUser?.forEach { t2 ->
-                if (t1.account == t2.account) {
+                if (t1.account == t2.account && !t1.account.isNullOrEmpty()) {
                     dbUsers.add(t2)
                     return@filter false
                 }

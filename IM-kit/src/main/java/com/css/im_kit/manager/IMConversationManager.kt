@@ -97,14 +97,14 @@ object IMConversationManager {
                                     it.unread_account = it.unread_account + 1
                                 }
                                 it.newMessage = message
-                                sgConversationCallbacks.forEach { callback ->
-                                    callback.onConversationList(sgConversations)
-                                }
                             }
                         }
                     } else {
                         hasNewConversationCount++
                     }
+                }
+                sgConversationCallbacks.forEach { callback ->
+                    callback.onConversationList(sgConversations)
                 }
                 if (hasNewConversationCount != messages.size) {
                     integrationConversation()

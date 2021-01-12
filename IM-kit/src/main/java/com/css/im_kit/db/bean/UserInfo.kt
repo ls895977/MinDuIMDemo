@@ -9,7 +9,7 @@ import java.io.Serializable
  */
 @Entity
 data class UserInfo(
-        var account: String,
+        var account: String?,
         var user_type: String,
         var nickname: String,
         var avatar: String
