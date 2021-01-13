@@ -38,7 +38,7 @@ object IMConversationManager {
         sgConversationCallbacks = listener
         //添加监听立即发送暂存数据
         if (!sgConversations.isNullOrEmpty()) {
-            sgConversations.sortBy { it.unread_account }
+            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
             listener.onConversationList(sgConversations)
         }
         if (!isMyMessageCallbackStart) {
@@ -105,7 +105,7 @@ object IMConversationManager {
                     hasNewConversationCount = hasNewConversationCount.plus(1)
                 }
             }
-            sgConversations.sortBy { it.unread_account }
+            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
             sgConversationCallbacks?.onConversationList(sgConversations)
             if (hasNewConversationCount != messages.size) {
                 integrationConversation(true)
@@ -142,7 +142,7 @@ object IMConversationManager {
                 }.let {
                     sgConversations.clear()
                     sgConversations.addAll(it)
-                    sgConversations.sortBy { it.unread_account }
+                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                     sgConversationCallbacks?.onConversationList(sgConversations)
                 }
             }
@@ -162,7 +162,7 @@ object IMConversationManager {
             }.let {
                 sgConversations.clear()
                 sgConversations.addAll(it)
-                sgConversations.sortBy { it.unread_account }
+                sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                 sgConversationCallbacks?.onConversationList(sgConversations)
             }
         }
@@ -200,7 +200,7 @@ object IMConversationManager {
                         }
                         sgConversations.add(sgConversation)
                     }
-                    sgConversations.sortBy { it.unread_account }
+                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                     sgConversationCallbacks?.onConversationList(sgConversations)
                 }
             } catch (e: Exception) {
