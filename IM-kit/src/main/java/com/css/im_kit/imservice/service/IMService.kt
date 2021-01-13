@@ -65,6 +65,7 @@ class IMService : Service(), ServiceListener {
     override fun onDestroy() {
         super.onDestroy()
         NetworkMonitorManager.getInstance().unregister(this)//取消网络监听
+        CycleTimeUtils.canCelTimer()//执行重连关闭
     }
 
     /**
@@ -148,30 +149,30 @@ class IMService : Service(), ServiceListener {
                 socketStatus = 3
             }
         } else {
-            try {
-                client?.reconnect()
-            } catch (e: InterruptedException) {
-                onLinkStatus?.onLinkedClose()
-                socketStatus = 3
-            }
-//                if (client?.isOpen == false) {
-//                    if (client?.readyState?.equals(ReadyState.NOT_YET_CONNECTED)!!) {
-//                        try {
-//                            client?.connectBlocking()
-//                        } catch (e: Exception) {
-//                            onLinkStatus?.onLinkedClose()
-//                            socketStatus = 3
-//                        }
-//                    } else if (client?.readyState?.equals(ReadyState.CLOSING)!! || client?.readyState?.equals(ReadyState.CLOSED)!!) {
-//                        try {
-//                            client?.reconnectBlocking()
-//                        } catch (e: InterruptedException) {
-//                            e.printStackTrace()
-//                            onLinkStatus?.onLinkedClose()
-//                            socketStatus = 3
-//                        }
-//                    }
-//                }
+//            try {
+//                client?.reconnectBlocking()
+//            } catch (e: InterruptedException) {
+//                onLinkStatus?.onLinkedClose()
+//                socketStatus = 3
+//            }
+                if (client?.isOpen == false) {
+                    if (client?.readyState?.equals(ReadyState.NOT_YET_CONNECTED)!!) {
+                        try {
+                             client?.connectBlocking(6, TimeUnit.SECONDS)
+                        } catch (e: Exception) {
+                            onLinkStatus?.onLinkedClose()
+                            socketStatus = 3
+                        }
+                    } else if (client?.readyState?.equals(ReadyState.CLOSING)!! || client?.readyState?.equals(ReadyState.CLOSED)!!) {
+                        try {
+                            client?.reconnectBlocking()
+                        } catch (e: InterruptedException) {
+                            e.printStackTrace()
+                            onLinkStatus?.onLinkedClose()
+                            socketStatus = 3
+                        }
+                    }
+                }
         }
     }
 
@@ -263,7 +264,6 @@ class IMService : Service(), ServiceListener {
                     }
                     onLinkStatus?.onLinkedClose()
                     socketStatus = event
-                    Log.e("aa", "-----------链接关闭或者链接发生错误---")
                 }
                 if (runSocketNum == 3) {
                     onLinkStatus?.onLinkedClose()
