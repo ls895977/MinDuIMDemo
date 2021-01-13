@@ -49,7 +49,7 @@ data class ReceiveMessageBean(
                 m_id = m_id,
                 send_account = send_account,
                 receive_account = receive_account,
-                shop_id = extend?.get("shop_id").toString(),
+                shop_id = extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(),
                 source = source,
                 message_type = type,
                 read_status = 1,

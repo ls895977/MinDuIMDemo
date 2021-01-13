@@ -134,7 +134,7 @@ object IMMessageManager {
                 MessageRepository.changeMessageSendType(it, message.m_id)
             }
             messageCallback.forEach {
-                it.onSendMessageReturn(message.extend?.get("shop_id").toString(), message.m_id)
+                it.onSendMessageReturn(message.extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(), message.m_id)
             }
         }
     }
@@ -218,7 +218,7 @@ object IMMessageManager {
                                 MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
                                 val extend = gson.fromJson(message.extend, HashMap::class.java)
                                 messageCallback.forEach {
-                                    it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
+                                    it.onSendMessageReturn(extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(), message.m_id)
                                 }
                             }
                         }
@@ -268,7 +268,7 @@ object IMMessageManager {
                                         MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
                                         val extend = gson.fromJson(message.extend, HashMap::class.java)
                                         messageCallback.forEach {
-                                            it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
+                                            it.onSendMessageReturn(extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(), message.m_id)
                                         }
                                     }
                                 }
@@ -302,7 +302,7 @@ object IMMessageManager {
                         MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
                         val extend = gson.fromJson(message.extend, HashMap::class.java)
                         messageCallback.forEach {
-                            it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
+                            it.onSendMessageReturn(extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(), message.m_id)
                         }
                     }
                 }
@@ -447,7 +447,7 @@ object IMMessageManager {
                                         MessageRepository.changeMessageSendType(SendType.FAIL, message.m_id)
                                         val extend = gson.fromJson(message.extend, HashMap::class.java)
                                         messageCallback.forEach {
-                                            it.onSendMessageReturn(extend?.get("shop_id").toString(), message.m_id)
+                                            it.onSendMessageReturn(extend?.get("shop_id").toString().toBigDecimal().stripTrailingZeros().toPlainString(), message.m_id)
                                         }
                                     }
                                 }
