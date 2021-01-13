@@ -410,13 +410,13 @@ class ConversationFragment(private var conversation: SGConversation, private var
         }
     }
 
+
     /**
      * 退出回话
      * 摧毁时关闭软件盘
      */
     override fun onDestroy() {
         IMChatRoomManager.dismissSgMessageCallback()
-        hideSoftKeyboard(binding?.etContent)
         super.onDestroy()
     }
 
@@ -460,5 +460,12 @@ class ConversationFragment(private var conversation: SGConversation, private var
      */
     fun sendImageMessage(images: ArrayList<String>) {
         IMChatRoomManager.sendImageMessages(images)
+    }
+
+    /**
+     * 关闭软件盘
+     */
+    fun closeKeyB() {
+        hideSoftKeyboard(binding?.etContent)
     }
 }

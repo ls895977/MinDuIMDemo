@@ -101,8 +101,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     private var isConnected = false
     private fun connectionIMService() {
         val url = "ws://testchatws.supersg.cn"
-        val token = "205283496868937728"
-        val userId = "205283496868937728"
+        val token = "207596583087403008"
+        val userId = "207596583087403008"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
                 return "A7771CC3D1286E7EE3483AE4AA0E5681"
