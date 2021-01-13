@@ -129,6 +129,6 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
 
     override fun onDestroy() {
         super.onDestroy()
-        IMConversationManager.removeSGConversationListListener(this)
+        IMConversationManager.removeSGConversationListListener()
     }
 }

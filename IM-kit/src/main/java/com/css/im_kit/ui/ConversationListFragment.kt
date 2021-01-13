@@ -76,7 +76,7 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * 退出当前界面才摧毁
      */
     override fun onDestroy() {
-        IMConversationManager.removeSGConversationListListener(this)
+        IMConversationManager.removeSGConversationListListener()
         super.onDestroy()
     }
 

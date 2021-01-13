@@ -26,7 +26,7 @@ object IMConversationManager {
     private var isMyMessageCallbackStart = false
 
     //回调列表
-    private var sgConversationCallbacks = arrayListOf<SGConversationCallback>()
+    private var sgConversationCallbacks: SGConversationCallback? = null
 
     //会话列表暂存数据
     private var sgConversations = arrayListOf<SGConversation>()
@@ -35,7 +35,7 @@ object IMConversationManager {
      * 添加会话列表监听
      */
     fun addSGConversationListListener(listener: SGConversationCallback) {
-        sgConversationCallbacks.add(listener)
+        sgConversationCallbacks = listener
         //添加监听立即发送暂存数据
         if (!sgConversations.isNullOrEmpty()) {
             listener.onConversationList(sgConversations)
@@ -49,9 +49,9 @@ object IMConversationManager {
     /**
      * 移除会话列表监听
      */
-    fun removeSGConversationListListener(listener: SGConversationCallback) {
-        sgConversationCallbacks.remove(listener)
-        if (sgConversationCallbacks.isNullOrEmpty()) {
+    fun removeSGConversationListListener() {
+        sgConversationCallbacks = null
+        if (sgConversationCallbacks == null) {
             isMyMessageCallbackStart = false
             IMMessageManager.removeMessageListener(myMessageCallback)
         }
@@ -61,7 +61,7 @@ object IMConversationManager {
      * 获取数据库会话列表监听
      */
     fun getConversationList() {
-        integrationConversation()
+        integrationConversation(false)
     }
 
     /**
@@ -91,7 +91,7 @@ object IMConversationManager {
             var hasNewConversationCount = 0
             messages.forEachIndexed { index, message ->
                 if (message.type != MessageType.WELCOME) {
-                    sgConversations.map { sgConversation ->
+                    sgConversations.forEach { sgConversation ->
                         if (messageHasConversation(sgConversation, message)) {
                             hasNewConversationCount = hasNewConversationCount.plus(1)
                             if (message.messageBody?.isSelf == false) {
@@ -104,14 +104,9 @@ object IMConversationManager {
                     hasNewConversationCount = hasNewConversationCount.plus(1)
                 }
             }
-            sgConversationCallbacks.map { callback ->
-                callback.onConversationList(sgConversations)
-            }
+            sgConversationCallbacks?.onConversationList(sgConversations)
             if (hasNewConversationCount != messages.size) {
-                ioScope.launch {
-                    delay(1000)
-                    integrationConversation()
-                }
+                integrationConversation(true)
             }
         }
 
@@ -143,9 +138,9 @@ object IMConversationManager {
                     }
                     return@map it
                 }.let {
-                    sgConversationCallbacks.forEach { callback ->
-                        callback.onConversationList(it)
-                    }
+                    sgConversations.clear()
+                    sgConversations.addAll(it)
+                    sgConversationCallbacks?.onConversationList(sgConversations)
                 }
             }
         }
@@ -162,16 +157,17 @@ object IMConversationManager {
                 }
                 return@map it
             }.let {
-                sgConversationCallbacks.forEach { callback ->
-                    callback.onConversationList(it)
-                }
+                sgConversations.clear()
+                sgConversations.addAll(it)
+                sgConversationCallbacks?.onConversationList(sgConversations)
             }
         }
     }
 
     @Synchronized
-    private fun integrationConversation() {
+    private fun integrationConversation(isDelay: Boolean) {
         ioScope.launch {
+            if (isDelay) delay(1000)
             try {
                 withContext(Dispatchers.Default) {
                     val nonceStr = System.currentTimeMillis().toString().md5()
@@ -200,9 +196,7 @@ object IMConversationManager {
                         }
                         sgConversations.add(sgConversation)
                     }
-                    sgConversationCallbacks.forEach { callback ->
-                        callback.onConversationList(sgConversations)
-                    }
+                    sgConversationCallbacks?.onConversationList(sgConversations)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
