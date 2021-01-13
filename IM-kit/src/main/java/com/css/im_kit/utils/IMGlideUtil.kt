@@ -28,41 +28,53 @@ object IMGlideUtil {
 
     //加载圆形头像图片
     fun loadAvatar(context: Context?, url: String?, img: ImageView) {
-        context?.let {
-            if (url.isNullOrEmpty()) {
-                Glide.with(context).load(R.mipmap.im_icon_avatar_default).apply(avatarOptions!!).into(img)
-            } else {
-                Glide.with(context).load(getAllUrl(url)).apply(avatarOptions!!).into(img)
+        try {
+            context?.let {
+                if (url.isNullOrEmpty()) {
+                    Glide.with(context).load(R.mipmap.im_icon_avatar_default).apply(avatarOptions!!).into(img)
+                } else {
+                    Glide.with(context).load(getAllUrl(url)).apply(avatarOptions!!).into(img)
+                }
             }
+        } catch (e: Exception) {
         }
     }
 
     //加载4个角为radius（单位：dp）的圆角图片
     fun loadRound4Img(context: Context?, url: String?, img: ImageView, radius: Int) {
-        context?.let {
-            if (url.isNullOrEmpty()) {
-                Glide.with(context).load(R.color.color_f3f3f3).apply(getRounOptions(radius)!!).into(img)
-            } else {
-                Glide.with(context).load(url).apply(getRounOptions(radius)!!).into(img)
+        try {
+            context?.let {
+                if (url.isNullOrEmpty()) {
+                    Glide.with(context).load(R.color.color_f3f3f3).apply(getRounOptions(radius)!!).into(img)
+                } else {
+                    Glide.with(context).load(url).apply(getRounOptions(radius)!!).into(img)
+                }
             }
+        } catch (e: Exception) {
         }
     }
 
     //头部圆角2个角
     fun loadRound2Img(context: Context?, url: String?, img: ImageView, radius: Int) {
-        context?.let {
-            if (url.isNullOrEmpty()) {
-                Glide.with(context).load(R.color.color_f3f3f3).apply(getRounOptions2(radius)!!).into(img)
-            } else {
-                Glide.with(context).load(getAllUrl(url)).apply(getRounOptions2(radius)!!).into(img)
+        try {
+            context?.let {
+                if (url.isNullOrEmpty()) {
+                    Glide.with(context).load(R.color.color_f3f3f3).apply(getRounOptions2(radius)!!).into(img)
+                } else {
+                    Glide.with(context).load(getAllUrl(url)).apply(getRounOptions2(radius)!!).into(img)
+                }
             }
+        } catch (e: Exception) {
         }
     }
 
     //加载4个角为radius（单位：dp）的圆角图片
     fun loadRound4Img(context: Context?, bitmap: Bitmap, img: ImageView, radius: Int) {
-        context?.let {
-            Glide.with(context).load(bitmap).apply(getRounOptions(radius)!!).into(img)
+        try {
+            context?.let {
+                Glide.with(context).load(bitmap).apply(getRounOptions(radius)!!).into(img)
+            }
+        } catch (e: Exception) {
         }
     }
 
