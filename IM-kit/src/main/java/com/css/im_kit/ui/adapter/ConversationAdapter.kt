@@ -58,7 +58,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
         }
 
         //头像
-        IMGlideUtil.loadAvatar(activity, item.userInfo?.avatar, helper.getView(R.id.iv_avatar))
+        IMGlideUtil.loadAvatar(mContext, item.userInfo?.avatar, helper.getView(R.id.iv_avatar))
 
         //昵称(user_type:1用户，2店铺客服，3平台客服)
         helper.setText(R.id.tv_user_name, item.userInfo?.nickname)
@@ -98,7 +98,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
                 helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text?.let { FaceTextUtil.toSpannableString(activity, it) })
             }
             2 -> {//img
-                (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
+                (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(mContext, it, helper.getView(R.id.iv_content)) }
                 //点击事件
                 helper.addOnClickListener(R.id.iv_content)
             }
@@ -106,7 +106,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
                 val message = item.messageBody as CommodityMessageBody
                 helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
-                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
+                IMGlideUtil.loadRound2Img(mContext, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
                 helper.addOnClickListener(R.id.ll_content)
             }
@@ -116,7 +116,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
                 helper.setText(R.id.tv_content, (item.messageBody as TextMessageBody).text?.let { FaceTextUtil.toSpannableString(activity, it) })
             }
             5 -> {//img
-                (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(activity, it, helper.getView(R.id.iv_content)) }
+                (item.messageBody as ImageMessageBody).imageUrl?.let { setImageMessage(mContext, it, helper.getView(R.id.iv_content)) }
                 //点击事件
                 helper.addOnClickListener(R.id.iv_content)
             }
@@ -124,7 +124,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
                 val message = item.messageBody as CommodityMessageBody
                 helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
-                IMGlideUtil.loadRound2Img(activity, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
+                IMGlideUtil.loadRound2Img(mContext, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
                 helper.addOnClickListener(R.id.ll_content)
             }
