@@ -59,6 +59,11 @@ object IMConversationManager {
         }
     }
 
+    fun clearSgConversations(){
+        sgConversations.clear()
+        sgConversationCallbacks?.onConversationList(sgConversations)
+    }
+
     /**
      * 获取数据库会话列表监听
      */

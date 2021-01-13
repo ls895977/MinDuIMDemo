@@ -8,6 +8,7 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.imservice.MessageServiceUtils
 import com.css.im_kit.imservice.interfacelinsterner.onLinkStatus
+import com.css.im_kit.manager.IMConversationManager
 import com.css.im_kit.manager.IMMessageManager
 import com.kongqw.network.monitor.NetworkMonitorManager
 import kotlinx.coroutines.launch
@@ -109,6 +110,7 @@ object IMManager {
 
     fun clearDB() {
         ioScope.launch {
+            IMConversationManager.clearSgConversations()
             MessageRepository.deleteAll()
             UserInfoRepository.deleteAll()
         }
