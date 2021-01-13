@@ -99,18 +99,16 @@ object IMUserInfoManager {
     @Synchronized
     fun refreshUserInfoCache(userInfo: UserInfo) {
         ioScope.launch {
-            IMManager.account?.let {
-                UserInfoRepository.loadById(it).let { user ->
-                    if (user == null) {
-                        return@let userInfo
-                    } else {
-                        user.avatar = userInfo.avatar
-                        user.nickname = userInfo.nickname
-                        return@let user
-                    }
-                }?.let { user ->
-                    insertOrUpdateUser(user)
+            UserInfoRepository.loadById(userInfo.account ?: "").let { user ->
+                if (user == null) {
+                    return@let userInfo
+                } else {
+                    user.avatar = userInfo.avatar
+                    user.nickname = userInfo.nickname
+                    return@let user
                 }
+            }?.let { user ->
+                insertOrUpdateUser(user)
             }
         }
     }
