@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
+import java.math.BigDecimal
 
 object IMConversationManager {
 
@@ -106,7 +107,7 @@ object IMConversationManager {
                     hasNewConversationCount = hasNewConversationCount.plus(1)
                 }
             }
-            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal()?:BigDecimal.ZERO }
             sgConversationCallbacks?.onConversationList(sgConversations)
             if (hasNewConversationCount != messages.size) {
                 integrationConversation(true)
