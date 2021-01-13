@@ -92,13 +92,14 @@ object IMConversationManager {
             var hasNewConversationCount = 0
             messages.forEachIndexed { index, message ->
                 if (message.type != MessageType.WELCOME) {
-                    sgConversations.forEach { sgConversation ->
-                        if (messageHasConversation(sgConversation, message)) {
+                    sgConversations.mapIndexed { index, item ->
+                        if (messageHasConversation(item, message)) {
                             hasNewConversationCount = hasNewConversationCount.plus(1)
                             if (message.messageBody?.isSelf == false) {
-                                sgConversation.unread_account = sgConversation.unread_account.plus(1)
+                                val unreadAccount = item.unread_account.plus(1)
+                                sgConversations[index].unread_account = unreadAccount
                             }
-                            sgConversation.newMessage = message
+                            sgConversations[index].newMessage = message
                         }
                     }
                 } else {
@@ -125,7 +126,8 @@ object IMConversationManager {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
-                                it.unread_account - size
+                                val unreadSize = it.unread_account - size
+                                if (unreadSize < 0) 0 else unreadSize
                             }
                         }
 
@@ -134,7 +136,8 @@ object IMConversationManager {
                             it.unread_account = if (isClear) {
                                 0
                             } else {
-                                it.unread_account - size
+                                val unreadSize = it.unread_account - size
+                                if (unreadSize < 0) 0 else unreadSize
                             }
                         }
                     }
