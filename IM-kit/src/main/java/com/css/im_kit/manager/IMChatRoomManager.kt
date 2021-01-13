@@ -241,7 +241,7 @@ object IMChatRoomManager {
             extend["shop_id"] = conversation.shop_id.toString()
             IMMessageManager.saveMessage(Message(
                     m_id = (IMManager.account + time).md5().substring(16, 32),
-                    send_account = IMManager.account!!,
+                    send_account = IMManager.account ?: "",
                     receive_account = conversation.chat_account ?: "",
                     shop_id = conversation.shop_id ?: "",
                     message_type = DBMessageType.TEXT.value,
@@ -273,7 +273,7 @@ object IMChatRoomManager {
                 time += index
                 Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
-                        send_account = IMManager.account!!,
+                        send_account = IMManager.account ?: "",
                         receive_account = conversation.chat_account ?: "",
                         shop_id = conversation.shop_id ?: "",
                         message_type = DBMessageType.RICH.value,
@@ -305,7 +305,7 @@ object IMChatRoomManager {
                 time += index
                 return@mapIndexed Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
-                        send_account = IMManager.account!!,
+                        send_account = IMManager.account ?: "",
                         receive_account = conversation.chat_account ?: "",
                         shop_id = conversation.shop_id ?: "",
                         message_type = DBMessageType.IMAGE.value,
@@ -358,7 +358,7 @@ object IMChatRoomManager {
                 extend["shop_id"] = shop_id.toString()
                 IMMessageManager.send101And102Message(Message(
                         m_id = (IMManager.account + time).md5().substring(16, 32),
-                        send_account = IMManager.account!!,
+                        send_account = IMManager.account ?: "",
                         receive_account = chat_account ?: "",
                         shop_id = shop_id ?: "",
                         message_type = DBMessageType.TEXT.value,
