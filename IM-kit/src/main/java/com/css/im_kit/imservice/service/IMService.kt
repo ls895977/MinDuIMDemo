@@ -189,7 +189,9 @@ class IMService : Service(), ServiceListener {
         }
         if (client != null && client?.isOpen!!) {
             try {
-                client?.send(message)
+                synchronized(message) {
+                    client?.send(message)
+                }
             } catch (e: java.lang.Exception) {
                 onLinkStatus?.onLinkedClose()
                 socketStatus = 3
