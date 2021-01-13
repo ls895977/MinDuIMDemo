@@ -13,7 +13,7 @@ import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.long13
 
-class ConversationListAdapter(var context: Context, data: List<SGConversation>) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, data) {
+class ConversationListAdapter(var context: Context) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, null) {
     override fun convert(helper: BaseViewHolder, item: SGConversation) {
         if (IMManager.isBusiness) {
             //头像

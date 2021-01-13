@@ -15,14 +15,12 @@ import kotlinx.coroutines.launch
 
 class ConversationListFragment(private var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback {
 
-    private var conversationList = arrayListOf<SGConversation>()
     private var conversationListAdapter: ConversationListAdapter? = null
 
     override fun layoutResource(): Int = R.layout.fragment_conversation_list
     override fun initView() {}
     override fun initData() {
-        conversationList = arrayListOf()
-        conversationListAdapter = ConversationListAdapter(this@ConversationListFragment.requireContext(), conversationList)
+        conversationListAdapter = ConversationListAdapter(this@ConversationListFragment.requireContext())
         binding!!.rvConversationList.adapter = conversationListAdapter
         //设置事件
         setDataListener.onSetFragmentDataListener()
@@ -31,39 +29,6 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     override fun initListeners() {
         //注册监听
         IMConversationManager.addSGConversationListListener(this)
-    }
-
-    /**
-     * 清空数据
-     */
-    fun clearDataList(dataList: ArrayList<SGConversation>) {
-        this.conversationList.clear()
-        conversationListAdapter?.notifyDataSetChanged()
-    }
-
-    /**
-     * 刷新数据
-     */
-    fun refreshDataList(dataList: ArrayList<SGConversation>) {
-        this.conversationList.clear()
-        this.conversationList.addAll(dataList)
-        conversationListAdapter?.notifyDataSetChanged()
-    }
-
-    /**
-     * 添加下一页数据
-     */
-    fun addDataList(dataList: ArrayList<SGConversation>) {
-        this.conversationList.addAll(dataList)
-        conversationListAdapter?.notifyDataSetChanged()
-    }
-
-    /**
-     * 刷新某一项数据
-     */
-    fun updateOneList(position: Int, dataItem: SGConversation) {
-        this.conversationList[position] = dataItem
-        conversationListAdapter?.notifyItemChanged(position)
     }
 
     /**
@@ -93,12 +58,11 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     /**
      * 拿到数据了
      */
+    @Synchronized
     override fun onConversationList(sgConversation: List<SGConversation>) {
         uiScope.launch {
-            conversationList.clear()
-            conversationList.addAll(sgConversation)
-            conversationListAdapter?.notifyDataSetChanged()
-            if (conversationList.isNullOrEmpty()) {
+            conversationListAdapter?.setNewData(sgConversation)
+            if (sgConversation.isNullOrEmpty()) {
                 binding?.ivNoContent?.visibility = View.VISIBLE
                 binding?.tvNoContent?.visibility = View.VISIBLE
             } else {
