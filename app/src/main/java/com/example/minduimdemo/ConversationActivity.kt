@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.CommodityMessage
@@ -82,7 +83,12 @@ class ConversationActivity : BaseActivity<ActivityConversationBinding>(), IMList
         transaction.commit()
     }
 
-    override fun initListeners() {}
+    override fun initListeners() {
+        binding.tvBack.setOnClickListener {
+            conversationFragment?.closeKeyB()
+            finish()
+        }
+    }
 
     /**
      * Fragment初始化好了
