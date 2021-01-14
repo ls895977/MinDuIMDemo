@@ -234,16 +234,22 @@ object HttpManager {
                 val map = HashMap<String, String>()
                 map["app_id"] = IMManager.app_id ?: ""
                 map["account"] = IMManager.account ?: ""
-                if (!IMManager.isBusiness) {
-                    map["shop_id"] = shop_id
+                map["shop_id"] = shop_id
+                map["flag"] = if (IMManager.isBusiness) {
+                    "2"
+                } else {
+                    "1"
                 }
                 map["chat_account"] = chat_account
                 map["nonce_str"] = nonceStr
                 val body = HashMap<String, Any>()
                 body["app_id"] = IMManager.app_id ?: ""
                 body["account"] = IMManager.account ?: ""
-                if (!IMManager.isBusiness) {
-                    body["shop_id"] = shop_id
+                body["shop_id"] = shop_id
+                body["flag"] = if (IMManager.isBusiness) {
+                    "2"
+                } else {
+                    "1"
                 }
                 body["chat_account"] = chat_account
                 body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
