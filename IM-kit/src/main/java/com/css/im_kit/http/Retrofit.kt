@@ -24,18 +24,13 @@ object Retrofit {
     }
 
     private fun getHeaderInterceptor(): Interceptor {
-        try {
-            return Interceptor { chain: Interceptor.Chain ->
-                val original = chain.request()
-                val requestBuilder = original.newBuilder()
-                //添加Token
-                requestBuilder.header(if (IMManager.isBusiness) "myToken" else "token", IMManager.getAPPToken())
-                val request = requestBuilder.build()
-                return@Interceptor chain.proceed(request)
-            }
-        }catch (e:Exception){
-            e.printStackTrace()
-            return getInterceptor()
+        return Interceptor { chain: Interceptor.Chain ->
+            val original = chain.request()
+            val requestBuilder = original.newBuilder()
+            //添加Token
+            requestBuilder.header(if (IMManager.isBusiness) "myToken" else "token", IMManager.getAPPToken())
+            val request = requestBuilder.build()
+            return@Interceptor chain.proceed(request)
         }
     }
 
@@ -45,22 +40,22 @@ object Retrofit {
         if (httpClient == null) {
             return if (BuildConfig.DEBUG) {
                 OkHttpClient().newBuilder()
-                        .readTimeout(20000, TimeUnit.MILLISECONDS)
-                        .connectTimeout(20000, TimeUnit.MILLISECONDS)
-                        .writeTimeout(20000, TimeUnit.MILLISECONDS)
+                        .readTimeout(60000, TimeUnit.MILLISECONDS)
+                        .connectTimeout(60000, TimeUnit.MILLISECONDS)
+                        .writeTimeout(60000, TimeUnit.MILLISECONDS)
                         .retryOnConnectionFailure(true)
                         //设置Header
-                        .addInterceptor(getInterceptor())
                         .addInterceptor(getHeaderInterceptor())
+                        .addInterceptor(getInterceptor())
                         .build()
             } else {
                 OkHttpClient().newBuilder()
-                        .readTimeout(20000, TimeUnit.MILLISECONDS)
-                        .connectTimeout(20000, TimeUnit.MILLISECONDS)
-                        .writeTimeout(20000, TimeUnit.MILLISECONDS)
+                        .readTimeout(60000, TimeUnit.MILLISECONDS)
+                        .connectTimeout(60000, TimeUnit.MILLISECONDS)
+                        .writeTimeout(60000, TimeUnit.MILLISECONDS)
                         .retryOnConnectionFailure(true)
-                        .addInterceptor(getInterceptor())
                         .addInterceptor(getHeaderInterceptor())
+                        .addInterceptor(getInterceptor())
                         //设置Header
                         .build()
             }.also { httpClient = it }
