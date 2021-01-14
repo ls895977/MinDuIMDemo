@@ -24,13 +24,18 @@ object Retrofit {
     }
 
     private fun getHeaderInterceptor(): Interceptor {
-        return Interceptor { chain: Interceptor.Chain ->
-            val original = chain.request()
-            val requestBuilder = original.newBuilder()
-            //添加Token
-            requestBuilder.header(if (IMManager.isBusiness) "myToken" else "token", IMManager.getAPPToken())
-            val request = requestBuilder.build()
-            chain.proceed(request)
+        try {
+            return Interceptor { chain: Interceptor.Chain ->
+                val original = chain.request()
+                val requestBuilder = original.newBuilder()
+                //添加Token
+                requestBuilder.header(if (IMManager.isBusiness) "myToken" else "token", IMManager.getAPPToken())
+                val request = requestBuilder.build()
+                return@Interceptor chain.proceed(request)
+            }
+        }catch (e:Exception){
+            e.printStackTrace()
+            return getInterceptor()
         }
     }
 

@@ -61,7 +61,9 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     @Synchronized
     override fun onConversationList(sgConversation: List<SGConversation>) {
         uiScope.launch {
-            conversationListAdapter?.setNewData(sgConversation)
+            synchronized(this) {
+                conversationListAdapter?.setNewData(sgConversation)
+            }
             if (sgConversation.isNullOrEmpty()) {
                 binding?.ivNoContent?.visibility = View.VISIBLE
                 binding?.tvNoContent?.visibility = View.VISIBLE

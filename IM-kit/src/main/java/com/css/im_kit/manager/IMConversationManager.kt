@@ -39,9 +39,11 @@ object IMConversationManager {
     fun addSGConversationListListener(listener: SGConversationCallback) {
         sgConversationCallbacks = listener
         //添加监听立即发送暂存数据
-        if (!sgConversations.isNullOrEmpty()) {
-            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
-            listener.onConversationList(sgConversations)
+        synchronized(this) {
+            if (!sgConversations.isNullOrEmpty()) {
+                sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                listener.onConversationList(sgConversations)
+            }
         }
         if (!isMyMessageCallbackStart) {
             isMyMessageCallbackStart = true
@@ -60,9 +62,11 @@ object IMConversationManager {
         }
     }
 
-    fun clearSgConversations(){
-        sgConversations.clear()
-        sgConversationCallbacks?.onConversationList(sgConversations)
+    fun clearSgConversations() {
+        synchronized(this) {
+            sgConversations.clear()
+            sgConversationCallbacks?.onConversationList(sgConversations)
+        }
     }
 
     /**
@@ -96,27 +100,31 @@ object IMConversationManager {
     private var myMessageCallback = object : MessageCallback {
         @Synchronized
         override fun onReceiveMessage(messages: MutableList<SGMessage>) {
-            var hasNewConversationCount = 0
-            messages.forEachIndexed { index, message ->
-                if (message.type != MessageType.WELCOME) {
-                    sgConversations.mapIndexed { index, item ->
-                        if (messageHasConversation(item, message)) {
-                            hasNewConversationCount = hasNewConversationCount.plus(1)
-                            if (message.messageBody?.isSelf == false) {
-                                val unreadAccount = item.unread_account.plus(1)
-                                sgConversations[index].unread_account = unreadAccount
+            synchronized(this) {
+                var hasNewConversationCount = 0
+                messages.forEachIndexed { index, message ->
+                    if (message.type != MessageType.WELCOME) {
+                        sgConversations.mapIndexed { index, item ->
+                            if (messageHasConversation(item, message)) {
+                                hasNewConversationCount = hasNewConversationCount.plus(1)
+                                if (message.messageBody?.isSelf == false) {
+                                    val unreadAccount = item.unread_account.plus(1)
+                                    sgConversations[index].unread_account = unreadAccount
+                                }
+                                sgConversations[index].newMessage = message
                             }
-                            sgConversations[index].newMessage = message
                         }
+                    } else {
+                        hasNewConversationCount = hasNewConversationCount.plus(1)
                     }
-                } else {
-                    hasNewConversationCount = hasNewConversationCount.plus(1)
                 }
-            }
-            sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal()?:BigDecimal.ZERO }
-            sgConversationCallbacks?.onConversationList(sgConversations)
-            if (hasNewConversationCount != messages.size) {
-                integrationConversation(true)
+                sgConversations.sortByDescending {
+                    it.newMessage?.messageBody?.receivedTime?.toBigDecimal() ?: BigDecimal.ZERO
+                }
+                sgConversationCallbacks?.onConversationList(sgConversations)
+                if (hasNewConversationCount != messages.size) {
+                    integrationConversation(true)
+                }
             }
         }
 
@@ -150,14 +158,17 @@ object IMConversationManager {
                     }
                     return@map it
                 }.let {
-                    sgConversations.clear()
-                    sgConversations.addAll(it)
-                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
-                    sgConversationCallbacks?.onConversationList(sgConversations)
+                    synchronized(this) {
+                        sgConversations.clear()
+                        sgConversations.addAll(it)
+                        sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                        sgConversationCallbacks?.onConversationList(sgConversations)
+                    }
                 }
             }
         }
 
+        @Synchronized
         override fun on201Message(message: Message) {
             val bean = gson.fromJson(message.extend, ChangeServiceAccountBean::class.java)
             sgConversations.map {
@@ -170,10 +181,12 @@ object IMConversationManager {
                 }
                 return@map it
             }.let {
-                sgConversations.clear()
-                sgConversations.addAll(it)
-                sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
-                sgConversationCallbacks?.onConversationList(sgConversations)
+                synchronized(this) {
+                    sgConversations.clear()
+                    sgConversations.addAll(it)
+                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                    sgConversationCallbacks?.onConversationList(sgConversations)
+                }
             }
         }
     }
@@ -202,16 +215,20 @@ object IMConversationManager {
                     }
                     return@let null
                 }?.let {
-                    sgConversations.clear()
+                    val datas = arrayListOf<SGConversation>()
                     it.forEach { item ->
                         val sgConversation = item.toSGConversation()
                         sgConversation.chat_account_info?.let { its ->
                             UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
                         }
-                        sgConversations.add(sgConversation)
+                        datas.add(sgConversation)
                     }
-                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
-                    sgConversationCallbacks?.onConversationList(sgConversations)
+                    synchronized(this) {
+                        sgConversations.clear()
+                        sgConversations.addAll(datas)
+                        sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                        sgConversationCallbacks?.onConversationList(sgConversations)
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
