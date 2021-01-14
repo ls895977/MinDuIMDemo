@@ -12,7 +12,10 @@ import com.css.im_kit.http.Retrofit
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.conversation.Shop
 import com.css.im_kit.model.userinfo.SGUserInfo
-import com.css.im_kit.utils.*
+import com.css.im_kit.utils.generateSignature
+import com.css.im_kit.utils.long10
+import com.css.im_kit.utils.md5
+import com.css.im_kit.utils.toMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -225,17 +228,23 @@ object HttpManager {
      * 把消息置为已读
      */
     @Synchronized
-    suspend fun changReadSomeOne(chat_account: String): Boolean =
+    suspend fun changReadSomeOne(chat_account: String, shop_id: String): Boolean =
             withContext(Dispatchers.Default) {
                 val nonceStr = System.currentTimeMillis().toString().md5()
                 val map = HashMap<String, String>()
                 map["app_id"] = IMManager.app_id ?: ""
                 map["account"] = IMManager.account ?: ""
+                if (!IMManager.isBusiness) {
+                    map["shop_id"] = shop_id
+                }
                 map["chat_account"] = chat_account
                 map["nonce_str"] = nonceStr
                 val body = HashMap<String, Any>()
                 body["app_id"] = IMManager.app_id ?: ""
                 body["account"] = IMManager.account ?: ""
+                if (!IMManager.isBusiness) {
+                    body["shop_id"] = shop_id
+                }
                 body["chat_account"] = chat_account
                 body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
                 body["nonce_str"] = nonceStr

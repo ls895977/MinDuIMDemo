@@ -405,7 +405,8 @@ object IMChatRoomManager {
                             if (isStart) {
                                 isStart = false
                                 val b = HttpManager.changReadSomeOne(
-                                        conversation.chat_account ?: ""
+                                        conversation.chat_account ?: "",
+                                        conversation.shop_id ?: ""
                                 )
                                 //通知会话列表清空未读消息数
                                 if (b) {
