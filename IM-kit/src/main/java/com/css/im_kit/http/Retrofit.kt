@@ -3,6 +3,7 @@ package com.css.im_kit.http
 import android.util.Log
 import com.css.im_kit.BuildConfig
 import com.css.im_kit.IMManager
+import okhttp3.ConnectionPool
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -43,6 +44,7 @@ object Retrofit {
                         .readTimeout(60000, TimeUnit.MILLISECONDS)
                         .connectTimeout(60000, TimeUnit.MILLISECONDS)
                         .writeTimeout(60000, TimeUnit.MILLISECONDS)
+                        .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
                         .retryOnConnectionFailure(true)
                         //设置Header
                         .addInterceptor(getHeaderInterceptor())
@@ -53,6 +55,7 @@ object Retrofit {
                         .readTimeout(60000, TimeUnit.MILLISECONDS)
                         .connectTimeout(60000, TimeUnit.MILLISECONDS)
                         .writeTimeout(60000, TimeUnit.MILLISECONDS)
+                        .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
                         .retryOnConnectionFailure(true)
                         .addInterceptor(getHeaderInterceptor())
                         .addInterceptor(getInterceptor())
