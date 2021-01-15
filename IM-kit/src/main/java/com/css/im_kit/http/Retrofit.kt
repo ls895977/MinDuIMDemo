@@ -58,7 +58,6 @@ object Retrofit {
                         .connectionPool(ConnectionPool(32, 5, TimeUnit.MINUTES))
                         .retryOnConnectionFailure(true)
                         .addInterceptor(getHeaderInterceptor())
-                        .addInterceptor(getInterceptor())
                         //设置Header
                         .build()
             }.also { httpClient = it }

@@ -23,7 +23,7 @@ public class TestApplication extends Application {
         IMManager.INSTANCE.build(this, "1607505722", "uN29TNVRilVmwqHw7aIMQfDZyw2ltVZO");
         IMManager.INSTANCE.setIMURL("http://testchatapi.supersg.cn", "/chat/listC");
         IMManager.INSTANCE.setQiuNiuTokenUrl("http://testcustomerapi.supersg.cn/api/customer_app/qiniu/getConfig");
-        IMManager.INSTANCE.setBusiness(true);
+//        IMManager.INSTANCE.setBusiness(true);
     }
 
     //static 代码段可以防止内存泄露
