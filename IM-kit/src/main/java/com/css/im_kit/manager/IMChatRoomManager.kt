@@ -164,6 +164,7 @@ object IMChatRoomManager {
                 conversation?.let {
                     if (it.shop_id == bean.shop_id.toString()) {
                         it.chat_account = bean.account
+                        it.chat_account_info ?: SGUserInfo()
                         it.chat_account_info?.user_type = bean.user_type.toString()
                         it.chat_account_info?.avatar = bean.avatar
                         it.chat_account_info?.nickname = bean.nickname
