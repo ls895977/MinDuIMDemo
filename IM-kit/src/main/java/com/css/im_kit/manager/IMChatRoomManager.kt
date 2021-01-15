@@ -318,7 +318,7 @@ object IMChatRoomManager {
                         extend = gson.toJson(extend)
                 )
             }.also {
-                IMMessageManager.sendImages(it as MutableList<Message>)
+                IMMessageManager.sendImages(it as MutableList<Message>,false)
             }
         }
     }

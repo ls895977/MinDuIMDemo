@@ -288,13 +288,18 @@ object IMMessageManager {
         uiScope.launch {
             withContext(Dispatchers.Default) {
                 MessageRepository.getMessage4messageId(messageId)?.let { message ->
+                    if (message.message_type == DBMessageType.IMAGE.value) {
+                        if (!message.message.contains("sgim")) {
+                            sendImages(arrayListOf(message), true)
+                            return@let null
+                        }
+                    }
                     message.send_time = System.currentTimeMillis()
                     message.receive_time = System.currentTimeMillis()
                     message.send_status = SendType.SENDING.text
                     MessageRepository.update(message)
                     Log.e("发送消息", message.toSendMessageBean().toJsonString())
                     MessageServiceUtils.sendNewMsg(message.toSendMessageBean().toJsonString())
-
                     delay(10000)
                     return@let MessageRepository.getMessage4messageId(message.m_id)
                 }?.let { message ->
@@ -336,7 +341,7 @@ object IMMessageManager {
     /**
      * 上传图片
      */
-    fun sendImages(imgMessages: MutableList<Message>) {
+    fun sendImages(imgMessages: MutableList<Message>, messageReplay: Boolean) {
         ioScope.launch {
             withContext(Dispatchers.Default) {
                 val body = HashMap<String, String>()
@@ -364,7 +369,9 @@ object IMMessageManager {
                 }
                 return@let null
             }?.let {
-                saveMessages(imgMessages, isSelf = true, send = false)
+                if (!messageReplay) {
+                    saveMessages(imgMessages, isSelf = true, send = false)
+                }
                 upLoadImages(imgMessages, it.token, it.fileName)
             }
         }
