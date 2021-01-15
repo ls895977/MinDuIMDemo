@@ -318,7 +318,7 @@ object IMChatRoomManager {
                         extend = gson.toJson(extend)
                 )
             }.also {
-                IMMessageManager.sendImages(it as MutableList<Message>,false)
+                IMMessageManager.sendImages(it as MutableList<Message>, false)
             }
         }
     }
@@ -417,6 +417,7 @@ object IMChatRoomManager {
                                             0,
                                             true)
                                 }
+
                             }
                         }.let {
                             //获取数据库聊天消息 isBusiness 是否是商戶端
@@ -448,6 +449,12 @@ object IMChatRoomManager {
                                 if (!it.isNullOrEmpty()) httpPage++
                                 return@let messages
                             } else {
+                                it.forEach {
+                                    if (it.send_status == SendType.SENDING.text) {
+                                        it.send_status = SendType.FAIL.text
+                                        MessageRepository.changeMessageSendType(SendType.FAIL, it.m_id)
+                                    }
+                                }
                                 return@let it
                             }
                         }?.map {
