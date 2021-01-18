@@ -17,6 +17,9 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
 
     private var conversationListAdapter: ConversationListAdapter? = null
 
+    //是否拉去过数据
+    private var hasGetData = false
+
     override fun layoutResource(): Int = R.layout.fragment_conversation_list
     override fun initView() {}
     override fun initData() {
@@ -72,6 +75,7 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
                 binding?.tvNoContent?.visibility = View.GONE
             }
         }
+        hasGetData = !sgConversation.isNullOrEmpty()
     }
 
     /**
