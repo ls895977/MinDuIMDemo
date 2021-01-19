@@ -357,7 +357,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                         //type=7的特殊消息
                         if (isAddSend7Message && isFirstGetData) {
                             binding?.rlMessage7?.visibility = View.VISIBLE
-                            binding?.tvProductPrice?.text = "￥${productPrice}"
+                            binding?.tvProductPrice?.text = "¥${productPrice}"
                             binding?.tvProductName?.text = productName
                             binding?.ivProductImage?.let { IMGlideUtil.loadRound4Img(requireContext(), productImage, it, IMDensityUtils.dp2px(requireContext(), 4f)) }
                         } else {
