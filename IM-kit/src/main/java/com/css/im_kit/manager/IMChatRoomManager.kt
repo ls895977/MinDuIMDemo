@@ -422,19 +422,20 @@ object IMChatRoomManager {
                             }
                         }.let {
                             //获取数据库聊天消息 isBusiness 是否是商戶端
-                            if (IMManager.isBusiness) {
-                                MessageRepository.getMessage4Account(
-                                        chat_account = conversation.chat_account ?: "",
-                                        lastItemTime = lastItemTime,
-                                        pageSize = pageSize
-                                )
-                            } else {
-                                MessageRepository.getMessage(
-                                        conversation.shop_id ?: "",
-                                        lastItemTime = lastItemTime,
-                                        pageSize = pageSize
-                                )
-                            }
+//                            if (IMManager.isBusiness) {
+//                                MessageRepository.getMessage4Account(
+//                                        chat_account = conversation.chat_account ?: "",
+//                                        lastItemTime = lastItemTime,
+//                                        pageSize = pageSize
+//                                )
+//                            } else {
+//                                MessageRepository.getMessage(
+//                                        conversation.shop_id ?: "",
+//                                        lastItemTime = lastItemTime,
+//                                        pageSize = pageSize
+//                                )
+//                            }
+                            return@let arrayListOf<Message>()
                         }.let {
                             //获取历史记录
                             if (it.isNullOrEmpty()) {
