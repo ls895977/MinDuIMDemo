@@ -104,7 +104,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
             }
             3 -> {//product
                 val message = item.messageBody as CommodityMessageBody
-                helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
+                helper.setText(R.id.tv_product_price, "¥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
                 IMGlideUtil.loadRound2Img(mContext, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
@@ -122,7 +122,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
             }
             6 -> {//product
                 val message = item.messageBody as CommodityMessageBody
-                helper.setText(R.id.tv_product_price, "￥${message.commodityPrice}")
+                helper.setText(R.id.tv_product_price, "¥${message.commodityPrice}")
                 helper.setText(R.id.tv_product_name, message.commodityName)
                 IMGlideUtil.loadRound2Img(mContext, message.commodityImage, helper.getView(R.id.iv_product_image), IMDensityUtils.dp2px(activity, 8f))
                 //点击事件
