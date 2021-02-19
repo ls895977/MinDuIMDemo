@@ -59,8 +59,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
     override fun onSetFragmentDataListener() {
         //item点击
         conversationListFragment?.addOnClickListener(this)
-        //item长按
-        conversationListFragment?.addOnLongClickListener(this)
         //重连点击监听
         conversationListFragment?.addLinkOnClickListener(View.OnClickListener {
             isConnected = false

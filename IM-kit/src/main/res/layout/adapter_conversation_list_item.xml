@@ -11,8 +11,8 @@
         android:id="@+id/user_avatar"
         android:layout_width="@dimen/dp_50"
         android:layout_height="@dimen/dp_50"
-        android:layout_marginLeft="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_10"
         android:src="@mipmap/im_icon_avatar_default" />
 
@@ -20,8 +20,8 @@
         android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_25"
-        android:layout_marginRight="@dimen/dp_20"
-        android:layout_toRightOf="@+id/user_avatar"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_toEndOf="@+id/user_avatar"
         android:gravity="bottom"
         android:orientation="horizontal"
         android:paddingBottom="@dimen/dp_2">
@@ -89,7 +89,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_1"
+        android:layout_height="0.5dp"
         android:layout_below="@+id/user_avatar"
         android:layout_alignStart="@+id/ll_message"
         android:layout_alignEnd="@+id/ll_message"

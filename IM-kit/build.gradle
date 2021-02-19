@@ -103,4 +103,6 @@ dependencies {
     implementation 'com.qiniu:qiniu-android-sdk:7.5.2'
     implementation 'com.qiniu:happy-dns:0.2.10'
 
+    //弹窗
+    implementation 'com.lxj:xpopup:2.1.8'
 }
