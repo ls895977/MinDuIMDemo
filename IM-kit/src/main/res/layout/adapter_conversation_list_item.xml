@@ -50,11 +50,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_message"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_25"
         android:layout_below="@+id/ll1"
-        android:layout_marginRight="@dimen/dp_20"
-        android:layout_toRightOf="@+id/user_avatar"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_toEndOf="@+id/user_avatar"
         android:orientation="horizontal"
         android:paddingTop="@dimen/dp_4">
 
@@ -90,6 +91,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_1"
         android:layout_below="@+id/user_avatar"
+        android:layout_alignStart="@+id/ll_message"
+        android:layout_alignEnd="@+id/ll_message"
         android:background="@color/color_eeeeee" />
 
 </RelativeLayout>

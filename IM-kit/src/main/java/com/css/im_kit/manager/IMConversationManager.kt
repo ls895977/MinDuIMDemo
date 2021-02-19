@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.awaitResponse
 import java.math.BigDecimal
-import java.util.concurrent.CopyOnWriteArrayList
 
 object IMConversationManager {
 
@@ -31,7 +30,7 @@ object IMConversationManager {
     private var sgConversationCallbacks: SGConversationCallback? = null
 
     //会话列表暂存数据
-    private var sgConversations = CopyOnWriteArrayList<SGConversation>()
+    private var sgConversations = ArrayList<SGConversation>()
 
     /**
      * 添加会话列表监听
