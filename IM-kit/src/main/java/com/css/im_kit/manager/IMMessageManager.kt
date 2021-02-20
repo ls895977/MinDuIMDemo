@@ -13,6 +13,7 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.imservice.MessageServiceUtils
+import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
@@ -58,30 +59,44 @@ object IMMessageManager {
                                         it.on201Message(receiveMessage.toDBMessage())
                                     }
                                 }
-                                DBMessageType.WELCOME.value,
-                                DBMessageType.NONBUSINESSHOURS.value -> {
+                                DBMessageType.WELCOME.value, DBMessageType.NONBUSINESSHOURS.value -> {
                                     val message = receiveMessage.toDBMessage()
                                     message.read_status = 1
                                     newMessageNoSave(message)
                                 }
                                 //新消息
                                 else -> {
-                                    val message = receiveMessage.toDBMessage()
-                                    message.read_status = 1
-                                    ioScope.launch {
-                                        async {
-                                            saveMessage(message, false)
+                                    //SYSTEM(11),
+                                    //    INTERACTION(12),
+                                    //    FANS(13),
+                                    //    FANS(14),
+                                    if (receiveMessage.type == DBMessageType.TEXT.value
+                                            && (receiveMessage.source == DBMessageSource.SYSTEM.value
+                                                    || receiveMessage.source == DBMessageSource.INTERACTION.value
+                                                    || receiveMessage.source == DBMessageSource.FANS.value
+                                                    || receiveMessage.source == DBMessageSource.FANS.value)
+                                    ) {
+                                        messageCallback.forEach {
+                                            it.onSystemMessage(mutableListOf(receiveMessage))
                                         }
+                                    } else {
+                                        val message = receiveMessage.toDBMessage()
+                                        message.read_status = 1
+                                        ioScope.launch {
+                                            async {
+                                                saveMessage(message, false)
+                                            }
+                                        }
+                                        if (receiveMessage.type != DBMessageType.SERVERRECEIPT.value) {
+                                            receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
+                                            receiveMessage.send_account = IMManager.account ?: ""
+                                            receiveMessage.receive_account = 0.toString()
+                                            receiveMessage.source = 6
+                                            "收到消息回执:${receiveMessage.toSendMessageBean().toJsonString()}".log()
+                                            MessageServiceUtils.sendNewMsg(receiveMessage.toSendMessageBean().toJsonString())
+                                        }
+                                        return@let message
                                     }
-                                    if (receiveMessage.type != DBMessageType.SERVERRECEIPT.value) {
-                                        receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
-                                        receiveMessage.send_account = IMManager.account ?: ""
-                                        receiveMessage.receive_account = 0.toString()
-                                        receiveMessage.source = 6
-                                        "收到消息回执:${receiveMessage.toSendMessageBean().toJsonString()}".log()
-                                        MessageServiceUtils.sendNewMsg(receiveMessage.toSendMessageBean().toJsonString())
-                                    }
-                                    return@let message
                                 }
                             }
                         }

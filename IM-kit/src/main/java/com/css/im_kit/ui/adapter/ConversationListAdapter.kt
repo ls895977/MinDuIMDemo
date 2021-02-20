@@ -2,11 +2,13 @@ package com.css.im_kit.ui.adapter
 
 import android.content.Context
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.IMManager
 import com.css.im_kit.R
+import com.css.im_kit.db.gson
 import com.css.im_kit.http.bean.SysBeanBack
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
@@ -65,12 +67,17 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         //未读消息条数
         helper.setText(R.id.message_count, if (item.unread_number > 99) "99+" else item.unread_number.toString())
         helper.setGone(R.id.message_count, item.unread_number > 0)
-
-        helper.setText(R.id.message_content, item.content)
+        if (item.content.isEmpty()) {
+            helper.setText(R.id.message_content, "没有消息")
+        } else {
+            val json = gson.fromJson(item.content, HashMap::class.java)
+            helper.setText(R.id.message_content, json["title"]?.toString() ?: "")
+        }
     }
 
     private fun message(helper: BaseViewHolder, item: MultiItemEntity) {
         item as SGConversation
+        helper.getView<RelativeLayout>(R.id.item_view).setBackgroundResource(if (item.sort == 0) R.color.white else R.color.color_f6f6f6)
         if (IMManager.isBusiness) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))

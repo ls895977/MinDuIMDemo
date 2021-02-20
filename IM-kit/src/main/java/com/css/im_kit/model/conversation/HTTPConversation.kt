@@ -77,6 +77,11 @@ class HTTPConversation : Serializable {
     var content: String? = null
 
     /**
+     *置顶字段，0 是不置顶
+     */
+    var sort: Int = 0
+
+    /**
      * 新消息数量
      */
     var unread_account: Int = 0
@@ -263,6 +268,7 @@ class HTTPConversation : Serializable {
                 chat_account = chat_account,
                 shop_id = shop_id,
                 newMessage = message,
+                sort = sort,
                 unread_account = unread_account,
                 chat_account_info = chat_account_info,
                 shop = shop

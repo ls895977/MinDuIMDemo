@@ -12,6 +12,8 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.http.bean.ChangeServiceAccountBean
+import com.css.im_kit.http.bean.SysBeanBack
+import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
@@ -55,8 +57,13 @@ object IMConversationManager {
                 return@apply
             }
             sgConversations.map {
-                it as SGConversation
-                return@map it.unread_account
+                if (it.itemType == 1) {
+                    it as SGConversation
+                    return@map it.unread_account
+                } else {
+                    it as SysBeanBack
+                    return@map it.unread_number
+                }
             }.reduce { acc, i ->
                 acc.plus(i)
             }.let {
@@ -84,6 +91,24 @@ object IMConversationManager {
     }
 
     /**
+     * 聊天列表取消置顶
+     */
+    fun unChatTop(position: Int) {
+        uiScope.launch {
+            val chatId = (sgConversations[position] as SGConversation).id
+            chatId?.let {
+                HttpManager.unChatTop(it) {
+                    synchronized(this) {
+                        if (it) {
+                            getConversationList()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * 聊天列表删除
      */
     fun chatDel(position: Int) {
@@ -94,8 +119,12 @@ object IMConversationManager {
                     synchronized(this) {
                         if (it) {
                             sgConversations.filter { conversation ->
-                                conversation as SGConversation
-                                conversation.id != chatId
+                                if (conversation.itemType == 1) {
+                                    conversation as SGConversation
+                                    return@filter conversation.id != chatId
+                                } else {
+                                    return@filter true
+                                }
                             }.let {
                                 sgConversations.clear()
                                 sgConversations.addAll(it)
@@ -189,14 +218,16 @@ object IMConversationManager {
                 messages.forEachIndexed { index, message ->
                     if (message.type != MessageType.WELCOME) {
                         sgConversations.mapIndexed { index, item ->
-                            item as SGConversation
-                            if (messageHasConversation(item, message)) {
-                                hasNewConversationCount = hasNewConversationCount.plus(1)
-                                if (message.messageBody?.isSelf == false) {
-                                    val unreadAccount = item.unread_account.plus(1)
-                                    (sgConversations[index] as SGConversation).unread_account = unreadAccount
+                            if (item.itemType == 1) {
+                                item as SGConversation
+                                if (messageHasConversation(item, message)) {
+                                    hasNewConversationCount = hasNewConversationCount.plus(1)
+                                    if (message.messageBody?.isSelf == false) {
+                                        val unreadAccount = item.unread_account.plus(1)
+                                        (sgConversations[index] as SGConversation).unread_account = unreadAccount
+                                    }
+                                    (sgConversations[index] as SGConversation).newMessage = message
                                 }
-                                (sgConversations[index] as SGConversation).newMessage = message
                             }
                         }
                     } else {
@@ -219,6 +250,13 @@ object IMConversationManager {
                     integrationConversation(true)
                 }
             }
+        }
+
+        /**
+         * 系统消息
+         */
+        override fun onSystemMessage(message: MutableList<ReceiveMessageBean>) {
+
         }
 
         @Synchronized
@@ -331,9 +369,29 @@ object IMConversationManager {
                     )?.await()
                     synchronized(this) {
                         sgConversations.clear()
-                        job1?.let {
-                            if (it.code == "20000") {
-                                sgConversations.addAll(it.data)
+                        if (!IMManager.isBusiness) {
+                            val sysMessage = arrayListOf<MultiItemEntity>()
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 14, created_time = "", unread_number = 0))
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 11, created_time = "", unread_number = 0))
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 12, created_time = "", unread_number = 0))
+                            job1?.let { data ->
+                                if (data.code == "20000") {
+                                    sysMessage.forEach { item ->
+                                        item as SysBeanBack
+                                        data.data.forEach { bean ->
+                                            if (item.sys_type == bean.sys_type) {
+                                                if (item.sys_type == 12) {
+                                                    item.content = "{\"title\":\"新的互动消息\""
+                                                } else {
+                                                    item.content = bean.content
+                                                }
+                                                item.created_time = bean.created_time
+                                                item.unread_number = bean.unread_number
+                                            }
+                                        }
+                                    }
+                                    sgConversations.addAll(sysMessage)
+                                }
                             }
                         }
                         job2?.let {

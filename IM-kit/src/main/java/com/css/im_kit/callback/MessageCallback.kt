@@ -1,6 +1,7 @@
 package com.css.im_kit.callback
 
 import com.css.im_kit.db.bean.Message
+import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.model.message.SGMessage
 
 interface MessageCallback {
@@ -9,6 +10,8 @@ interface MessageCallback {
      * 接收消息
      */
     fun onReceiveMessage(message: MutableList<SGMessage>)
+
+    fun onSystemMessage(message: MutableList<ReceiveMessageBean>)
 
     /**
      * 接收到消息发送成功回执

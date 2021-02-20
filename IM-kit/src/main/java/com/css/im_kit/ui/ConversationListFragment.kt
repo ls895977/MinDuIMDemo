@@ -47,7 +47,7 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
                         .offsetX(IMDensityUtils.getScreenWidth(requireContext()).minus(IMDensityUtils.dp2px(requireContext(), 200f).toFloat()).toInt())
                         .popupType(PopupType.AttachView)
                         .hasShadowBg(true)
-                        .asCustom(MessageConversationsPup(context = requireContext(), position = position, clickListener = this@ConversationListFragment))
+                        .asCustom(MessageConversationsPup(context = requireContext(), isSticky = sort == 0, position = position, clickListener = this@ConversationListFragment))
                         .show()
             }
             return@OnItemChildLongClickListener true
@@ -119,6 +119,8 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
     override fun sticky(position: Int, isSticky: Boolean) {
         if (isSticky) {
             IMConversationManager.chatTop(position)
+        } else {
+            IMConversationManager.unChatTop(position)
         }
     }
 

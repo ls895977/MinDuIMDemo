@@ -292,6 +292,38 @@ object HttpManager {
             }
         }
     }
+    /**
+     * unLlistTop
+     */
+    @Synchronized
+    suspend fun unChatTop(id: String, back: (Boolean) -> Unit) {
+        ioScope.launch {
+            withContext(Dispatchers.Default) {
+                val nonceStr = System.currentTimeMillis().toString().md5()
+                val map = HashMap<String, String>()
+                map["app_id"] = IMManager.app_id ?: ""
+                map["nonce_str"] = nonceStr
+                map["id"] = id
+                val body = HashMap<String, Any>()
+                body["app_id"] = IMManager.app_id ?: ""
+                body["id"] = id
+                body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+                body["nonce_str"] = nonceStr
+
+                Retrofit.api?.unChatTop(
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                )?.awaitResponse()?.let {
+                    if (it.isSuccessful) {
+                        if (it.body()?.code == "20000") {
+                            back(true)
+                        }
+                        back(false)
+                    }
+                    back(false)
+                }
+            }
+        }
+    }
 
     /**
      * 系统消息列表

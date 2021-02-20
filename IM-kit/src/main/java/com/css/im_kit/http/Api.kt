@@ -73,6 +73,12 @@ interface Api {
     fun chatTop(@Body requestBody: RequestBody): Call<BaseData<Any>>
 
     /**
+     * 取消置顶
+     */
+    @POST("/chat/unListTop")
+    fun unChatTop(@Body requestBody: RequestBody): Call<BaseData<Any>>
+
+    /**
      * 聊天列表删除
      */
     @POST("/chat/listDel")

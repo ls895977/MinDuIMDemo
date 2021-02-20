@@ -61,6 +61,11 @@ class SGConversation : Serializable, MultiItemEntity {
     var newMessage: SGMessage? = null
 
     /**
+     *置顶字段，0 是不置顶
+     */
+    var sort: Int = 0
+
+    /**
      * 新消息数量
      */
     var unread_account: Int = 0
@@ -76,7 +81,7 @@ class SGConversation : Serializable, MultiItemEntity {
     var shop: Shop? = null
 
     constructor()
-    constructor(id: String?, account: String?, chat_account: String?, shop_id: String?, newMessage: SGMessage?, unread_account: Int, chat_account_info: SGUserInfo?, shop: Shop?) {
+    constructor(id: String?, account: String?, chat_account: String?, shop_id: String?, newMessage: SGMessage?, unread_account: Int, sort: Int, chat_account_info: SGUserInfo?, shop: Shop?) {
         this.id = id
         this.account = account
         this.chat_account = chat_account
@@ -85,6 +90,7 @@ class SGConversation : Serializable, MultiItemEntity {
         this.unread_account = unread_account
         this.chat_account_info = chat_account_info
         this.shop = shop
+        this.sort = sort
     }
 
     override fun getItemType(): Int {

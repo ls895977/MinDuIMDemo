@@ -16,6 +16,7 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.bean.ChangeServiceAccountBean
 import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
+import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
@@ -121,6 +122,10 @@ object IMChatRoomManager {
                     }
                 }
             }
+        }
+
+        override fun onSystemMessage(message: MutableList<ReceiveMessageBean>) {
+
         }
 
         @Synchronized
