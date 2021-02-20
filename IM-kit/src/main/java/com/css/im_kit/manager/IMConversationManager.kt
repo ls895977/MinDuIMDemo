@@ -49,6 +49,10 @@ object IMConversationManager {
      */
     private fun unreadCount() {
         unreadCountListener?.apply {
+            if (sgConversations.isNullOrEmpty()) {
+                unreadCount(0)
+                return@apply
+            }
             sgConversations.map {
                 return@map it.unread_account
             }.reduce { acc, i ->
