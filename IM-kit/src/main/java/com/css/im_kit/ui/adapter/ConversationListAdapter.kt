@@ -55,7 +55,7 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         //时间
         helper.setGone(R.id.time, item.created_time.isNotEmpty())
         item.created_time.let {
-            val time = it.toLong().long13()
+            val time = IMDateUtil.dateToStamp(it).long13()
             try {
                 helper.setText(R.id.time, IMDateUtil.getSimpleTime0(time))
             } catch (e: Exception) {
