@@ -305,7 +305,7 @@ object HttpManager {
         map["account"] = IMManager.account ?: ""
         val body = HashMap<String, Any>()
         body["app_id"] = IMManager.app_id ?: ""
-        map["account"] = IMManager.account ?: ""
+        body["account"] = IMManager.account ?: ""
         body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
         body["nonce_str"] = nonceStr
 
