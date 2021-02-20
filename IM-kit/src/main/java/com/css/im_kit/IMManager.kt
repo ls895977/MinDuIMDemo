@@ -115,9 +115,17 @@ object IMManager {
             UserInfoRepository.deleteAll()
         }
     }
+
+    fun setUnreadCountListener(listener: UnreadCountListener) {
+        IMConversationManager.setUnreadCountListener(listener)
+    }
 }
 
 interface TokenCallBack {
     fun getToken(): String
     fun getImageBaseUrl(): String
+}
+
+interface UnreadCountListener {
+    fun unreadCount(count: Int)
 }

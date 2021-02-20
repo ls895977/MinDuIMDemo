@@ -1,6 +1,7 @@
 package com.css.im_kit.manager
 
 import com.css.im_kit.IMManager
+import com.css.im_kit.UnreadCountListener
 import com.css.im_kit.callback.MessageCallback
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.db.bean.Message
@@ -31,6 +32,32 @@ object IMConversationManager {
 
     //会话列表暂存数据
     private var sgConversations = ArrayList<SGConversation>()
+
+    private var unreadCountListener: UnreadCountListener? = null
+
+    /**
+     * 添加未读数量监听
+     */
+
+    fun setUnreadCountListener(listener: UnreadCountListener) {
+        unreadCountListener = listener
+        unreadCount()
+    }
+
+    /**
+     * 更新未读数
+     */
+    private fun unreadCount() {
+        unreadCountListener?.apply {
+            sgConversations.map {
+                return@map it.unread_account
+            }.reduce { acc, i ->
+                acc.plus(i)
+            }.let {
+                unreadCount(it)
+            }
+        }
+    }
 
     /**
      * 添加会话列表监听
@@ -120,7 +147,9 @@ object IMConversationManager {
                 sgConversations.sortByDescending {
                     it.newMessage?.messageBody?.receivedTime?.toBigDecimal() ?: BigDecimal.ZERO
                 }
+
                 sgConversationCallbacks?.onConversationList(sgConversations)
+                unreadCount()
                 if (hasNewConversationCount != messages.size) {
                     integrationConversation(true)
                 }
@@ -162,6 +191,7 @@ object IMConversationManager {
                         sgConversations.addAll(it)
                         sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                         sgConversationCallbacks?.onConversationList(sgConversations)
+                        unreadCount()
                     }
                 }
             }
@@ -185,6 +215,7 @@ object IMConversationManager {
                     sgConversations.addAll(it)
                     sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                     sgConversationCallbacks?.onConversationList(sgConversations)
+                    unreadCount()
                 }
             }
         }
@@ -227,6 +258,7 @@ object IMConversationManager {
                         sgConversations.addAll(datas)
                         sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
                         sgConversationCallbacks?.onConversationList(sgConversations)
+                        unreadCount()
                     }
                 }
             } catch (e: Exception) {
