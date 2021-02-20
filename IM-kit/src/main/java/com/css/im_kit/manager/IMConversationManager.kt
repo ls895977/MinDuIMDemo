@@ -332,23 +332,27 @@ object IMConversationManager {
                     synchronized(this) {
                         sgConversations.clear()
                         job1?.let {
-                            sgConversations.addAll(it.data)
+                            if (it.code == "20000") {
+                                sgConversations.addAll(it.data)
+                            }
                         }
                         job2?.let {
-                            val datas = arrayListOf<SGConversation>()
-                            it.data.forEach { item ->
-                                val sgConversation = item.toSGConversation()
-                                sgConversation.chat_account_info?.let { its ->
-                                    ioScope.launch {
-                                        UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
+                            if (it.code == "20000") {
+                                val datas = arrayListOf<SGConversation>()
+                                it.data.forEach { item ->
+                                    val sgConversation = item.toSGConversation()
+                                    sgConversation.chat_account_info?.let { its ->
+                                        ioScope.launch {
+                                            UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
+                                        }
                                     }
+                                    datas.add(sgConversation)
                                 }
-                                datas.add(sgConversation)
+                                datas.sortByDescending {
+                                    it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                }
+                                sgConversations.addAll(datas)
                             }
-                            datas.sortByDescending {
-                                it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
-                            }
-                            sgConversations.addAll(datas)
                         }
                         sgConversationCallbacks?.onConversationList(sgConversations)
                         unreadCount()

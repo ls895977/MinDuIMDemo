@@ -298,7 +298,6 @@ object HttpManager {
      */
     @Synchronized
     fun chatSysMessage(): Call<BaseData<MutableList<SysBeanBack>>>? {
-
         val nonceStr = System.currentTimeMillis().toString().md5()
         val map = HashMap<String, String>()
         map["app_id"] = IMManager.app_id ?: ""

@@ -2,6 +2,7 @@ package com.example.minduimdemo
 
 import android.util.Log
 import android.widget.Toast
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.IMManager
 import com.css.im_kit.TokenCallBack
 import com.css.im_kit.callback.ChatRoomCallback
@@ -123,7 +124,7 @@ class TestActivity : BaseActivity<ActivityDbtestBinding>(), SGConversationCallba
         }
     }
 
-    override fun onConversationList(sgConversation: List<SGConversation>) {
+    override fun onConversationList(sgConversation: List<MultiItemEntity>) {
         Log.e("111", sgConversation.toString())
     }
 
