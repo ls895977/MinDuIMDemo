@@ -69,6 +69,7 @@
             android:layout_height="wrap_content"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="3"
+            android:overScrollMode="never"
             tools:listitem="@layout/adapter_conversation_list_item" />
     </LinearLayout>
 

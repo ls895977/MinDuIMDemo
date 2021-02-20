@@ -1,5 +1,6 @@
 package com.css.im_kit.manager
 
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.IMManager
 import com.css.im_kit.UnreadCountListener
 import com.css.im_kit.callback.MessageCallback
@@ -20,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.awaitResponse
+import retrofit2.await
 import java.math.BigDecimal
 
 object IMConversationManager {
@@ -31,7 +32,7 @@ object IMConversationManager {
     private var sgConversationCallbacks: SGConversationCallback? = null
 
     //会话列表暂存数据
-    private var sgConversations = ArrayList<SGConversation>()
+    private var sgConversations = ArrayList<MultiItemEntity>()
 
     private var unreadCountListener: UnreadCountListener? = null
 
@@ -54,11 +55,56 @@ object IMConversationManager {
                 return@apply
             }
             sgConversations.map {
+                it as SGConversation
                 return@map it.unread_account
             }.reduce { acc, i ->
                 acc.plus(i)
             }.let {
                 unreadCount(it)
+            }
+        }
+    }
+
+    /**
+     * 聊天列表置顶
+     */
+    fun chatTop(position: Int) {
+        uiScope.launch {
+            val chatId = (sgConversations[position] as SGConversation).id
+            chatId?.let {
+                HttpManager.chatTop(it) {
+                    synchronized(this) {
+                        if (it) {
+                            getConversationList()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 聊天列表删除
+     */
+    fun chatDel(position: Int) {
+        uiScope.launch {
+            val chatId = (sgConversations[position] as SGConversation).id
+            chatId?.let {
+                HttpManager.chatDel(it) {
+                    synchronized(this) {
+                        if (it) {
+                            sgConversations.filter { conversation ->
+                                conversation as SGConversation
+                                conversation.id != chatId
+                            }.let {
+                                sgConversations.clear()
+                                sgConversations.addAll(it)
+                                sgConversationCallbacks?.onConversationList(sgConversations)
+                                unreadCount()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -71,7 +117,15 @@ object IMConversationManager {
         //添加监听立即发送暂存数据
         synchronized(this) {
             if (!sgConversations.isNullOrEmpty()) {
-                sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                sgConversations.sortByDescending {
+                    if (it.itemType == 1) {
+                        it as SGConversation
+                        return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                ?: BigDecimal.ZERO
+                    } else {
+                        return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                    }
+                }
                 listener.onConversationList(sgConversations)
             }
         }
@@ -135,13 +189,14 @@ object IMConversationManager {
                 messages.forEachIndexed { index, message ->
                     if (message.type != MessageType.WELCOME) {
                         sgConversations.mapIndexed { index, item ->
+                            item as SGConversation
                             if (messageHasConversation(item, message)) {
                                 hasNewConversationCount = hasNewConversationCount.plus(1)
                                 if (message.messageBody?.isSelf == false) {
                                     val unreadAccount = item.unread_account.plus(1)
-                                    sgConversations[index].unread_account = unreadAccount
+                                    (sgConversations[index] as SGConversation).unread_account = unreadAccount
                                 }
-                                sgConversations[index].newMessage = message
+                                (sgConversations[index] as SGConversation).newMessage = message
                             }
                         }
                     } else {
@@ -149,7 +204,13 @@ object IMConversationManager {
                     }
                 }
                 sgConversations.sortByDescending {
-                    it.newMessage?.messageBody?.receivedTime?.toBigDecimal() ?: BigDecimal.ZERO
+                    if (it.itemType == 1) {
+                        it as SGConversation
+                        return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                ?: BigDecimal.ZERO
+                    } else {
+                        return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                    }
                 }
 
                 sgConversationCallbacks?.onConversationList(sgConversations)
@@ -168,23 +229,26 @@ object IMConversationManager {
         override fun unreadMessageNumCount(shop_id: String, account: String, chat_account: String, size: Int, isClear: Boolean) {
             uiScope.launch {
                 sgConversations.map {
-                    if (IMManager.isBusiness) {
-                        if (it.account == account && chat_account == chat_account) {
-                            it.unread_account = if (isClear) {
-                                0
-                            } else {
-                                val unreadSize = it.unread_account - size
-                                if (unreadSize < 0) 0 else unreadSize
+                    if (it.itemType == 1) {
+                        it as SGConversation
+                        if (IMManager.isBusiness) {
+                            if (it.account == account && chat_account == chat_account) {
+                                it.unread_account = if (isClear) {
+                                    0
+                                } else {
+                                    val unreadSize = it.unread_account - size
+                                    if (unreadSize < 0) 0 else unreadSize
+                                }
                             }
-                        }
 
-                    } else {
-                        if (it.shop_id == shop_id) {
-                            it.unread_account = if (isClear) {
-                                0
-                            } else {
-                                val unreadSize = it.unread_account - size
-                                if (unreadSize < 0) 0 else unreadSize
+                        } else {
+                            if (it.shop_id == shop_id) {
+                                it.unread_account = if (isClear) {
+                                    0
+                                } else {
+                                    val unreadSize = it.unread_account - size
+                                    if (unreadSize < 0) 0 else unreadSize
+                                }
                             }
                         }
                     }
@@ -193,7 +257,14 @@ object IMConversationManager {
                     synchronized(this) {
                         sgConversations.clear()
                         sgConversations.addAll(it)
-                        sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                        sgConversations.sortByDescending {
+                            if (it.itemType == 1) {
+                                it as SGConversation
+                                return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                            } else {
+                                return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                            }
+                        }
                         sgConversationCallbacks?.onConversationList(sgConversations)
                         unreadCount()
                     }
@@ -205,19 +276,29 @@ object IMConversationManager {
         override fun on201Message(message: Message) {
             val bean = gson.fromJson(message.extend, ChangeServiceAccountBean::class.java)
             sgConversations.map {
-                if (it.shop_id == bean.shop_id.toString()) {
-                    it.chat_account = bean.account
-                    it.chat_account_info?.user_type = bean.user_type.toString()
-                    it.chat_account_info?.avatar = bean.avatar
-                    it.chat_account_info?.nickname = bean.nickname
-                    it.chat_account_info?.account = bean.account
+                if (it.itemType == 1) {
+                    it as SGConversation
+                    if (it.shop_id == bean.shop_id.toString()) {
+                        it.chat_account = bean.account
+                        it.chat_account_info?.user_type = bean.user_type.toString()
+                        it.chat_account_info?.avatar = bean.avatar
+                        it.chat_account_info?.nickname = bean.nickname
+                        it.chat_account_info?.account = bean.account
+                    }
                 }
                 return@map it
             }.let {
                 synchronized(this) {
                     sgConversations.clear()
                     sgConversations.addAll(it)
-                    sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                    sgConversations.sortByDescending {
+                        if (it.itemType == 1) {
+                            it as SGConversation
+                            return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                        } else {
+                            return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                        }
+                    }
                     sgConversationCallbacks?.onConversationList(sgConversations)
                     unreadCount()
                 }
@@ -231,36 +312,44 @@ object IMConversationManager {
             if (isDelay) delay(1000)
             try {
                 withContext(Dispatchers.Default) {
+                    val job1 = if (!IMManager.isBusiness) {
+                        HttpManager.chatSysMessage()?.await()
+                    } else {
+                        null
+                    }
                     val nonceStr = System.currentTimeMillis().toString().md5()
                     val map = HashMap<String, String>()
                     map["account"] = IMManager.account ?: ""
                     map["app_id"] = IMManager.app_id ?: ""
                     map["nonce_str"] = nonceStr
-                    Retrofit.api?.chatList(
+                    val job2 = Retrofit.api?.chatList(
                             url = IMManager.chatListUrl ?: "",
                             nonce_str = nonceStr,
                             app_id = IMManager.app_id ?: "",
                             account = IMManager.account ?: "",
                             sign = map.generateSignature(IMManager.app_secret ?: "")
-                    )
-                }?.awaitResponse()?.let {
-                    if (it.isSuccessful && it.body()?.code == "20000") {
-                        return@let it.body()?.data
-                    }
-                    return@let null
-                }?.let {
-                    val datas = arrayListOf<SGConversation>()
-                    it.forEach { item ->
-                        val sgConversation = item.toSGConversation()
-                        sgConversation.chat_account_info?.let { its ->
-                            UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
-                        }
-                        datas.add(sgConversation)
-                    }
+                    )?.await()
                     synchronized(this) {
                         sgConversations.clear()
-                        sgConversations.addAll(datas)
-                        sgConversations.sortByDescending { it.newMessage?.messageBody?.receivedTime?.toBigDecimal() }
+                        job1?.let {
+                            sgConversations.addAll(it.data)
+                        }
+                        job2?.let {
+                            val datas = arrayListOf<SGConversation>()
+                            it.data.forEach { item ->
+                                val sgConversation = item.toSGConversation()
+                                sgConversation.chat_account_info?.let { its ->
+                                    ioScope.launch {
+                                        UserInfoRepository.insertOrUpdateUser(its.toDBUserInfo())
+                                    }
+                                }
+                                datas.add(sgConversation)
+                            }
+                            datas.sortByDescending {
+                                it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                            }
+                            sgConversations.addAll(datas)
+                        }
                         sgConversationCallbacks?.onConversationList(sgConversations)
                         unreadCount()
                     }

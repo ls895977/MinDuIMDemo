@@ -1,10 +1,13 @@
 package com.css.im_kit.ui.adapter
 
 import android.content.Context
-import com.chad.library.adapter.base.BaseQuickAdapter
+import android.widget.ImageView
+import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.IMManager
 import com.css.im_kit.R
+import com.css.im_kit.http.bean.SysBeanBack
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.TextMessageBody
@@ -13,8 +16,61 @@ import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.long13
 
-class ConversationListAdapter(var context: Context) : BaseQuickAdapter<SGConversation, BaseViewHolder>(R.layout.adapter_conversation_list_item, null) {
-    override fun convert(helper: BaseViewHolder, item: SGConversation) {
+class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(null) {
+    init {
+        addItemType(1, R.layout.adapter_conversation_list_item)
+        addItemType(2, R.layout.adapter_conversation_list_item)
+    }
+
+    override fun convert(helper: BaseViewHolder, item: MultiItemEntity) {
+        when (item.itemType) {
+            1 -> {
+                message(helper, item)
+            }
+            2 -> {
+                sysMessage(helper, item)
+            }
+        }
+    }
+
+    private fun sysMessage(helper: BaseViewHolder, item: MultiItemEntity) {
+        item as SysBeanBack
+        //头像
+
+        //用户名
+        when (item.sys_type) {//14订单消息11系统消息12互动消息
+            14 -> {
+                helper.getView<ImageView>(R.id.user_avatar).setImageResource(R.drawable.ic_message_order)
+                helper.setText(R.id.user_name, "订单消息")
+            }
+            11 -> {
+                helper.getView<ImageView>(R.id.user_avatar).setImageResource(R.drawable.ic_message_system)
+                helper.setText(R.id.user_name, "系统消息")
+            }
+            12 -> {
+                helper.getView<ImageView>(R.id.user_avatar).setImageResource(R.drawable.ic_message_hudong)
+                helper.setText(R.id.user_name, "互动")
+            }
+        }
+        //时间
+        helper.setGone(R.id.time, item.created_time.isNotEmpty())
+        item.created_time.let {
+            val time = it.toLong().long13()
+            try {
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(time))
+            } catch (e: Exception) {
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(IMDateUtil.dateToStamp(time.toString())))
+            }
+        }
+        //未读消息条数
+        helper.setText(R.id.message_count, if (item.unread_number > 99) "99+" else item.unread_number.toString())
+        helper.setGone(R.id.message_count, item.unread_number > 0)
+
+        helper.setText(R.id.message_content, item.content)
+    }
+
+    private fun message(helper: BaseViewHolder, item: MultiItemEntity) {
+        item as SGConversation
         if (IMManager.isBusiness) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))

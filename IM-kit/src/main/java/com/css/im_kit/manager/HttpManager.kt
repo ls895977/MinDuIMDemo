@@ -8,7 +8,9 @@ import com.css.im_kit.db.ioScope
 import com.css.im_kit.db.repository.MessageRepository
 import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
+import com.css.im_kit.http.BaseData
 import com.css.im_kit.http.Retrofit
+import com.css.im_kit.http.bean.SysBeanBack
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.conversation.Shop
 import com.css.im_kit.model.userinfo.SGUserInfo
@@ -21,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
 import retrofit2.awaitResponse
 
 object HttpManager {
@@ -222,6 +225,94 @@ object HttpManager {
                 }
             }
         }
+    }
+
+    /**
+     * 聊天列表删除
+     */
+    @Synchronized
+    suspend fun chatDel(id: String, back: (Boolean) -> Unit) {
+        ioScope.launch {
+            withContext(Dispatchers.Default) {
+                val nonceStr = System.currentTimeMillis().toString().md5()
+                val map = HashMap<String, String>()
+                map["app_id"] = IMManager.app_id ?: ""
+                map["nonce_str"] = nonceStr
+                map["id"] = id
+                val body = HashMap<String, Any>()
+                body["app_id"] = IMManager.app_id ?: ""
+                body["id"] = id
+                body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+                body["nonce_str"] = nonceStr
+
+                Retrofit.api?.chatDel(
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                )?.awaitResponse()?.let {
+                    if (it.isSuccessful) {
+                        if (it.body()?.code == "20000") {
+                            back(true)
+                        }
+                        back(false)
+                    }
+                    back(false)
+                }
+            }
+        }
+    }
+
+    /**
+     * 聊天列表置顶
+     */
+    @Synchronized
+    suspend fun chatTop(id: String, back: (Boolean) -> Unit) {
+        ioScope.launch {
+            withContext(Dispatchers.Default) {
+                val nonceStr = System.currentTimeMillis().toString().md5()
+                val map = HashMap<String, String>()
+                map["app_id"] = IMManager.app_id ?: ""
+                map["nonce_str"] = nonceStr
+                map["id"] = id
+                val body = HashMap<String, Any>()
+                body["app_id"] = IMManager.app_id ?: ""
+                body["id"] = id
+                body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+                body["nonce_str"] = nonceStr
+
+                Retrofit.api?.chatTop(
+                        requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+                )?.awaitResponse()?.let {
+                    if (it.isSuccessful) {
+                        if (it.body()?.code == "20000") {
+                            back(true)
+                        }
+                        back(false)
+                    }
+                    back(false)
+                }
+            }
+        }
+    }
+
+    /**
+     * 系统消息列表
+     */
+    @Synchronized
+    fun chatSysMessage(): Call<BaseData<MutableList<SysBeanBack>>>? {
+
+        val nonceStr = System.currentTimeMillis().toString().md5()
+        val map = HashMap<String, String>()
+        map["app_id"] = IMManager.app_id ?: ""
+        map["nonce_str"] = nonceStr
+        map["account"] = IMManager.account ?: ""
+        val body = HashMap<String, Any>()
+        body["app_id"] = IMManager.app_id ?: ""
+        map["account"] = IMManager.account ?: ""
+        body["sign"] = map.generateSignature(IMManager.app_secret ?: "")
+        body["nonce_str"] = nonceStr
+
+        return Retrofit.api?.chatSysList(
+                requestBody = gson.toJson(body).toRequestBody("application/json".toMediaType())
+        )
     }
 
     /**

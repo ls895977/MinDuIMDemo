@@ -2,6 +2,7 @@ package com.css.im_kit.ui
 
 import android.view.View
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.R
 import com.css.im_kit.callback.SGConversationCallback
 import com.css.im_kit.databinding.FragmentConversationListBinding
@@ -74,7 +75,7 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * 拿到数据了
      */
     @Synchronized
-    override fun onConversationList(sgConversation: List<SGConversation>) {
+    override fun onConversationList(sgConversation: List<MultiItemEntity>) {
         uiScope.launch {
             synchronized(this) {
                 conversationListAdapter?.setNewData(sgConversation)
@@ -109,14 +110,16 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * 删除会话
      */
     override fun delete(position: Int) {
-
+        IMConversationManager.chatDel(position)
     }
 
     /**
      * 置顶会话
      */
     override fun sticky(position: Int, isSticky: Boolean) {
-
+        if (isSticky) {
+            IMConversationManager.chatTop(position)
+        }
     }
 
 }

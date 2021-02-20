@@ -2,6 +2,7 @@ package com.css.im_kit.http
 
 import com.css.im_kit.http.bean.AssignCustomerBack
 import com.css.im_kit.http.bean.MessageHistoryBack
+import com.css.im_kit.http.bean.SysBeanBack
 import com.css.im_kit.manager.QNTokenBean
 import com.css.im_kit.model.conversation.HTTPConversation
 import okhttp3.RequestBody
@@ -64,5 +65,23 @@ interface Api {
      */
     @POST("/chat/changReadSomeOne")
     fun changReadSomeOne(@Body requestBody: RequestBody): Call<BaseData<Any>>
+
+    /**
+     * 聊天列表置顶
+     */
+    @POST("/chat/listTop")
+    fun chatTop(@Body requestBody: RequestBody): Call<BaseData<Any>>
+
+    /**
+     * 聊天列表删除
+     */
+    @POST("/chat/listDel")
+    fun chatDel(@Body requestBody: RequestBody): Call<BaseData<Any>>
+
+    /**
+     * 系统消息列表
+     */
+    @POST("/chat/sysList")
+    fun chatSysList(@Body requestBody: RequestBody): Call<BaseData<MutableList<SysBeanBack>>>
 
 }

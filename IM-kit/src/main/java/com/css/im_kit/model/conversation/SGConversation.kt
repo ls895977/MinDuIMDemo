@@ -1,5 +1,6 @@
 package com.css.im_kit.model.conversation
 
+import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.model.message.SGMessage
 import com.css.im_kit.model.userinfo.SGUserInfo
 import java.io.Serializable
@@ -33,7 +34,7 @@ chat_account_info	object
 聊天人的信息
  *
  */
-class SGConversation : Serializable {
+class SGConversation : Serializable, MultiItemEntity {
     /**
      * 会话列表id
      */
@@ -84,6 +85,10 @@ class SGConversation : Serializable {
         this.unread_account = unread_account
         this.chat_account_info = chat_account_info
         this.shop = shop
+    }
+
+    override fun getItemType(): Int {
+        return 1
     }
 }
 
