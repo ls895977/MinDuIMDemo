@@ -72,6 +72,7 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
             val json = gson.fromJson(item.content, HashMap::class.java)
             helper.setText(R.id.message_content, json["title"]?.toString() ?: "")
         }
+        helper.addOnClickListener(R.id.item_view)
     }
 
     private fun message(helper: BaseViewHolder, item: MultiItemEntity) {
