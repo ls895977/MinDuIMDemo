@@ -149,8 +149,12 @@ object IMConversationManager {
                 sgConversations.sortByDescending {
                     if (it.itemType == 1) {
                         it as SGConversation
-                        return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
-                                ?: BigDecimal.ZERO
+                        if (it.sort != 0) {
+                            return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                        } else {
+                            return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                    ?: BigDecimal.ZERO
+                        }
                     } else {
                         return@sortByDescending Long.MAX_VALUE.toBigDecimal()
                     }
@@ -237,8 +241,12 @@ object IMConversationManager {
                 sgConversations.sortByDescending {
                     if (it.itemType == 1) {
                         it as SGConversation
-                        return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
-                                ?: BigDecimal.ZERO
+                        if (it.sort != 0) {
+                            return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                        } else {
+                            return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                    ?: BigDecimal.ZERO
+                        }
                     } else {
                         return@sortByDescending Long.MAX_VALUE.toBigDecimal()
                     }
@@ -256,7 +264,11 @@ object IMConversationManager {
          * 系统消息
          */
         override fun onSystemMessage(message: MutableList<ReceiveMessageBean>) {
-
+            sgConversations.forEach { item ->
+                if (item.itemType == 2) {
+                    item as SysBeanBack
+                }
+            }
         }
 
         @Synchronized
@@ -298,7 +310,11 @@ object IMConversationManager {
                         sgConversations.sortByDescending {
                             if (it.itemType == 1) {
                                 it as SGConversation
-                                return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                if (it.sort != 0) {
+                                    return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                                } else {
+                                    return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                }
                             } else {
                                 return@sortByDescending Long.MAX_VALUE.toBigDecimal()
                             }
@@ -332,7 +348,11 @@ object IMConversationManager {
                     sgConversations.sortByDescending {
                         if (it.itemType == 1) {
                             it as SGConversation
-                            return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                            if (it.sort != 0) {
+                                return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                            } else {
+                                return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                            }
                         } else {
                             return@sortByDescending Long.MAX_VALUE.toBigDecimal()
                         }
@@ -407,7 +427,11 @@ object IMConversationManager {
                                     datas.add(sgConversation)
                                 }
                                 datas.sortByDescending {
-                                    it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                    if (it.sort != 0) {
+                                        return@sortByDescending Long.MAX_VALUE.toBigDecimal()
+                                    } else {
+                                        return@sortByDescending it.newMessage?.messageBody?.receivedTime?.toBigDecimal()
+                                    }
                                 }
                                 sgConversations.addAll(datas)
                             }

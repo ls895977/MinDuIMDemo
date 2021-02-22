@@ -38,7 +38,6 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
     private fun sysMessage(helper: BaseViewHolder, item: MultiItemEntity) {
         item as SysBeanBack
         //头像
-
         //用户名
         when (item.sys_type) {//14订单消息11系统消息12互动消息
             14 -> {
