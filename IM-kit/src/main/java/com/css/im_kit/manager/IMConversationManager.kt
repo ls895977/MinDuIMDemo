@@ -13,10 +13,12 @@ import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.http.bean.ChangeServiceAccountBean
 import com.css.im_kit.http.bean.SysBeanBack
+import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
 import com.css.im_kit.model.message.SGMessage
+import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.generateSignature
 import com.css.im_kit.utils.md5
 import kotlinx.coroutines.Dispatchers
@@ -262,13 +264,49 @@ object IMConversationManager {
 
         /**
          * 系统消息
+         *   SYSTEM(11),
+        INTERACTION(12),
+        FANS(13),
+        ORDER(14),
          */
         override fun onSystemMessage(message: MutableList<ReceiveMessageBean>) {
             sgConversations.forEach { item ->
                 if (item.itemType == 2) {
                     item as SysBeanBack
+                    message.forEach { bean ->
+                        let {
+                            when (bean.source) {//14订单消息11系统消息12互动消息
+                                DBMessageSource.SYSTEM.value -> {
+                                    return@let 11
+                                }
+                                DBMessageSource.INTERACTION.value -> {
+                                    return@let 12
+                                }
+                                DBMessageSource.FANS.value -> {
+                                    return@let 12
+                                }
+                                DBMessageSource.ORDER.value -> {
+                                    return@let 14
+                                }
+                                else -> return@let null
+                            }
+                        }?.let {
+                            if (item.sys_type == it) {
+                                item.unread_number = item.unread_number.plus(1)
+                                item.created_time = IMDateUtil.format(bean.time)
+                                if (item.sys_type == 12) {
+                                    item.content = "{\"title\":\"新的互动消息\""
+                                } else {
+                                    item.content = bean.content
+                                }
+                            }
+                        }
+                    }
                 }
+                sgConversationCallbacks?.onConversationList(sgConversations)
+                unreadCount()
             }
+
         }
 
         @Synchronized

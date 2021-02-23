@@ -67,7 +67,17 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         helper.setText(R.id.message_count, if (item.unread_number > 99) "99+" else item.unread_number.toString())
         helper.setGone(R.id.message_count, item.unread_number > 0)
         if (item.content.isEmpty()) {
-            helper.setText(R.id.message_content, "没有消息")
+            when (item.sys_type) {
+                12 -> {
+                    helper.setText(R.id.message_content, "暂无新的互动消息")
+                }
+                11 -> {
+                    helper.setText(R.id.message_content, "暂无新的系统消息")
+                }
+                14 -> {
+                    helper.setText(R.id.message_content, "暂无新的订单消息")
+                }
+            }
         } else {
             val json = gson.fromJson(item.content, HashMap::class.java)
             helper.setText(R.id.message_content, json["title"]?.toString() ?: "")

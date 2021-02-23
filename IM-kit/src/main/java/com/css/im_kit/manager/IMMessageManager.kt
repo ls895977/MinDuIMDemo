@@ -69,12 +69,12 @@ object IMMessageManager {
                                     //SYSTEM(11),
                                     //    INTERACTION(12),
                                     //    FANS(13),
-                                    //    FANS(14),
+                                    //    ORDER(14),
                                     if (receiveMessage.type == DBMessageType.TEXT.value
                                             && (receiveMessage.source == DBMessageSource.SYSTEM.value
                                                     || receiveMessage.source == DBMessageSource.INTERACTION.value
                                                     || receiveMessage.source == DBMessageSource.FANS.value
-                                                    || receiveMessage.source == DBMessageSource.FANS.value)
+                                                    || receiveMessage.source == DBMessageSource.ORDER.value)
                                     ) {
                                         messageCallback.forEach {
                                             it.onSystemMessage(mutableListOf(receiveMessage))
