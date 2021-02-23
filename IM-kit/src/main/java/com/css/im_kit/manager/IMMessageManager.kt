@@ -52,7 +52,6 @@ object IMMessageManager {
                             when (receiveMessage.type) {
                                 DBMessageType.SERVERRECEIPT.value -> {
                                     changeMessageStatus(receiveMessage)
-                                    return@let null
                                 }
                                 DBMessageType.REASSIGNCCUSTOMERSERVICE.value -> {
                                     messageCallback.forEach {
@@ -64,38 +63,27 @@ object IMMessageManager {
                                     message.read_status = 1
                                     newMessageNoSave(message)
                                 }
+                                DBMessageType.PUSH.value -> {
+                                    messageCallback.forEach {
+                                        it.onSystemMessage(mutableListOf(receiveMessage))
+                                    }
+                                }
                                 //新消息
                                 else -> {
-                                    //SYSTEM(11),
-                                    //    INTERACTION(12),
-                                    //    FANS(13),
-                                    //    ORDER(14),
-                                    if (receiveMessage.type == DBMessageType.TEXT.value
-                                            && (receiveMessage.source == DBMessageSource.SYSTEM.value
-                                                    || receiveMessage.source == DBMessageSource.INTERACTION.value
-                                                    || receiveMessage.source == DBMessageSource.FANS.value
-                                                    || receiveMessage.source == DBMessageSource.ORDER.value)
-                                    ) {
-                                        messageCallback.forEach {
-                                            it.onSystemMessage(mutableListOf(receiveMessage))
+                                    val message = receiveMessage.toDBMessage()
+                                    message.read_status = 1
+                                    ioScope.launch {
+                                        async {
+                                            saveMessage(message, false)
                                         }
-                                    } else {
-                                        val message = receiveMessage.toDBMessage()
-                                        message.read_status = 1
-                                        ioScope.launch {
-                                            async {
-                                                saveMessage(message, false)
-                                            }
-                                        }
-                                        if (receiveMessage.type != DBMessageType.SERVERRECEIPT.value) {
-                                            receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
-                                            receiveMessage.send_account = IMManager.account ?: ""
-                                            receiveMessage.receive_account = 0.toString()
-                                            receiveMessage.source = 6
-                                            "收到消息回执:${receiveMessage.toSendMessageBean().toJsonString()}".log()
-                                            MessageServiceUtils.sendNewMsg(receiveMessage.toSendMessageBean().toJsonString())
-                                        }
-                                        return@let message
+                                    }
+                                    if (receiveMessage.type != DBMessageType.SERVERRECEIPT.value) {
+                                        receiveMessage.type = DBMessageType.CLIENTRECEIPT.value
+                                        receiveMessage.send_account = IMManager.account ?: ""
+                                        receiveMessage.receive_account = 0.toString()
+                                        receiveMessage.source = 6
+                                        "收到消息回执:${receiveMessage.toSendMessageBean().toJsonString()}".log()
+                                        MessageServiceUtils.sendNewMsg(receiveMessage.toSendMessageBean().toJsonString())
                                     }
                                 }
                             }

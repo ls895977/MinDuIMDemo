@@ -20,6 +20,7 @@ enum class DBMessageType(val value: Int): Serializable {
     IMAGE(3),
     VIDEO(4),
     VOICE(5),
+    PUSH(6),
     CLIENTRECEIPT(100),
     SERVERRECEIPT(101),
     WELCOME (102),//客服欢迎消息
