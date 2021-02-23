@@ -9,6 +9,7 @@ import com.chad.library.adapter.base.entity.MultiItemEntity
 import com.css.im_kit.IMManager
 import com.css.im_kit.R
 import com.css.im_kit.db.gson
+import com.css.im_kit.http.bean.SysBean
 import com.css.im_kit.http.bean.SysBeanBack
 import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.model.message.MessageType
@@ -17,6 +18,8 @@ import com.css.im_kit.utils.FaceTextUtil
 import com.css.im_kit.utils.IMDateUtil
 import com.css.im_kit.utils.IMGlideUtil
 import com.css.im_kit.utils.long13
+import com.google.gson.reflect.TypeToken
+
 
 class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<MultiItemEntity, BaseViewHolder>(null) {
     init {
@@ -79,8 +82,13 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
                 }
             }
         } else {
-            val json = gson.fromJson(item.content, HashMap::class.java)
-            helper.setText(R.id.message_content, json["title"]?.toString() ?: "")
+            val type = object : TypeToken<List<SysBean>>() {}.type
+            val list: List<SysBean> = gson.fromJson(item.content, type)
+            list.forEach {
+                if (it.key == "title") {
+                    helper.setText(R.id.message_content, it.value)
+                }
+            }
         }
         helper.addOnClickListener(R.id.item_view)
     }

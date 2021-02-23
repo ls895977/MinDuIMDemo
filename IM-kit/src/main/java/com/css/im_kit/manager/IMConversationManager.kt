@@ -295,7 +295,7 @@ object IMConversationManager {
                                 item.unread_number = item.unread_number.plus(1)
                                 item.created_time = IMDateUtil.format(bean.time)
                                 if (item.sys_type == 12) {
-                                    item.content = "{\"title\":\"新的互动消息\"}"
+                                    item.content = "[{\"key\":\"title\",\"type\":\"string\",\"value\":\"新的互动消息\"}]"
                                 } else {
                                     item.content = bean.content
                                 }
@@ -439,7 +439,7 @@ object IMConversationManager {
                                         data.data.forEach { bean ->
                                             if (item.sys_type == bean.sys_type) {
                                                 if (item.sys_type == 12) {
-                                                    item.content = "{\"title\":\"新的互动消息\"}"
+                                                    item.content = "[{\"key\":\"title\",\"type\":\"string\",\"title\":\"新的互动消息\"}]"
                                                 } else {
                                                     item.content = bean.content
                                                 }
