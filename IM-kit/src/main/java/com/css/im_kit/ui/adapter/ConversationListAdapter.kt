@@ -2,7 +2,6 @@ package com.css.im_kit.ui.adapter
 
 import android.content.Context
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter
 import com.chad.library.adapter.base.BaseViewHolder
 import com.chad.library.adapter.base.entity.MultiItemEntity
@@ -67,8 +66,8 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
             }
         }
         //未读消息条数
-        helper.setText(R.id.message_count, if (item.unread_number > 99) "99+" else item.unread_number.toString())
-        helper.setGone(R.id.message_count, item.unread_number > 0)
+        helper.setText(R.id.message_count, if (item.unread_account > 99) "99+" else item.unread_account.toString())
+        helper.setGone(R.id.message_count, item.unread_account > 0)
         if (item.content.isEmpty()) {
             when (item.sys_type) {
                 12 -> {
@@ -95,7 +94,7 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
 
     private fun message(helper: BaseViewHolder, item: MultiItemEntity) {
         item as SGConversation
-        helper.getView<RelativeLayout>(R.id.item_view).setBackgroundResource(if (item.sort == 0) R.color.white else R.color.color_f6f6f6)
+        helper.setGone(R.id.im_top, item.sort != 0)
         if (IMManager.isBusiness) {
             //头像
             IMGlideUtil.loadAvatar(context, item.chat_account_info?.avatar, helper.getView(R.id.user_avatar))

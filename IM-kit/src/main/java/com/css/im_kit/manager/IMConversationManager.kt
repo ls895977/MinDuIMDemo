@@ -64,7 +64,7 @@ object IMConversationManager {
                     return@map it.unread_account
                 } else {
                     it as SysBeanBack
-                    return@map it.unread_number
+                    return@map it.unread_account
                 }
             }.reduce { acc, i ->
                 acc.plus(i)
@@ -82,7 +82,7 @@ object IMConversationManager {
             if (it.itemType == 2) {
                 it as SysBeanBack
                 if (type == it.sys_type) {
-                    it.unread_number = 0
+                    it.unread_account = 0
                     return@forEach
                 }
             }
@@ -308,7 +308,7 @@ object IMConversationManager {
                             }
                         }?.let {
                             if (item.sys_type == it) {
-                                item.unread_number = item.unread_number.plus(1)
+                                item.unread_account = item.unread_account.plus(1)
                                 item.created_time = IMDateUtil.format(bean.time)
                                 if (item.sys_type == 12) {
                                     item.content = "[{\"key\":\"title\",\"type\":\"string\",\"value\":\"新的互动消息\"}]"
@@ -445,9 +445,9 @@ object IMConversationManager {
                         sgConversations.clear()
                         if (!IMManager.isBusiness) {
                             val sysMessage = arrayListOf<MultiItemEntity>()
-                            sysMessage.add(SysBeanBack(content = "", sys_type = 14, created_time = "", unread_number = 0))
-                            sysMessage.add(SysBeanBack(content = "", sys_type = 11, created_time = "", unread_number = 0))
-                            sysMessage.add(SysBeanBack(content = "", sys_type = 12, created_time = "", unread_number = 0))
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 14, created_time = "", unread_account = 0))
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 11, created_time = "", unread_account = 0))
+                            sysMessage.add(SysBeanBack(content = "", sys_type = 12, created_time = "", unread_account = 0))
                             job1?.let { data ->
                                 if (data.code == "20000") {
                                     sysMessage.forEach { item ->
@@ -460,7 +460,7 @@ object IMConversationManager {
                                                     item.content = bean.content
                                                 }
                                                 item.created_time = bean.created_time
-                                                item.unread_number = bean.unread_number
+                                                item.unread_account = bean.unread_account
                                             }
                                         }
                                     }

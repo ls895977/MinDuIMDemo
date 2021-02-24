@@ -98,12 +98,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), IMListener.SetDataList
 
     private var isConnected = false
     private fun connectionIMService() {
-        val url = "ws://devchatws.supersg.cn"
-        val token = "207144203463970817"
-        val userId = "207144203463970817"
+        val url = "ws://testchatws.supersg.cn"
+        val token = "207188408521527296"
+        val userId = "207188408521527296"
         IMManager.connect(url, token, userId, object : TokenCallBack {
             override fun getToken(): String {
-                return "204A181848F32E5111462140F241FD83"
+                return "CF77CF8F35CC4716C02FD3D20778D8E4"
             }
 
             override fun getImageBaseUrl(): String {
