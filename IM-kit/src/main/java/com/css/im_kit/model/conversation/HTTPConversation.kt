@@ -140,53 +140,53 @@ class HTTPConversation : Serializable {
         val baseMessageBody: BaseMessageBody = when (message_type) {
             DBMessageType.TEXT.value -> {
                 messageType = MessageType.TEXT
-                val map = gson.fromJson(content, HashMap::class.java)
+                val item = gson.fromJson(content, ConversationMessage::class.java)
                 TextMessageBody(
-                        sendAccount = map["send_account"].toString(),
-                        receiveAccount = map["receive_account"].toString(),
+                        sendAccount = item.send_account,
+                        receiveAccount = item.receive_account,
                         isRead = true,
-                        receivedTime = updated_time ?: "0",
-                        sendTime = created_time ?: "0",
-                        text = map["content"].toString()
+                        receivedTime = item.time,
+                        sendTime = item.time,
+                        text = item.content
                 )
             }
             DBMessageType.IMAGE.value -> {
                 messageType = MessageType.IMAGE
-                val map = gson.fromJson(content, HashMap::class.java)
+                val item = gson.fromJson(content, ConversationMessage::class.java)
                 ImageMessageBody(
-                        sendAccount = map["send_account"].toString(),
-                        receiveAccount = map["receive_account"].toString(),
+                        sendAccount = item.send_account,
+                        receiveAccount = item.receive_account,
                         isRead = true,
-                        receivedTime = updated_time ?: "0",
-                        sendTime = created_time ?: "0",
-                        imageUrl = map["content"].toString()
+                        receivedTime = item.time,
+                        sendTime = item.time,
+                        imageUrl = item.content
                 )
             }
             DBMessageType.RICH.value -> {
                 try {
-                    val bean = gson.fromJson(content, HashMap::class.java)
-                    val messageBean = gson.fromJson(bean["content"].toString(), HashMap::class.java)
+                    val item = gson.fromJson(content, ConversationMessage::class.java)
+                    val messageBean = gson.fromJson(item.content, HashMap::class.java)
                     if (messageBean["type"] == "commodity") {
 
                         val commodity = gson.fromJson(gson.toJson(messageBean["content"]), CommodityMessage::class.java)
                         if (commodity.imgUrl.isNullOrEmpty()) {
                             messageType = MessageType.TEXT
                             TextMessageBody(
-                                    sendAccount = bean["send_account"].toString(),
-                                    receiveAccount = bean["receive_account"].toString(),
+                                    sendAccount = item.send_account,
+                                    receiveAccount = item.receive_account,
                                     isRead = true,
-                                    receivedTime = updated_time ?: "0",
-                                    sendTime = created_time ?: "0",
+                                    receivedTime = item.time,
+                                    sendTime = item.time,
                                     text = "未知消息类型"
                             )
                         } else {
                             messageType = MessageType.COMMODITY
                             CommodityMessageBody(
-                                    sendAccount = bean["send_account"].toString(),
-                                    receiveAccount = bean["receive_account"].toString(),
+                                    sendAccount = item.send_account,
+                                    receiveAccount = item.receive_account,
                                     isRead = true,
-                                    receivedTime = updated_time ?: "0",
-                                    sendTime = created_time ?: "0",
+                                    receivedTime = item.time,
+                                    sendTime = item.time,
                                     commodityId = commodity.productId,
                                     commodityImage = commodity.imgUrl,
                                     commodityName = commodity.productName,
@@ -196,60 +196,60 @@ class HTTPConversation : Serializable {
                     } else {
                         messageType = MessageType.TEXT
                         TextMessageBody(
-                                sendAccount = bean["send_account"].toString(),
-                                receiveAccount = bean["receive_account"].toString(),
+                                sendAccount = item.send_account,
+                                receiveAccount = item.receive_account,
                                 isRead = true,
-                                receivedTime = updated_time ?: "0",
-                                sendTime = created_time ?: "0",
+                                receivedTime = item.time,
+                                sendTime = item.time,
                                 text = "未知类型"
                         )
                     }
                 } catch (e: Exception) {
-                    val map = gson.fromJson(content, HashMap::class.java)
+                    val item = gson.fromJson(content, ConversationMessage::class.java)
                     messageType = MessageType.TEXT
                     TextMessageBody(
-                            sendAccount = map["send_account"].toString(),
-                            receiveAccount = map["receive_account"].toString(),
+                            sendAccount = item.send_account,
+                            receiveAccount = item.receive_account,
                             isRead = true,
-                            receivedTime = updated_time ?: "0",
-                            sendTime = created_time ?: "0",
+                            receivedTime = item.time,
+                            sendTime = item.time,
                             text = "未知类型")
                 }
 
             }
             DBMessageType.WELCOME.value -> {
                 messageType = MessageType.TEXT
-                val map = gson.fromJson(content, HashMap::class.java)
+                val item = gson.fromJson(content, ConversationMessage::class.java)
                 TextMessageBody(
-                        sendAccount = map["send_account"].toString(),
-                        receiveAccount = map["receive_account"].toString(),
+                        sendAccount = item.send_account,
+                        receiveAccount = item.receive_account,
                         isRead = true,
-                        receivedTime = updated_time ?: "0",
-                        sendTime = created_time ?: "0",
-                        text = map["content"].toString()
+                        receivedTime = item.time,
+                        sendTime = item.time,
+                        text = item.content
                 )
             }
             DBMessageType.NONBUSINESSHOURS.value -> {
                 messageType = MessageType.TEXT
-                val map = gson.fromJson(content, HashMap::class.java)
+                val item = gson.fromJson(content, ConversationMessage::class.java)
                 TextMessageBody(
-                        sendAccount = map["send_account"].toString(),
-                        receiveAccount = map["receive_account"].toString(),
+                        sendAccount = item.send_account,
+                        receiveAccount = item.receive_account,
                         isRead = true,
-                        receivedTime = updated_time ?: "0",
-                        sendTime = created_time ?: "0",
-                        text = map["content"].toString()
+                        receivedTime = item.time,
+                        sendTime = item.time,
+                        text = item.content
                 )
             }
             else -> {
                 messageType = MessageType.TEXT
-                val map = gson.fromJson(content, HashMap::class.java)
+                val item = gson.fromJson(content, ConversationMessage::class.java)
                 TextMessageBody(
-                        sendAccount = map["send_account"].toString(),
-                        receiveAccount = map["receive_account"].toString(),
+                        sendAccount = item.send_account,
+                        receiveAccount = item.receive_account,
                         isRead = true,
-                        receivedTime = updated_time ?: "0",
-                        sendTime = created_time ?: "0",
+                        receivedTime = item.time,
+                        sendTime =item.time,
                         text = "未知类型"
                 )
             }
@@ -274,5 +274,15 @@ class HTTPConversation : Serializable {
                 shop = shop
         )
     }
-
 }
+
+class ConversationMessage(
+        val content: String,
+        val m_id: String,
+        val receive_account: String,
+        val send_account: String,
+        val source: String,
+        val time: String,
+        val type: String
+)
+
