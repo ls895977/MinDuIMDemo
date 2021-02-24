@@ -67,7 +67,7 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         }
         //未读消息条数
         helper.setText(R.id.message_count, if (item.unread_account > 99) "99+" else item.unread_account.toString())
-        helper.setGone(R.id.message_count, item.unread_account > 0)
+        helper.setVisible(R.id.message_count, item.unread_account > 0)
         if (item.content.isEmpty()) {
             when (item.sys_type) {
                 12 -> {
@@ -135,7 +135,7 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
 
         //未读消息条数
         helper.setText(R.id.message_count, if (item.unread_account > 99) "99+" else item.unread_account.toString())
-        helper.setGone(R.id.message_count, item.unread_account > 0)
+        helper.setVisible(R.id.message_count, item.unread_account > 0)
 
         //点击事件
         helper.addOnClickListener(R.id.item_view)
