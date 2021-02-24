@@ -87,6 +87,7 @@ object IMConversationManager {
                 }
             }
         }
+        sgConversationCallbacks?.onConversationList(sgConversations)
         unreadCount()
     }
 
