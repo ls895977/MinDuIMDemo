@@ -75,6 +75,22 @@ object IMConversationManager {
     }
 
     /**
+     * 清空系统消息未读数
+     */
+    fun clearSysMessageUnread(type: Int) {
+        sgConversations.forEach {
+            if (it.itemType == 2) {
+                it as SysBeanBack
+                if (type == it.sys_type) {
+                    it.unread_number = 0
+                    return@forEach
+                }
+            }
+        }
+        unreadCount()
+    }
+
+    /**
      * 聊天列表置顶
      */
     fun chatTop(position: Int) {
