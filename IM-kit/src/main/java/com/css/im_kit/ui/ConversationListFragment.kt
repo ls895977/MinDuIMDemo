@@ -12,12 +12,15 @@ import com.css.im_kit.model.conversation.SGConversation
 import com.css.im_kit.ui.adapter.ConversationListAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.listener.IMListener
+import com.css.im_kit.ui.pop.DeleteDialog
 import com.css.im_kit.ui.pop.MessageConversationsCallBack
 import com.css.im_kit.ui.pop.MessageConversationsPup
 import com.css.im_kit.utils.IMDensityUtils
 import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupAnimation
 import com.lxj.xpopup.enums.PopupType
 import kotlinx.coroutines.launch
+
 
 class ConversationListFragment(private var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback, MessageConversationsCallBack {
 
@@ -110,7 +113,18 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
      * 删除会话
      */
     override fun delete(position: Int) {
-        IMConversationManager.chatDel(position)
+        XPopup.Builder(context)
+                .popupAnimation(PopupAnimation.ScaleAlphaFromCenter)
+                .dismissOnTouchOutside(false)
+                .dismissOnBackPressed(false)
+                .asCustom(context?.let {
+                    DeleteDialog(it, "删除信息后，信息不可恢复", "确认", "取消") {
+                        if (it) {
+                            IMConversationManager.chatDel(position)
+                        }
+                    }
+                })
+                .show()
     }
 
     /**
