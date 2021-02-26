@@ -39,6 +39,17 @@ object MessageRepository {
                 ?: arrayListOf()
     }
 
+    @Synchronized
+    suspend fun delete4account(chat_account: String) {
+        dao?.delete4account(chat_account = chat_account)
+    }
+
+    @Synchronized
+    suspend fun delete4ShopId(shop_id: String) {
+        dao?.delete4ShopId(shop_id = shop_id)
+    }
+
+
     /**
      * 获取消息
      * messageId 消息id

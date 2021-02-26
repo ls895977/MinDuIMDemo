@@ -140,6 +140,13 @@ object IMConversationManager {
                             sgConversations.filter { conversation ->
                                 if (conversation.itemType == 1) {
                                     conversation as SGConversation
+                                    if (conversation.id == chatId) {
+                                        if (IMManager.isBusiness) {
+                                            IMMessageManager.delete4account(conversation.chat_account ?: "")
+                                        } else {
+                                            IMMessageManager.delete4ShopId(conversation.shop_id ?: "")
+                                        }
+                                    }
                                     return@filter conversation.id != chatId
                                 } else {
                                     return@filter true

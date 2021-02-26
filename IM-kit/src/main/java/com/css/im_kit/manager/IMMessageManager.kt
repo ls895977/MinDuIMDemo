@@ -13,7 +13,6 @@ import com.css.im_kit.db.repository.UserInfoRepository
 import com.css.im_kit.db.uiScope
 import com.css.im_kit.http.Retrofit
 import com.css.im_kit.imservice.MessageServiceUtils
-import com.css.im_kit.imservice.bean.DBMessageSource
 import com.css.im_kit.imservice.bean.DBMessageType
 import com.css.im_kit.imservice.bean.ReceiveMessageBean
 import com.css.im_kit.imservice.interfacelinsterner.onResultMessage
@@ -411,6 +410,17 @@ object IMMessageManager {
         )
     }
 
+    fun delete4ShopId(shop_id: String) {
+        GlobalScope.launch {
+            MessageRepository.delete4ShopId(shop_id)
+        }
+    }
+
+    fun delete4account(chat_account: String) {
+        GlobalScope.launch {
+            MessageRepository.delete4account(chat_account)
+        }
+    }
 
     /**
      * 上传图片
