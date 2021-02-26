@@ -85,7 +85,21 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
             val list: List<SysBean> = gson.fromJson(item.content, type)
             list.forEach {
                 if (it.key == "title") {
-                    helper.setText(R.id.message_content, it.value)
+                    if (it.value.isEmpty()) {
+                        when (item.sys_type) {
+                            12 -> {
+                                helper.setText(R.id.message_content, "暂无新的互动消息")
+                            }
+                            11 -> {
+                                helper.setText(R.id.message_content, "暂无新的系统消息")
+                            }
+                            14 -> {
+                                helper.setText(R.id.message_content, "暂无新的订单消息")
+                            }
+                        }
+                    } else {
+                        helper.setText(R.id.message_content, it.value)
+                    }
                 }
             }
         }
