@@ -101,5 +101,7 @@ class SGConversation : Serializable, MultiItemEntity {
 class Shop(
         var shop_id: String,
         var shop_name: String,
+        var self_shop: String,
+        var brand_name: String,
         var log: String
 ) : Serializable

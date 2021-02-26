@@ -118,7 +118,11 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
             //头像
             IMGlideUtil.loadAvatar(context, item.shop?.log, helper.getView(R.id.user_avatar))
             //用户名
-            helper.setText(R.id.user_name, item.shop?.shop_name)
+            if (item.shop?.self_shop == "1") {
+                helper.setText(R.id.user_name, "民度优选")
+            } else {
+                helper.setText(R.id.user_name, item.shop?.shop_name ?: "" + "「" + item.shop?.brand_name ?: "" + "」")
+            }
         }
 
 
