@@ -60,9 +60,9 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         item.created_time.let {
             val time = IMDateUtil.dateToStamp(it).long13()
             try {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(time))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime1(time))
             } catch (e: Exception) {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(IMDateUtil.dateToStamp(time.toString())))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime1(IMDateUtil.dateToStamp(time.toString())))
             }
         }
         //未读消息条数
@@ -131,9 +131,9 @@ class ConversationListAdapter(var context: Context) : BaseMultiItemQuickAdapter<
         item.newMessage?.messageBody?.receivedTime?.let {
             val time = it.toLong().long13()
             try {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(time))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime1(time))
             } catch (e: Exception) {
-                helper.setText(R.id.time, IMDateUtil.getSimpleTime0(IMDateUtil.dateToStamp(time.toString())))
+                helper.setText(R.id.time, IMDateUtil.getSimpleTime1(IMDateUtil.dateToStamp(time.toString())))
             }
 
         }
