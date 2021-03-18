@@ -53,23 +53,25 @@ object IMConversationManager {
      * 更新未读数
      */
     private fun unreadCount() {
-        unreadCountListener?.apply {
-            if (sgConversations.isNullOrEmpty()) {
-                unreadCount(0)
-                return@apply
-            }
-            sgConversations.map {
-                if (it.itemType == 1) {
-                    it as SGConversation
-                    return@map it.unread_account
-                } else {
-                    it as SysBeanBack
-                    return@map it.unread_account
+        synchronized(this) {
+            unreadCountListener?.apply {
+                if (sgConversations.isNullOrEmpty()) {
+                    unreadCount(0)
+                    return@apply
                 }
-            }.reduce { acc, i ->
-                acc.plus(i)
-            }.let {
-                unreadCount(it)
+                sgConversations.map {
+                    if (it.itemType == 1) {
+                        it as SGConversation
+                        return@map it.unread_account
+                    } else {
+                        it as SysBeanBack
+                        return@map it.unread_account
+                    }
+                }.reduce { acc, i ->
+                    acc.plus(i)
+                }.let {
+                    unreadCount(it)
+                }
             }
         }
     }
@@ -78,17 +80,19 @@ object IMConversationManager {
      * 清空系统消息未读数
      */
     fun clearSysMessageUnread(type: Int) {
-        sgConversations.forEach {
-            if (it.itemType == 2) {
-                it as SysBeanBack
-                if (type == it.sys_type) {
-                    it.unread_account = 0
-                    return@forEach
+        synchronized(this) {
+            sgConversations.forEach {
+                if (it.itemType == 2) {
+                    it as SysBeanBack
+                    if (type == it.sys_type) {
+                        it.unread_account = 0
+                        return@forEach
+                    }
                 }
             }
+            sgConversationCallbacks?.onConversationList(sgConversations)
+            unreadCount()
         }
-        sgConversationCallbacks?.onConversationList(sgConversations)
-        unreadCount()
     }
 
     /**
@@ -152,10 +156,12 @@ object IMConversationManager {
                                     return@filter true
                                 }
                             }.let {
-                                sgConversations.clear()
-                                sgConversations.addAll(it)
-                                sgConversationCallbacks?.onConversationList(sgConversations)
-                                unreadCount()
+                                synchronized(this) {
+                                    sgConversations.clear()
+                                    sgConversations.addAll(it)
+                                    sgConversationCallbacks?.onConversationList(sgConversations)
+                                    unreadCount()
+                                }
                             }
                         }
                     }
