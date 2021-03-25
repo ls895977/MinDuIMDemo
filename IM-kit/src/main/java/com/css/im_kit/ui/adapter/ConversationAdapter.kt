@@ -132,7 +132,7 @@ class ConversationAdapter(private var activity: Activity) : BaseMultiItemQuickAd
 
         //长按
         helper.addOnClickListener(R.id.item_view)
-        helper.addOnLongClickListener(R.id.item_view)
+        helper.addOnLongClickListener(R.id.ll_content)
     }
 
     /**

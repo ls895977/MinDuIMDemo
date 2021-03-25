@@ -1,0 +1,31 @@
+apply plugin: 'maven'
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "http://47.114.159.170:10090/3ElAUYeQt7F2") {
+                authentication(userName: "admin", password: "35uDyYzkq7Xp")
+            }
+
+            pom.project {
+                // 检查:
+                // 1. flow.gradle 中是否修改版本号.
+                // 2. 此处是否修改版本号.
+                // 3. 链接地址,账号,密码是否正确.
+                version '0.1.0'
+                artifactId 'im'
+                groupId 'com.bingfor.cxs'
+                packaging 'aar'
+            }
+        }
+    }
+}

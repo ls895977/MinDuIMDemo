@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/color_transparent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start">
+
+        <LinearLayout
+            android:id="@+id/sticky"
+            android:layout_width="64dp"
+            android:layout_height="34dp"
+            android:background="@drawable/shape_50balck_corner_8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/sticky_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="举报"
+                android:textColor="@color/white"
+                android:textSize="@dimen/sp_14" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="@dimen/dp_15"
+            android:layout_height="@dimen/dp_9"
+            android:layout_below="@+id/sticky"
+            android:layout_alignStart="@+id/sticky"
+            android:layout_alignEnd="@+id/sticky"
+            android:src="@drawable/ic_jubao" />
+
+    </RelativeLayout>
+</LinearLayout>

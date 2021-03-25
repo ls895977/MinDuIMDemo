@@ -1,7 +1,6 @@
 package com.css.im_kit.utils
 
 import android.util.Log
-import android.widget.Toast
 import com.css.im_kit.IMManager
 import com.css.im_kit.db.bean.Message
 import com.css.im_kit.db.bean.SendType
@@ -28,7 +27,7 @@ fun String.log() {
 
 fun String.toast() {
     uiScope.launch {
-        Toast.makeText(IMManager.context, this@toast, Toast.LENGTH_SHORT).show()
+        ToastUtil.show(this@toast)
     }
 }
 

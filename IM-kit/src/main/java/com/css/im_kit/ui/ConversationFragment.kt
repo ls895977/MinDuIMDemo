@@ -7,7 +7,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.view.KeyEvent
 import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.widget.addTextChangedListener
@@ -31,7 +30,11 @@ import com.css.im_kit.ui.adapter.EmojiAdapter
 import com.css.im_kit.ui.base.BaseFragment
 import com.css.im_kit.ui.bean.EmojiBean
 import com.css.im_kit.ui.listener.IMListener
+import com.css.im_kit.ui.pop.ReportPup
 import com.css.im_kit.utils.*
+import com.lxj.xpopup.XPopup
+import com.lxj.xpopup.enums.PopupPosition
+import com.lxj.xpopup.enums.PopupType
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -161,13 +164,25 @@ class ConversationFragment(private var conversation: SGConversation, private var
 //                R.id.item_view -> {}
             }
         }
-//        //长按删除
-//        adapter!!.setOnItemLongClickListener { adapter, view, position ->
-//            when (view.id) {
-//                R.id.item_view -> {}
-//            }
-//            return@setOnItemLongClickListener false
-//        }
+        //长按删除
+        adapter!!.setOnItemChildLongClickListener { adapter, view, position ->
+            when (view.id) {
+                R.id.ll_content -> {
+                    val item = adapter.getItem(position) as SGMessage
+                    if (item.messageBody?.isSelf == false) {
+                        XPopup.Builder(requireContext())
+                                .atView(view)
+                                .popupPosition(PopupPosition.Top)
+                                .offsetX(IMDensityUtils.getScreenWidth(requireContext()).minus(IMDensityUtils.dp2px(requireContext(), 280f).toFloat()).toInt())
+                                .popupType(PopupType.AttachView)
+                                .hasShadowBg(false)
+                                .asCustom(ReportPup(context = requireContext()))
+                                .show()
+                    }
+                }
+            }
+            return@setOnItemChildLongClickListener false
+        }
 
         //输入区（发送按钮展示与否）
         binding!!.etContent.addTextChangedListener {
