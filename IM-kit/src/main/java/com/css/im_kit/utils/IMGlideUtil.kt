@@ -31,7 +31,7 @@ object IMGlideUtil {
         try {
             context?.let {
                 if (url.isNullOrEmpty()) {
-                    Glide.with(context).load(R.mipmap.im_icon_avatar_default).apply(avatarOptions!!).into(img)
+                    Glide.with(context).load(R.color.color_eeeeee).apply(avatarOptions!!).into(img)
                 } else {
                     Glide.with(context).load(getAllUrl(url)).apply(avatarOptions!!).into(img)
                 }
