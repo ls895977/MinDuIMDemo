@@ -41,7 +41,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class ConversationFragment(private var conversation: SGConversation, private var setDataListener: IMListener.SetDataListener, var setClickProductListener: IMListener.SetClickProductListener) : BaseFragment<FragmentConversationBinding?>() {
+class ConversationFragment() : BaseFragment<FragmentConversationBinding?>() {
+    var conversation: SGConversation? = null
+    var setDataListener: IMListener.SetDataListener? = null
+    var setClickProductListener: IMListener.SetClickProductListener? = null
+
+    constructor(conversation: SGConversation,
+                setDataListener: IMListener.SetDataListener,
+                setClickProductListener: IMListener.SetClickProductListener) : this() {
+        this.conversation = conversation
+        this.setDataListener = setDataListener
+        this.setClickProductListener = setClickProductListener
+    }
+
+
     private var isFirstGetData = false//是否第一次获取数据
     private var keyboardTag = false//软键盘状态
     private var emojiTag = false//表情区域状态
@@ -74,7 +87,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
         layout.reverseLayout = true //列表翻转
         binding?.rvConversationList?.layoutManager = layout
         //设置事件
-        setDataListener.onSetFragmentDataListener()
+        setDataListener?.onSetFragmentDataListener()
 
         //表情
         val gridLayoutManager = GridLayoutManager(this.context, 7)
@@ -146,7 +159,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     }
                 }
                 R.id.ll_content -> {//商品，进详情
-                    setClickProductListener.onGoProductDetail((adapter.data[position] as SGMessage).messageBody as CommodityMessageBody)
+                    setClickProductListener?.onGoProductDetail((adapter.data[position] as SGMessage).messageBody as CommodityMessageBody)
                 }
                 R.id.loading_image -> {//消息发送失败》重发!!!!!(只有自己的消息可以重发)
                     if (IMManager.isServiceStatus()) {
@@ -348,8 +361,9 @@ class ConversationFragment(private var conversation: SGConversation, private var
         this.productImage = productImage
         this.productPrice = productPrice
         isFirstGetData = true
-        IMChatRoomManager
-                .initConversation(conversation)
+        conversation?.let {
+            IMChatRoomManager
+                .initConversation(it)
                 .addSGConversationListListener(object : ChatRoomCallback {
                     @Synchronized
                     override fun onReceiveMessage(message: List<SGMessage>) {
@@ -394,6 +408,7 @@ class ConversationFragment(private var conversation: SGConversation, private var
                     }
                 })
                 .create()
+        }
     }
 
     /**

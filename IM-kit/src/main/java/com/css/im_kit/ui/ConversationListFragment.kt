@@ -22,8 +22,11 @@ import com.lxj.xpopup.enums.PopupType
 import kotlinx.coroutines.launch
 
 
-class ConversationListFragment(private var setDataListener: IMListener.SetDataListener) : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback, MessageConversationsCallBack {
-
+class ConversationListFragment() : BaseFragment<FragmentConversationListBinding?>(), SGConversationCallback, MessageConversationsCallBack {
+    constructor(setDataListener:IMListener.SetDataListener):this(){
+        this.setDataListener = setDataListener
+    }
+    var setDataListener:IMListener.SetDataListener?=null
     private var conversationListAdapter: ConversationListAdapter? = null
 
     //是否拉去过数据
@@ -35,7 +38,7 @@ class ConversationListFragment(private var setDataListener: IMListener.SetDataLi
         conversationListAdapter = ConversationListAdapter(this@ConversationListFragment.requireContext())
         binding!!.rvConversationList.adapter = conversationListAdapter
         //设置事件
-        setDataListener.onSetFragmentDataListener()
+        setDataListener?.onSetFragmentDataListener()
     }
 
     override fun initListeners() {
